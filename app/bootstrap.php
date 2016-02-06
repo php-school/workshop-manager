@@ -25,6 +25,7 @@ use PhpSchool\WorkshopManager\Command\ListCommand;
 use PhpSchool\WorkshopManager\Command\SearchCommand;
 use PhpSchool\WorkshopManager\Command\UninstallCommand;
 use PhpSchool\WorkshopManager\Command\UnlinkCommand;
+use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Application;
 
 ini_set('display_errors', 1);
@@ -34,13 +35,14 @@ $homePath   = strtolower(substr(PHP_OS, 0, 3)) === 'win'
     ? getenv('USERPROFILE')
     : getenv('HOME');
 
-$appPath    = realpath(sprintf('%s/.php-school', $homePath));
-$filesystem = new Filesystem(new Local($appPath));
+$appPath            = realpath(sprintf('%s/.php-school', $homePath));
+$filesystem         = new Filesystem(new Local($appPath));
+$workshopRepository = new WorkshopRepository(sprintf('%s/workshops.json', __DIR__));
 
 $application = new Application();
 $application->add(new InstallCommand($filesystem));
 $application->add(new UninstallCommand($filesystem));
-$application->add(new SearchCommand);
+$application->add(new SearchCommand($workshopRepository));
 $application->add(new ListCommand($filesystem));
 $application->add(new LinkCommand($filesystem));
 $application->add(new UnlinkCommand);

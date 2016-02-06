@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class ListCommand
+ * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
 class ListCommand extends Command
 {

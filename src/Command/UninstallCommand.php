@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class UninstallCommand
+ * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
 class UninstallCommand extends Command
 {

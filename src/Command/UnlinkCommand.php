@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class UnlinkCommand
+ * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
 class UnlinkCommand extends Command
 {
