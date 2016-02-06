@@ -1,0 +1,9 @@
+{
+  "workshops": [
+    {
+      "name": "Learn you PHP!",
+      "owner": "php-school",
+      "repo": "learn-you-php"
+    }
+  ]
+}
