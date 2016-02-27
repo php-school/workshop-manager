@@ -25,6 +25,7 @@ use PhpSchool\WorkshopManager\Command\ListCommand;
 use PhpSchool\WorkshopManager\Command\SearchCommand;
 use PhpSchool\WorkshopManager\Command\UninstallCommand;
 use PhpSchool\WorkshopManager\Command\UnlinkCommand;
+use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Application;
 
@@ -35,9 +36,22 @@ $homePath   = strtolower(substr(PHP_OS, 0, 3)) === 'win'
     ? getenv('USERPROFILE')
     : getenv('HOME');
 
-$appPath            = realpath(sprintf('%s/.php-school', $homePath));
-$filesystem         = new Filesystem(new Local($appPath));
-$workshopRepository = new WorkshopRepository(sprintf('%s/workshops.json', __DIR__));
+$appPath       = realpath(sprintf('%s/.php-school', $homePath));
+$filesystem    = new Filesystem(new Local($appPath));
+
+// Build Workshop entity array
+$workshopsJson = json_decode(file_get_contents(sprintf('%s/workshops.json', __DIR__)), true);
+$workshops     = array_map(function ($workshop) {
+    return new Workshop(
+        $workshop['name'],
+        $workshop['display_name'],
+        $workshop['owner'],
+        $workshop['repo'],
+        $workshop['description']
+    );
+}, $workshopsJson['workshops']);
+
+$workshopRepository = new WorkshopRepository($workshops);
 
 $application = new Application();
 $application->add(new InstallCommand($filesystem));

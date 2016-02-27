@@ -2,8 +2,8 @@
 
 namespace PhpSchool\WorkshopManager\Repository;
 
-use InvalidArgumentException;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 
 /**
  * Class WorkshopRepository
@@ -12,46 +12,70 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 class WorkshopRepository implements RepositoryInterface
 {
     /**
-     * @var string
+     * @var Workshop[]
      */
-    private $source;
+    private $workshops;
 
     /**
-     * @var array
+     * @param Workshop[] $workshops
      */
-    private $data;
-
-    /**
-     * Accepts path to JSON source
-     *
-     * @param string $source
-     */
-    public function __construct($source)
+    public function __construct(array $workshops)
     {
-        $this->source = $source;
-        $this->data   = json_decode(file_get_contents($source), true);
+        foreach ($workshops as $workshop) {
+            if ($workshop instanceof Workshop) {
+                $this->workshops[$workshop->getName()] = $workshop;
+            }
+        }
     }
-    
+
     /**
-     * @param $name
+     * @param string $name
      *
      * @return Workshop
-     * @throws InvalidArgumentException
+     * @throws WorkshopNotFoundException
      */
-    public function find($name)
+    public function getByName($name)
     {
-        $index = array_search($name, array_column($this->data['workshops'], 'name'), true);
-
-        if (false === $index) {
-            throw new InvalidArgumentException('No workshop with that name available!');
+        if (!$this->hasWorkshop($name)) {
+            throw new WorkshopNotFoundException;
         }
 
-        return new Workshop(
-            $this->data['workshops'][$index]['name'],
-            $this->data['workshops'][$index]['display_name'],
-            $this->data['workshops'][$index]['owner'],
-            $this->data['workshops'][$index]['repo'],
-            $this->data['workshops'][$index]['description']
-        );
+        $index = array_search($name, array_keys($this->workshops), true);
+
+        if (false === $index) {
+            throw new WorkshopNotFoundException;
+        }
+
+        return $this->workshops[$index];
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function hasWorkshop($name)
+    {
+        return array_key_exists($name, $this->workshops);
+    }
+
+    /**
+     * @param string $searchName
+     *
+     * @return Workshop[]
+     * @throws WorkshopNotFoundException
+     */
+    public function find($searchName)
+    {
+        $results = array_map(function ($name) {
+            return $this->workshops[$name];
+        }, array_filter(array_keys($this->workshops), function ($workshopName) use ($searchName) {
+            return false !== strpos($workshopName, $searchName) || 3 >= levenshtein($searchName, $workshopName);
+        }));
+
+        if (!$results) {
+            throw new WorkshopNotFoundException;
+        }
+
+        return $results;
     }
 }
