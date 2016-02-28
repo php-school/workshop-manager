@@ -1,22 +1,21 @@
 <?php
 
 namespace PhpSchool\WorkshopManager;
-
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 
 /**
- * Class WorkshopManager
+ * Class ManagerState
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class WorkshopManager
+class ManagerState
 {
     /**
-     * @var WorkshopInstaller
+     * @var Filesystem
      */
-    private $installer;
+    private $filesystem;
 
     /**
      * @var WorkshopRepository
@@ -24,20 +23,13 @@ class WorkshopManager
     private $repository;
 
     /**
-     * @var Filesystem
-     */
-    private $filesystem;
-
-    /**
-     * @param WorkshopInstaller $installer
      * @param Filesystem $filesystem
      * @param WorkshopRepository $repository
      */
-    public function __construct(WorkshopInstaller $installer, WorkshopRepository $repository, Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, WorkshopRepository $repository)
     {
-        $this->installer  = $installer;
-        $this->repository = $repository;
         $this->filesystem = $filesystem;
+        $this->repository = $repository;
     }
 
     /**
@@ -54,16 +46,26 @@ class WorkshopManager
         }, $this->filesystem->listContents('workshops')));
     }
 
-
-    public function installWorkshop($name)
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function isWorkshopInstalled($name)
     {
-        $workshop = $this->repository->getByName($name);
+        foreach ($this->getInstalledWorkshops() as $workshop) {
+            if ($workshop->getName() === $name) {
+                return true;
+            }
+        }
 
-        $this->installer->install($workshop);
+        return false;
     }
 
-    public function uninstallWorkshop($name)
+    /**
+     * @return bool
+     */
+    public function clearTemp()
     {
-
+        return $this->filesystem->deleteDir('.temp');
     }
 }

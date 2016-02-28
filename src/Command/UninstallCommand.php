@@ -4,6 +4,10 @@ namespace PhpSchool\WorkshopManager\Command;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
+use PhpSchool\WorkshopManager\Uninstaller;
+use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
@@ -17,19 +21,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UninstallCommand extends Command
 {
     /**
-     * @var Filesystem
+     * @var Uninstaller
      */
-    private $filesystem;
+    private $uninstaller;
 
     /**
-     * ListCommand constructor
-     *
-     * @param Filesystem $filesystem
-     * @throws LogicException When the command name is empty
+     * @param Uninstaller $uninstaller
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Uninstaller $uninstaller)
     {
-        $this->filesystem = $filesystem;
+        $this->uninstaller = $uninstaller;
         parent::__construct();
     }
 
@@ -53,23 +54,18 @@ class UninstallCommand extends Command
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $workshop = $input->getArgument('workshop');
-        $contents = $this->filesystem->listContents(sprintf('workshops/%s', $workshop));
-
-        if (!$contents) {
-            $output->writeln(sprintf('Looks like "%s" isn\'t installed', $workshop));
-            return;
-        }
-
-        $unlinkCommand = $this->getApplication()->find('unlink');
-        $unlinkCommand->run($input, $output);
+        $output->writeln('');
 
         try {
-            $this->filesystem->deleteDir(sprintf('workshops/%s', $workshop));
-        } catch (FileNotFoundException $e) {
-            $output->writeln(sprintf('Failed to uninstall "%s"', $workshop));
+            $this->uninstaller->uninstallWorkshop($workshop);
+        } catch (WorkshopNotInstalledException $e) {
+            $output->writeln(sprintf(' <error>Workshop "%s" not currently installed</error>', $workshop));
+            return;
+        } catch (\RuntimeException $e) {
+            $output->writeln(sprintf(' <error>Failed to uninstall workshop "%s"</error>', $workshop));
             return;
         }
 
-        $output->writeln(sprintf('Successfully uninstalled "%s"', $workshop));
+        $output->writeln(sprintf(' <info>Successfully uninstalled "%s"</info>', $workshop));
     }
 }

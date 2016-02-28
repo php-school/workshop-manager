@@ -26,9 +26,10 @@ use PhpSchool\WorkshopManager\Command\SearchCommand;
 use PhpSchool\WorkshopManager\Command\UninstallCommand;
 use PhpSchool\WorkshopManager\Command\UnlinkCommand;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
-use PhpSchool\WorkshopManager\WorkshopInstaller;
-use PhpSchool\WorkshopManager\WorkshopManager;
+use PhpSchool\WorkshopManager\Uninstaller;
 use Symfony\Component\Console\Application;
 
 ini_set('display_errors', 1);
@@ -54,22 +55,18 @@ $workshops     = array_map(function ($workshop) {
 }, $workshopsJson['workshops']);
 
 $workshopRepository = new WorkshopRepository($workshops);
-
-$workshopManager = new WorkshopManager(
-    new WorkshopInstaller($filesystem),
-    $workshopRepository,
-    $filesystem
-);
+$managerState       = new ManagerState($filesystem, $workshopRepository);
+$installer          = new Installer();
+$uninstaller        = new Uninstaller($filesystem, $workshopRepository, $managerState);
 
 $application = new Application();
 $application->add(new InstallCommand($filesystem));
-$application->add(new UninstallCommand($filesystem));
+$application->add(new UninstallCommand($uninstaller));
 $application->add(new SearchCommand($workshopRepository));
-$application->add(new ListCommand($workshopManager));
+$application->add(new ListCommand($managerState));
 $application->add(new LinkCommand($filesystem));
 $application->add(new UnlinkCommand);
 $application->setAutoExit(false);
 $application->run();
 
-// Cleanup temp
-$filesystem->deleteDir('.temp');
+$managerState->clearTemp();

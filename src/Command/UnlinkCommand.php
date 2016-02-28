@@ -38,11 +38,11 @@ class UnlinkCommand extends Command
         $workshopPath = sprintf('%s/%s', $homeBinPath, $workshop);
 
         if (!is_link($workshopPath)) {
-            $output->writeln(sprintf('Link not found in "%s"', $workshopPath));
+            $output->writeln(sprintf(' <error>Link not found in "%s"</error>', $workshopPath));
             return;
         }
 
         unlink($workshopPath);
-        $output->writeln(sprintf('Workshop "%s" executable unlinked succesfully', $workshop));
+        $output->writeln(sprintf(' <info>Workshop "%s" executable unlinked succesfully</info>', $workshop));
     }
 }

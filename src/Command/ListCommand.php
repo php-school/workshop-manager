@@ -2,10 +2,8 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
-use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
-use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -19,16 +17,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ListCommand extends Command
 {
     /**
-     * @var WorkshopManager
+     * @var ManagerState
      */
-    private $workshopManager;
+    private $state;
 
     /**
-     * @param WorkshopManager $workshopManager
+     * @param ManagerState $state
      */
-    public function __construct(WorkshopManager $workshopManager)
+    public function __construct(ManagerState $state)
     {
-        $this->workshopManager = $workshopManager;
+        $this->state = $state;
         parent::__construct();
     }
 
@@ -50,7 +48,7 @@ class ListCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $workshops = $this->workshopManager->getInstalledWorkshops();
+        $workshops = $this->state->getInstalledWorkshops();
 
         if (!$workshops) {
             $output->writeln("\n There are currently no workshops installed");
