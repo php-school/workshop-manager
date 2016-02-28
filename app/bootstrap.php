@@ -27,6 +27,8 @@ use PhpSchool\WorkshopManager\Command\UninstallCommand;
 use PhpSchool\WorkshopManager\Command\UnlinkCommand;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use PhpSchool\WorkshopManager\WorkshopInstaller;
+use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Application;
 
 ini_set('display_errors', 1);
@@ -53,11 +55,17 @@ $workshops     = array_map(function ($workshop) {
 
 $workshopRepository = new WorkshopRepository($workshops);
 
+$workshopManager = new WorkshopManager(
+    new WorkshopInstaller($filesystem),
+    $workshopRepository,
+    $filesystem
+);
+
 $application = new Application();
 $application->add(new InstallCommand($filesystem));
 $application->add(new UninstallCommand($filesystem));
 $application->add(new SearchCommand($workshopRepository));
-$application->add(new ListCommand($filesystem, $workshopRepository));
+$application->add(new ListCommand($workshopManager));
 $application->add(new LinkCommand($filesystem));
 $application->add(new UnlinkCommand);
 $application->setAutoExit(false);
