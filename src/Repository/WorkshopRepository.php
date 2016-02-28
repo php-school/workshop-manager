@@ -40,13 +40,7 @@ class WorkshopRepository implements RepositoryInterface
             throw new WorkshopNotFoundException;
         }
 
-        $index = array_search($name, array_keys($this->workshops), true);
-
-        if (false === $index) {
-            throw new WorkshopNotFoundException;
-        }
-
-        return $this->workshops[$index];
+        return $this->workshops[$name];
     }
 
     /**

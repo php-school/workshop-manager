@@ -57,7 +57,7 @@ $application = new Application();
 $application->add(new InstallCommand($filesystem));
 $application->add(new UninstallCommand($filesystem));
 $application->add(new SearchCommand($workshopRepository));
-$application->add(new ListCommand($filesystem));
+$application->add(new ListCommand($filesystem, $workshopRepository));
 $application->add(new LinkCommand($filesystem));
 $application->add(new UnlinkCommand);
 $application->setAutoExit(false);

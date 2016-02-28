@@ -3,8 +3,11 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use League\Flysystem\Filesystem;
+use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
+use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\LogicException;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -20,14 +23,20 @@ class ListCommand extends Command
     private $filesystem;
 
     /**
+     * @var WorkshopRepository
+     */
+    private $repository;
+
+    /**
      * ListCommand constructor
      *
      * @param Filesystem $filesystem
-     * @throws LogicException When the command name is empty
+     * @param WorkshopRepository $repository
      */
-    public function __construct(Filesystem $filesystem)
+    public function __construct(Filesystem $filesystem, WorkshopRepository $repository)
     {
         $this->filesystem = $filesystem;
+        $this->repository = $repository;
         parent::__construct();
     }
 
@@ -49,18 +58,28 @@ class ListCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $workshops = $this->filesystem->listContents('workshops');
+        $workshops = array_filter(array_map(function ($listing) {
+            try {
+                return $this->repository->getByName($listing['basename']);
+            } catch (WorkshopNotFoundException $e) {
+                return false;
+            }
+        }, $this->filesystem->listContents('workshops')));
 
         if (!$workshops) {
-            $output->writeln('There are currently no workshops installed');
+            $output->writeln("\n There are currently no workshops installed");
             return;
         }
 
-        $output->writeln('Installed workshops');
+        $output->writeln("\n <info>Installed workshops</info>");
+        $output->writeln(" ===================");
 
-        foreach ($workshops as $workshop) {
-            // TODO: Filter out files/dirs not in JSON
-            $output->writeln(sprintf('  - %s', $workshop['basename']));
-        }
+        (new Table($output))
+            ->setHeaders(['Name', 'Description', 'Package'])
+            ->setRows(array_map(function (Workshop $workshop) {
+                return [$workshop->getDisplayName(), wordwrap($workshop->getDescription(), 50), $workshop->getName()];
+            }, $workshops))
+            ->setStyle('borderless')
+            ->render();
     }
 }

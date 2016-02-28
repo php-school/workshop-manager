@@ -23,7 +23,6 @@ class SearchCommand extends Command
     private $workshopRepository;
 
     /**
-     * SearchCommand constructor.
      * @param WorkshopRepository $repository
      */
     public function __construct(WorkshopRepository $repository)
@@ -65,7 +64,7 @@ class SearchCommand extends Command
         $output->writeln(' ==============');
 
         (new Table($output))
-            ->setHeaders(['Name', 'Description', 'Install Name'])
+            ->setHeaders(['Name', 'Description', 'Package'])
             ->setRows(array_map(function (Workshop $workshop) {
                 return [$workshop->getDisplayName(), wordwrap($workshop->getDescription(), 50), $workshop->getName()];
             }, $workshops))
