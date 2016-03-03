@@ -17,56 +17,15 @@ switch (true) {
         throw new RuntimeException('Unable to locate Composer autoloader; please run "composer install".');
 }
 
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
-use PhpSchool\WorkshopManager\Command\InstallCommand;
-use PhpSchool\WorkshopManager\Command\LinkCommand;
-use PhpSchool\WorkshopManager\Command\ListCommand;
-use PhpSchool\WorkshopManager\Command\SearchCommand;
-use PhpSchool\WorkshopManager\Command\UninstallCommand;
-use PhpSchool\WorkshopManager\Command\UnlinkCommand;
-use PhpSchool\WorkshopManager\Entity\Workshop;
-use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\ManagerState;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
-use PhpSchool\WorkshopManager\Uninstaller;
 use Symfony\Component\Console\Application;
 
 ini_set('display_errors', 1);
 
-// Unix or Windows home path
-$homePath   = strtolower(substr(PHP_OS, 0, 3)) === 'win'
-    ? getenv('USERPROFILE')
-    : getenv('HOME');
+$container = (new \DI\ContainerBuilder())
+    ->addDefinitions(__DIR__ . '/config.php')
+    ->useAutowiring(false)
+    ->build();
 
-$appPath       = realpath(sprintf('%s/.php-school', $homePath));
-$filesystem    = new Filesystem(new Local($appPath));
-
-// Build Workshop entity array
-$workshopsJson = json_decode(file_get_contents(sprintf('%s/workshops.json', __DIR__)), true);
-$workshops     = array_map(function ($workshop) {
-    return new Workshop(
-        $workshop['name'],
-        $workshop['display_name'],
-        $workshop['owner'],
-        $workshop['repo'],
-        $workshop['description']
-    );
-}, $workshopsJson['workshops']);
-
-$workshopRepository = new WorkshopRepository($workshops);
-$managerState       = new ManagerState($filesystem, $workshopRepository);
-$installer          = new Installer();
-$uninstaller        = new Uninstaller($filesystem, $workshopRepository, $managerState);
-
-$application = new Application();
-$application->add(new InstallCommand($filesystem));
-$application->add(new UninstallCommand($uninstaller));
-$application->add(new SearchCommand($workshopRepository));
-$application->add(new ListCommand($managerState));
-$application->add(new LinkCommand($filesystem));
-$application->add(new UnlinkCommand);
-$application->setAutoExit(false);
-$application->run();
-
-$managerState->clearTemp();
+$container->get(Application::class)->run();
+$container->get(ManagerState::class)->clearTemp();

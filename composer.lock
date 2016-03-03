@@ -319,16 +319,16 @@
         },
         {
             "name": "php-di/php-di",
-            "version": "5.2.1",
+            "version": "5.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-DI/PHP-DI.git",
-                "reference": "f3ae41b493b9e95edcb698ecbd15990063c0414c"
+                "reference": "f574bcc841201ab04587b1c6da1234d4044f67d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/f3ae41b493b9e95edcb698ecbd15990063c0414c",
-                "reference": "f3ae41b493b9e95edcb698ecbd15990063c0414c",
+                "url": "https://api.github.com/repos/PHP-DI/PHP-DI/zipball/f574bcc841201ab04587b1c6da1234d4044f67d8",
+                "reference": "f574bcc841201ab04587b1c6da1234d4044f67d8",
                 "shasum": ""
             },
             "require": {
@@ -372,7 +372,7 @@
                 "dependency injection",
                 "di"
             ],
-            "time": "2016-01-14 21:46:36"
+            "time": "2016-02-09 22:00:00"
         },
         {
             "name": "php-di/phpdoc-reader",
