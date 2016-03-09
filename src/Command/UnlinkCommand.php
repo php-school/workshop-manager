@@ -32,6 +32,9 @@ class UnlinkCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        // TODO: Reimplement
+        return;
+
         $workshop     = $input->getArgument('workshop');
         $homePath     = strtolower(substr(PHP_OS, 0, 3)) === 'win' ? getenv('USERPROFILE') : getenv('HOME');
         $homeBinPath  = sprintf('%s/bin', $homePath);

@@ -6,7 +6,7 @@ namespace PhpSchool\WorkshopManager\Entity;
  * Class Workshop
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class Workshop
+final class Workshop
 {
     /**
      * @var string

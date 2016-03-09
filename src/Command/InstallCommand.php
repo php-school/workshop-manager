@@ -2,11 +2,10 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
-use Github\Client;
-use Github\Exception\InvalidArgumentException;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\FileExistsException;
-use League\Flysystem\Filesystem;
+use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
+use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,18 +18,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 class InstallCommand extends Command
 {
     /**
-     * @var Filesystem
+     * @var WorkshopRepository
      */
-    private $localFilesystem;
+    private $workshopRepository;
 
     /**
-     * ListCommand constructor
-     *
-     * @param Filesystem $localFilesystem
+     * @var Installer
      */
-    public function __construct(Filesystem $localFilesystem)
+    private $installer;
+
+    /**
+     * @param Installer $installer
+     * @param WorkshopRepository $workshopRepository
+     */
+    public function __construct(Installer $installer, WorkshopRepository $workshopRepository)
     {
-        $this->localFilesystem = $localFilesystem;
+        $this->installer          = $installer;
+        $this->workshopRepository = $workshopRepository;
+
         parent::__construct();
     }
 
@@ -53,73 +58,28 @@ class InstallCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $workshop     = $input->getArgument('workshop');
-        $workshopPath = sprintf('workshops/%s', $workshop);
-        $downloadPath = sprintf('.temp/%s', $workshop);
-
-        if ($this->localFilesystem->listContents($workshopPath)) {
-            $output->writeln(sprintf('Looks like "%s" is already installed!', $workshop));
-            return;
-        }
-
-        // TODO: Use JSON file to get workshop details
-        $user   = 'php-school';
-        $repo   = 'learn-you-php';
-        $client = new Client();
+        $output->writeln('');
+        $workshopName = $input->getArgument('workshop');
 
         try {
-            $tags      = $client->api('git')->tags()->all($user, $repo);
-            $latest    = end($tags);
-            $latestSha = $latest['object']['sha'];
-            $data      = $client->api('repo')->contents()->archive($user, $repo, 'zipball', $latestSha);
-
-            $this->localFilesystem->write(sprintf('%s.zip', $downloadPath), $data);
-        } catch (InvalidArgumentException $e) {
-            $output->writeln(sprintf('Failed to download "%s"', $workshop));
-            return;
-        } catch (FileExistsException $e) {
-            $output->writeln(sprintf('Failed to install "%s"', $workshop));
+            $workshop = $this->workshopRepository->getByName($workshopName);
+        } catch (WorkshopNotFoundException $e) {
+            $output->writeln(sprintf(' <error>No workshops found matching "%s"</error>', $workshopName));
             return;
         }
 
-        /** @var Local $adaptor */
-        $adaptor     = $this->localFilesystem->getAdapter();
-        $fullZipPath = $adaptor->applyPathPrefix(sprintf('%s.zip', $downloadPath));
-        $zipArchive  = new \ZipArchive();
-
-        if (!$zipArchive->open($fullZipPath)) {
-            $output->writeln(sprintf('Failed to open "%s" zip', $workshop));
+        try {
+            $this->installer->installWorkshop($workshop);
+        } catch (WorkshopAlreadyInstalledException $e) {
+            $output->writeln(sprintf(' <info>"%s" is already installed, your ready to learn!</info>', $workshopName));
+            return;
+        } catch (\Exception $e) {
+            $output->writeln(sprintf(' <error>There was a problem installing "%s"</error>', $workshopName));
             return;
         }
 
-        $unzipPath = $adaptor->applyPathPrefix('.temp');
-        $dirStat   = $zipArchive->statIndex(0);
-        $dirName   = basename($dirStat['name']);
+        // TODO: Symlink ?
 
-        if (!$zipArchive->extractTo($unzipPath)) {
-            $output->writeln(sprintf('Failed to unzip "%s" zip', $workshop));
-            return;
-        }
-
-        $this->localFilesystem->delete(sprintf('%s.zip', $downloadPath));
-
-        if (!$this->localFilesystem->rename(sprintf('.temp/%s', $dirName), $workshopPath)) {
-            $output->writeln(sprintf('Failed to move "%s"', $workshop));
-            return;
-        }
-
-        $fullWorkshopPath = $adaptor->applyPathPrefix($workshopPath);
-        $currentPath      = getcwd();
-
-        chdir($fullWorkshopPath);
-        exec('composer install --no-dev');
-        chdir($currentPath);
-
-        $this->localFilesystem->createDir('bin');
-
-        $linkCommand = $this->getApplication()->find('link');
-        $linkCommand->run($input, $output);
-
-        $output->writeln(sprintf('Successfully installed "%s"', $workshop));
+        $output->writeln(sprintf(' <info>Successfully installed "%s"</info>', $workshop->getName()));
     }
 }

@@ -10,7 +10,7 @@ use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
  * Class Uninstaller
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class Uninstaller
+final class Uninstaller
 {
     /**
      * @var Filesystem

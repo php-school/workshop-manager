@@ -1,5 +1,9 @@
 <?php
 
+use Composer\Factory;
+use Composer\IO\IOInterface;
+use Composer\IO\NullIO;
+use Github\Client;
 use Interop\Container\ContainerInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
@@ -9,6 +13,7 @@ use PhpSchool\WorkshopManager\Command\ListCommand;
 use PhpSchool\WorkshopManager\Command\SearchCommand;
 use PhpSchool\WorkshopManager\Command\UninstallCommand;
 use PhpSchool\WorkshopManager\Command\UnlinkCommand;
+use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\ManagerState;
@@ -30,7 +35,7 @@ return [
         return $application;
     }),
     InstallCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new InstallCommand($c->get(Filesystem::class));
+        return new InstallCommand($c->get(Installer::class), $c->get(WorkshopRepository::class));
     }),
     UninstallCommand::class => \DI\factory(function (ContainerInterface $c) {
         return new UninstallCommand($c->get(Uninstaller::class));
@@ -45,13 +50,40 @@ return [
         return new LinkCommand($c->get(Filesystem::class));
     }),
     UnlinkCommand::class => \DI\object(UnlinkCommand::class),
-    Installer::class => \DI\object(Install::class),
+    Installer::class => \DI\factory(function (ContainerInterface $c) {
+        return new Installer(
+            $c->get(ManagerState::class),
+            $c->get(Downloader::class),
+            $c->get(Filesystem::class),
+            $c->get(Factory::class),
+            $c->get(IOInterface::class)
+        );
+    }),
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
         return new Uninstaller(
             $c->get(Filesystem::class),
             $c->get(WorkshopRepository::class),
             $c->get(ManagerState::class)
         );
+    }),
+    Downloader::class => \DI\factory(function (ContainerInterface $c) {
+        return new Downloader(
+            $c->get(Client::class),
+            $c->get(Filesystem::class),
+            $c->get(ManagerState::class)
+        );
+    }),
+    Client::class => \DI\object(Client::class),
+    Factory::class => \DI\object(),
+    IOInterface::class => \DI\factory(function () {
+        return new \Composer\IO\ConsoleIO(
+            new Symfony\Component\Console\Input\ArgvInput,
+            new Symfony\Component\Console\Output\ConsoleOutput(
+                Symfony\Component\Console\Output\ConsoleOutput::VERBOSITY_DEBUG
+            ),
+            new Symfony\Component\Console\Helper\HelperSet
+        );
+        return new NullIO;
     }),
     WorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {
         return new WorkshopRepository($c->get('workshops'));

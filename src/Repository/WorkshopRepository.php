@@ -17,13 +17,20 @@ class WorkshopRepository implements RepositoryInterface
     private $workshops;
 
     /**
+     * @var int[]
+     */
+    private $searchableWorkshops;
+
+    /**
      * @param Workshop[] $workshops
      */
     public function __construct(array $workshops)
     {
         foreach ($workshops as $workshop) {
             if ($workshop instanceof Workshop) {
-                $this->workshops[$workshop->getName()] = $workshop;
+                $this->workshops[$workshop->getName()]                  = $workshop;
+                $this->searchableWorkshops[$workshop->getName()]        = $workshop->getName();
+                $this->searchableWorkshops[$workshop->getDisplayName()] = $workshop->getName();
             }
         }
     }
@@ -60,11 +67,13 @@ class WorkshopRepository implements RepositoryInterface
      */
     public function find($searchName)
     {
-        $results = array_map(function ($name) {
-            return $this->workshops[$name];
-        }, array_filter(array_keys($this->workshops), function ($workshopName) use ($searchName) {
-            return false !== strpos($workshopName, $searchName) || 3 >= levenshtein($searchName, $workshopName);
-        }));
+        $results = array_map(function ($workshopKey) {
+            return $this->workshops[$workshopKey];
+        }, array_unique(array_filter($this->searchableWorkshops, function ($key, $searchable) use ($searchName) {
+            $searchable = strtolower($searchable);
+            $searchName = strtolower($searchName);
+            return false !== stripos($searchable, $searchName) || 3 >= levenshtein($searchName, $searchable);
+        }, ARRAY_FILTER_USE_BOTH)));
 
         if (!$results) {
             throw new WorkshopNotFoundException;

@@ -1,6 +1,7 @@
 <?php
 
 namespace PhpSchool\WorkshopManager;
+
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
@@ -10,7 +11,7 @@ use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
  * Class ManagerState
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class ManagerState
+final class ManagerState
 {
     /**
      * @var Filesystem
