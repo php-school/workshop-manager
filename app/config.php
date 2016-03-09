@@ -76,13 +76,6 @@ return [
     Client::class => \DI\object(Client::class),
     Factory::class => \DI\object(),
     IOInterface::class => \DI\factory(function () {
-        return new \Composer\IO\ConsoleIO(
-            new Symfony\Component\Console\Input\ArgvInput,
-            new Symfony\Component\Console\Output\ConsoleOutput(
-                Symfony\Component\Console\Output\ConsoleOutput::VERBOSITY_DEBUG
-            ),
-            new Symfony\Component\Console\Helper\HelperSet
-        );
         return new NullIO;
     }),
     WorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {

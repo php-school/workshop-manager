@@ -105,13 +105,6 @@ final class Installer
 
         $installer  = ComposerInstaller::create($this->io, $composer);
 
-        $installer
-            ->setDryRun(false)
-            ->setVerbose('vvv')
-            ->setDumpAutoloader(true)
-            ->setRunScripts(true)
-            ->setOptimizeAutoloader(true);
-
         chdir($workshopPath);
         try {
             $installer->run();
