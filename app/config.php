@@ -16,6 +16,7 @@ use PhpSchool\WorkshopManager\Command\UnlinkCommand;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
@@ -56,7 +57,7 @@ return [
             $c->get(Downloader::class),
             $c->get(Filesystem::class),
             $c->get(Factory::class),
-            $c->get(IOInterface::class)
+            $c->get(IOFactory::class)
         );
     }),
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
@@ -75,6 +76,7 @@ return [
     }),
     Client::class => \DI\object(Client::class),
     Factory::class => \DI\object(),
+    IOFactory::class => \DI\object(IOFactory::class),
     IOInterface::class => \DI\factory(function () {
         return new NullIO;
     }),

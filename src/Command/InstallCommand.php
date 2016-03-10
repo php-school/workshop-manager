@@ -69,7 +69,7 @@ class InstallCommand extends Command
         }
 
         try {
-            $this->installer->installWorkshop($workshop);
+            $this->installer->installWorkshop($workshop, $input, $output);
         } catch (WorkshopAlreadyInstalledException $e) {
             $output->writeln(sprintf(' <info>"%s" is already installed, your ready to learn!</info>', $workshopName));
             return;
