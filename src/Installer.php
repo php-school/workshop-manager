@@ -4,6 +4,7 @@ namespace PhpSchool\WorkshopManager;
 
 use Composer\Installer as ComposerInstaller;
 use Composer\Factory;
+use Composer\IO\IOInterface;
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
@@ -37,44 +38,34 @@ final class Installer
     private $factory;
 
     /**
-     * @var IOFactory
-     */
-    private $ioFactory;
-
-    /**
      * @param ManagerState $state
      * @param Downloader $downloader
      * @param Filesystem $filesystem
      * @param Factory $factory
-     * @param IOFactory $ioFactory
      */
     public function __construct(
         ManagerState $state,
         Downloader $downloader,
         Filesystem $filesystem,
-        Factory $factory,
-        IOFactory $ioFactory
+        Factory $factory
     ) {
         $this->state      = $state;
         $this->downloader = $downloader;
         $this->filesystem = $filesystem;
         $this->factory    = $factory;
-        $this->ioFactory  = $ioFactory;
     }
 
     /**
      * @param Workshop $workshop
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param IOInterface $io
      * @throws \League\Flysystem\FileExistsException
      */
-    public function installWorkshop(Workshop $workshop, InputInterface $input, OutputInterface $output)
+    public function installWorkshop(Workshop $workshop, IOInterface $io)
     {
         if ($this->state->isWorkshopInstalled($workshop->getName())) {
             throw new WorkshopAlreadyInstalledException;
         }
 
-        $io         = $this->ioFactory->getIO($input, $output);
         $pathToZip  = $this->downloader->download($workshop);
         $zipArchive = new \ZipArchive();
 

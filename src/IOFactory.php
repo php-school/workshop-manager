@@ -26,10 +26,8 @@ class IOFactory
             case OutputInterface::VERBOSITY_VERY_VERBOSE:
             case OutputInterface::VERBOSITY_DEBUG:
                 return new ConsoleIO($input, $output, new HelperSet);
-                break;
             default:
                 return new NullIO;
-                break;
         }
     }
 }
