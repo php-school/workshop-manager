@@ -16,6 +16,7 @@ use PhpSchool\WorkshopManager\Command\UnlinkCommand;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
@@ -35,7 +36,11 @@ return [
         return $application;
     }),
     InstallCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new InstallCommand($c->get(Installer::class), $c->get(WorkshopRepository::class));
+        return new InstallCommand(
+            $c->get(Installer::class),
+            $c->get(WorkshopRepository::class),
+            $c->get(IOFactory::class)
+        );
     }),
     UninstallCommand::class => \DI\factory(function (ContainerInterface $c) {
         return new UninstallCommand($c->get(Uninstaller::class));
@@ -49,14 +54,13 @@ return [
     LinkCommand::class => \DI\factory(function (ContainerInterface $c) {
         return new LinkCommand($c->get(Filesystem::class));
     }),
-    UnlinkCommand::class => \DI\object(UnlinkCommand::class),
+    UnlinkCommand::class => \DI\object(),
     Installer::class => \DI\factory(function (ContainerInterface $c) {
         return new Installer(
             $c->get(ManagerState::class),
             $c->get(Downloader::class),
             $c->get(Filesystem::class),
-            $c->get(Factory::class),
-            $c->get(IOInterface::class)
+            $c->get(Factory::class)
         );
     }),
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
@@ -73,8 +77,9 @@ return [
             $c->get(ManagerState::class)
         );
     }),
-    Client::class => \DI\object(Client::class),
+    Client::class => \DI\object(),
     Factory::class => \DI\object(),
+    IOFactory::class => \DI\object(),
     IOInterface::class => \DI\factory(function () {
         return new NullIO;
     }),

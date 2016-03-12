@@ -5,10 +5,11 @@ namespace PhpSchool\WorkshopManager;
 use Composer\Installer as ComposerInstaller;
 use Composer\Factory;
 use Composer\IO\IOInterface;
-use Composer\IO\NullIO;
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Installer
@@ -37,36 +38,29 @@ final class Installer
     private $factory;
 
     /**
-     * @var NullIO
-     */
-    private $io;
-
-    /**
      * @param ManagerState $state
      * @param Downloader $downloader
      * @param Filesystem $filesystem
      * @param Factory $factory
-     * @param IOInterface $io
      */
     public function __construct(
         ManagerState $state,
         Downloader $downloader,
         Filesystem $filesystem,
-        Factory $factory,
-        IOInterface $io
+        Factory $factory
     ) {
         $this->state      = $state;
         $this->downloader = $downloader;
         $this->filesystem = $filesystem;
         $this->factory    = $factory;
-        $this->io         = $io;
     }
 
     /**
      * @param Workshop $workshop
-     * @throws WorkshopAlreadyInstalledException
+     * @param IOInterface $io
+     * @throws \League\Flysystem\FileExistsException
      */
-    public function installWorkshop(Workshop $workshop)
+    public function installWorkshop(Workshop $workshop, IOInterface $io)
     {
         if ($this->state->isWorkshopInstalled($workshop->getName())) {
             throw new WorkshopAlreadyInstalledException;
@@ -97,13 +91,13 @@ final class Installer
          *      UnexpectedValueException : COMPOSER_AUTH environment variable is malformed  [ ]
          */
         $composer = $this->factory->createComposer(
-            $this->io,
+            $io,
             sprintf('%s/composer.json', $workshopPath),
             false,
             $workshopPath
         );
 
-        $installer  = ComposerInstaller::create($this->io, $composer);
+        $installer = ComposerInstaller::create($io, $composer);
 
         chdir($workshopPath);
         try {

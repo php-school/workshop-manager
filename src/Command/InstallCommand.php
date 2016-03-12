@@ -5,6 +5,7 @@ namespace PhpSchool\WorkshopManager\Command;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,13 +29,20 @@ class InstallCommand extends Command
     private $installer;
 
     /**
+     * @var IOFactory
+     */
+    private $ioFactory;
+
+    /**
      * @param Installer $installer
      * @param WorkshopRepository $workshopRepository
+     * @param IOFactory $ioFactory
      */
-    public function __construct(Installer $installer, WorkshopRepository $workshopRepository)
+    public function __construct(Installer $installer, WorkshopRepository $workshopRepository, IOFactory $ioFactory)
     {
         $this->installer          = $installer;
         $this->workshopRepository = $workshopRepository;
+        $this->ioFactory          = $ioFactory;
 
         parent::__construct();
     }
@@ -69,7 +77,7 @@ class InstallCommand extends Command
         }
 
         try {
-            $this->installer->installWorkshop($workshop);
+            $this->installer->installWorkshop($workshop, $this->ioFactory->getIO($input, $output));
         } catch (WorkshopAlreadyInstalledException $e) {
             $output->writeln(sprintf(' <info>"%s" is already installed, your ready to learn!</info>', $workshopName));
             return;
