@@ -98,7 +98,10 @@ return [
             );
         }, $workshopsJson['workshops']);
     }),
-    'workshopData' => json_decode(file_get_contents(sprintf('%s/workshops.json', __DIR__)), true),
+    'workshopSrc' => 'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json',
+    'workshopData' => \DI\factory(function (ContainerInterface $c) {
+        return json_decode(file_get_contents($c->get('workshopSrc')), true);
+    }),
     ManagerState::class => \DI\factory(function (ContainerInterface $c) {
         return new ManagerState($c->get(Filesystem::class), $c->get(WorkshopRepository::class));
     }),
