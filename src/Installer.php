@@ -38,31 +38,38 @@ final class Installer
     private $factory;
 
     /**
+     * @var IOInterface
+     */
+    private $io;
+
+    /**
      * @param ManagerState $state
      * @param Downloader $downloader
      * @param Filesystem $filesystem
      * @param Factory $factory
+     * @param IOInterface $io
      */
     public function __construct(
         ManagerState $state,
         Downloader $downloader,
         Filesystem $filesystem,
-        Factory $factory
+        Factory $factory,
+        IOInterface $io
     ) {
         $this->state      = $state;
         $this->downloader = $downloader;
         $this->filesystem = $filesystem;
         $this->factory    = $factory;
+        $this->io         = $io;
     }
 
     /**
      * @param Workshop $workshop
-     * @param IOInterface $io
      * @throws \League\Flysystem\FileExistsException
      */
-    public function installWorkshop(Workshop $workshop, IOInterface $io)
+    public function installWorkshop(Workshop $workshop)
     {
-        if ($this->state->isWorkshopInstalled($workshop->getName())) {
+        if ($this->state->isWorkshopInstalled($workshop)) {
             throw new WorkshopAlreadyInstalledException;
         }
 
@@ -91,13 +98,13 @@ final class Installer
          *      UnexpectedValueException : COMPOSER_AUTH environment variable is malformed  [ ]
          */
         $composer = $this->factory->createComposer(
-            $io,
+            $this->io,
             sprintf('%s/composer.json', $workshopPath),
             false,
             $workshopPath
         );
 
-        $installer = ComposerInstaller::create($io, $composer);
+        $installer = ComposerInstaller::create($this->io, $composer);
 
         chdir($workshopPath);
         try {

@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManager;
 
 use League\Flysystem\Filesystem;
+use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 
@@ -16,41 +17,42 @@ final class Uninstaller
      * @var Filesystem
      */
     private $filesystem;
-
-    /**
-     * @var WorkshopRepository
-     */
-    private $repository;
-
+    
     /**
      * @var ManagerState
      */
     private $state;
 
     /**
-     * @param Filesystem $filesystem
-     * @param WorkshopRepository $repository
-     * @param ManagerState $state
+     * @var Linker
      */
-    public function __construct(Filesystem $filesystem, WorkshopRepository $repository, ManagerState $state)
+    private $linker;
+
+    /**
+     * @param Filesystem $filesystem
+     * @param ManagerState $state
+     * @param Linker $linker
+     */
+    public function __construct(Filesystem $filesystem, ManagerState $state, Linker $linker)
     {
         $this->filesystem = $filesystem;
-        $this->repository = $repository;
         $this->state      = $state;
+        $this->linker     = $linker;
     }
 
     /**
-     * @param $name
-     * @throws WorkshopNotInstalledException
-     * @throws \RuntimeException On unexpected failure
+     * @param Workshop $workshop
      */
-    public function uninstallWorkshop($name)
+    public function uninstallWorkshop(Workshop $workshop)
     {
-        if (!$this->state->isWorkshopInstalled($name)) {
+        if (!$this->state->isWorkshopInstalled($workshop)) {
             throw new WorkshopNotInstalledException;
         }
 
-        if (!$this->filesystem->deleteDir(sprintf('workshops/%s', $name))) {
+        // TODO: Add error handling.
+        $this->linker->unlink($workshop);
+
+        if (!$this->filesystem->deleteDir(sprintf('workshops/%s', $workshop->getName()))) {
             throw new \RuntimeException;
         }
     }

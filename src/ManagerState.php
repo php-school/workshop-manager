@@ -48,13 +48,13 @@ final class ManagerState
     }
 
     /**
-     * @param string $name
+     * @param Workshop $workshop
      * @return bool
      */
-    public function isWorkshopInstalled($name)
+    public function isWorkshopInstalled(Workshop $workshop)
     {
-        foreach ($this->getInstalledWorkshops() as $workshop) {
-            if ($workshop->getName() === $name) {
+        foreach ($this->getInstalledWorkshops() as $installedWorkshop) {
+            if ($workshop->getName() === $installedWorkshop->getName()) {
                 return true;
             }
         }
