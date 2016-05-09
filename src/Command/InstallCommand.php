@@ -91,7 +91,7 @@ class InstallCommand extends Command
             return;
         }
 
-        if ($this->linker->symlink($workshop, $input->hasOption('force'))) {
+        if ($this->linker->symlink($workshop, $input->getOption('force'))) {
             $output->writeln(sprintf(' <info>Successfully installed "%s"</info>', $workshop->getName()));
         }
     }

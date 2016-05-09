@@ -24,33 +24,26 @@ final class Uninstaller
     private $state;
 
     /**
-     * @var Linker
-     */
-    private $linker;
-
-    /**
      * @param Filesystem $filesystem
      * @param ManagerState $state
-     * @param Linker $linker
      */
-    public function __construct(Filesystem $filesystem, ManagerState $state, Linker $linker)
+    public function __construct(Filesystem $filesystem, ManagerState $state)
     {
         $this->filesystem = $filesystem;
         $this->state      = $state;
-        $this->linker     = $linker;
     }
 
     /**
      * @param Workshop $workshop
+     *
+     * @throws WorkshopNotInstalledException
+     * @throws \RuntimeException When filesystem delete fails
      */
     public function uninstallWorkshop(Workshop $workshop)
     {
         if (!$this->state->isWorkshopInstalled($workshop)) {
             throw new WorkshopNotInstalledException;
         }
-
-        // TODO: Add error handling.
-        $this->linker->unlink($workshop);
 
         if (!$this->filesystem->deleteDir(sprintf('workshops/%s', $workshop->getName()))) {
             throw new \RuntimeException;

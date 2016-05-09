@@ -2,16 +2,12 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
-use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\LogicException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,13 +29,20 @@ class UninstallCommand extends Command
     private $workshopRepository;
 
     /**
+     * @var Linker
+     */
+    private $linker;
+
+    /**
      * @param Uninstaller $uninstaller
      * @param WorkshopRepository $workshopRepository
+     * @param Linker $linker
      */
-    public function __construct(Uninstaller $uninstaller, WorkshopRepository $workshopRepository)
+    public function __construct(Uninstaller $uninstaller, WorkshopRepository $workshopRepository, Linker $linker)
     {
         $this->uninstaller        = $uninstaller;
         $this->workshopRepository = $workshopRepository;
+        $this->linker             = $linker;
 
         parent::__construct();
     }
@@ -52,7 +55,8 @@ class UninstallCommand extends Command
         $this
             ->setName('uninstall')
             ->setDescription('Uninstall a PHP School workshop')
-            ->addArgument('workshop', InputArgument::REQUIRED, 'What workshop would you like to uninstall');
+            ->addArgument('workshop', InputArgument::REQUIRED, 'What workshop would you like to uninstall')
+            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Attempt to force the removal of blocking files');
     }
 
     /**
@@ -70,6 +74,11 @@ class UninstallCommand extends Command
             $workshop = $this->workshopRepository->getByName($workshopName);
         } catch (WorkshopNotFoundException $e) {
             $output->writeln(sprintf(' <error>No workshops found matching "%s"</error>', $workshopName));
+            return;
+        }
+
+        if (!$this->linker->unlink($workshop, $input->getOption('force'))) {
+            $output->writeln(sprintf(' <error>Failed to uninstall workshop "%s"</error>', $workshop->getName()));
             return;
         }
 

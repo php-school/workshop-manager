@@ -43,7 +43,8 @@ return [
     UninstallCommand::class => \DI\factory(function (ContainerInterface $c) {
         return new UninstallCommand(
             $c->get(Uninstaller::class),
-            $c->get(WorkshopRepository::class)
+            $c->get(WorkshopRepository::class),
+            $c->get(Linker::class)
         );
     }),
     SearchCommand::class => \DI\factory(function (ContainerInterface $c) {
@@ -71,8 +72,7 @@ return [
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
         return new Uninstaller(
             $c->get(Filesystem::class),
-            $c->get(ManagerState::class),
-            $c->get(Linker::class)
+            $c->get(ManagerState::class)
         );
     }),
     Downloader::class => \DI\factory(function (ContainerInterface $c) {
