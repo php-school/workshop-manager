@@ -138,20 +138,10 @@ return [
     ManagerState::class => \DI\factory(function (ContainerInterface $c) {
         return new ManagerState($c->get(Filesystem::class), $c->get(WorkshopRepository::class));
     }),
-    FileSystem::class => \DI\factory(function (ContainerInterface $c) {
+    Filesystem::class => \DI\factory(function (ContainerInterface $c) {
         return new Filesystem($c->get(Local::class));
     }),
-    Local::class => \DI\factory(function (ContainerInterface $c) {
-        return new Local($c->get('rootDir'));
-    }),
-    'rootDir' => \DI\factory(function (ContainerInterface $c) {
-        return realpath(sprintf('%s/.php-school', $c->get('homePath')));
-    }),
-    'homePath' => \DI\factory(function () {
-        if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-            return getenv('USERPROFILE') ?: getenv('HOMEDRIVE') ?: getenv('HOMEPATH');
-        }
-
-        return getenv('HOME');
+    Local::class => \DI\factory(function () {
+        return new Local(realpath(sprintf('%s/.php-school', getenv('HOME'))));
     })
 ];

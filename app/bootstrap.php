@@ -22,14 +22,22 @@ use Symfony\Component\Console\Application;
 
 ini_set('display_errors', 1);
 
-
-// TODO: Detect non Unix envs, pure Windows and bail out kindly.
-// TODO: Ensure Cygwin and other compatible envs still work.
-
 $container = (new \DI\ContainerBuilder())
     ->addDefinitions(__DIR__ . '/config.php')
     ->useAutowiring(false)
     ->build();
+
+if (!file_exists('/usr/local/bin')) {
+    $container->get(\Composer\IO\IOInterface::class)->write([
+        '',
+        ' Woops!... It looks like your not running in a Unix envirnoment',
+        '',
+        ' Currently we only support Unix based systems, if your running Windows please use Cygwin',
+        ' See <info>https://phpschool.io/install#windows</info> for more details',
+        ''
+    ]);
+    exit;
+}
 
 $container->get(Application::class)->run();
 $container->get(ManagerState::class)->clearTemp();
