@@ -42,7 +42,7 @@ final class Linker
         $this->state      = $state;
         $this->filesystem = $filesystem;
         $this->io         = $io;
-        $this->useSystem  = strpos($filesystem->getAdapter()->applyPathPrefix('bin'), getenv('PATH')) === false;
+        $this->useSystem  = strpos(getenv('PATH'), $filesystem->getAdapter()->applyPathPrefix('bin')) === false;
     }
 
     /**
@@ -80,8 +80,11 @@ final class Linker
         if (!is_writable(dirname($systemTarget))) {
             $this->io->write([
                 sprintf(
-                    ' <error>The system directory: "%s" is not writeable. Workshop "%s" cannot be installed.</error>',
-                    dirname($systemTarget),
+                    ' <error>The system directory: "%s" is not writeable.</error>',
+                    dirname($systemTarget)
+                ),
+                sprintf(
+                    ' <info>Workshop "%s" is installed but not linked to an executable path.</info>',
                     $workshop->getName()
                 ),
                 '',
@@ -90,10 +93,13 @@ final class Linker
                     '  1. Add the PHP School local bin dir: <info>%s</info> to your PATH variable',
                     dirname($localTarget)
                 ),
-                '      e.g. Run <info>$ echo "export PATH=$PATH:%s" >> ~/.bashrc && source ~/.bashrc</info>',
+                sprintf(
+                    '      e.g. Run <info>$ echo \'export PATH="$PATH:%s"\' >> ~/.bashrc && source ~/.bashrc</info>',
+                    dirname($localTarget)
+                ),
                 '      Replacing ~/.bashrc with your chosen bash config file e.g. ~/.zshrc or ~/.profile etc',
                 sprintf(
-                    '  2. Run <info>%s</info> directly with <info>php %s</info>',
+                    '  2. Run <info>%s</info> directly with <info>$ php %s</info>',
                     $workshop->getName(),
                     $localTarget
                 )
