@@ -142,6 +142,6 @@ return [
         return new Filesystem($c->get(Local::class));
     }),
     Local::class => \DI\factory(function () {
-        return new Local(realpath(sprintf('%s/.php-school', getenv('HOME'))));
+        return new Local(sprintf('%s/.php-school', getenv('HOME')));
     })
 ];

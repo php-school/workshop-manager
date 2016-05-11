@@ -202,7 +202,11 @@ final class Linker
      */
     private function getLocalTargetPath(Workshop $workshop)
     {
-        return $this->filesystem->getAdapter()->applyPathPrefix(sprintf('bin/%s', $workshop->getName()));
+        // Ensure bin dir exists
+        $path = sprintf('bin/%s', $workshop->getName());
+        $this->filesystem->createDir(dirname($path));
+
+        return $this->filesystem->getAdapter()->applyPathPrefix($path);
     }
 
     /**
