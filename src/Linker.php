@@ -5,6 +5,7 @@ namespace PhpSchool\WorkshopManager;
 use Composer\IO\IOInterface;
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 
 /**
  * Class Linker
@@ -54,7 +55,7 @@ final class Linker
     public function symlink(Workshop $workshop, $force = false)
     {
         if (!$this->state->isWorkshopInstalled($workshop)) {
-            $this->io->write(sprintf(' <error>Workshop "%s" not installed</error>', $workshop->getName()));
+            $this->io->write(sprintf(' <error> Workshop "%s" not installed </error>', $workshop->getName()));
             return false;
         }
 
@@ -80,7 +81,7 @@ final class Linker
         if (!is_writable(dirname($systemTarget))) {
             $this->io->write([
                 sprintf(
-                    ' <error>The system directory: "%s" is not writeable.</error>',
+                    ' <error> The system directory: "%s" is not writeable. </error>',
                     dirname($systemTarget)
                 ),
                 sprintf(
@@ -122,8 +123,8 @@ final class Linker
     private function link(Workshop $workshop, $target)
     {
         if (!symlink($this->getWorkshopSrcPath($workshop), $target)) {
-            $this->io->write(' <error> Unexpected error occurred</error>');
-            $this->io->write(sprintf(' <error> Failed symlinking workshop bin to path "%s"</error>', $target));
+            $this->io->write(' <error> Unexpected error occurred </error>');
+            $this->io->write(sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $target));
             return false;
         }
         chmod($target, 0755);
@@ -135,25 +136,25 @@ final class Linker
      * @param Workshop $workshop
      * @param bool $force
      *
-     * @return bool
+     * @throws WorkshopNotInstalledException
+     * @throws \RuntimeException
      */
     public function unlink(Workshop $workshop, $force = false)
     {
         if (!$this->state->isWorkshopInstalled($workshop)) {
-            $this->io->write(sprintf(' <error>Workshop "%s" not installed</error>', $workshop->getName()));
-            return true;
+            throw new WorkshopNotInstalledException;
         }
 
-        $localTarget = $this->filesystem->getAdapter()->applyPathPrefix(sprintf('bin/%s', $workshop->getName()));
-        $result      = $this->removeWorkshopBin($localTarget, $force);
+        $systemTarget = $this->getSystemInstallPath($workshop->getName());
+        $localTarget  = $this->filesystem->getAdapter()->applyPathPrefix(sprintf('bin/%s', $workshop->getName()));
 
-        // TODO: This seems wrong. Maybe there is a better way?
-        if ($this->useSystem) {
-            $systemTarget = $this->getSystemInstallPath($workshop->getName());
-            $result       = $result && $this->removeWorkshopBin($systemTarget, $force);
+        $removed = $this->useSystem
+            ? $this->removeWorkshopBin($systemTarget, $force) && $this->removeWorkshopBin($localTarget, $force)
+            : $this->removeWorkshopBin($localTarget, $force);
+
+        if (!$removed) {
+            throw new \RuntimeException;
         }
-
-        return $result;
     }
 
     /**
@@ -170,8 +171,8 @@ final class Linker
 
         if (!$force && !is_link($path)) {
             $this->io->write([
-                sprintf(' <error>File already exists at path "%s"</error>', $path),
-                ' <error>Try again using --force or manually remove the file</error>'
+                sprintf(' <error> File already exists at path "%s" </error>', $path),
+                ' <info>Try again using --force or manually remove the file</info>'
             ]);
 
             return false;
@@ -179,7 +180,7 @@ final class Linker
 
         if (!unlink($path)) {
             $this->io->write([
-                sprintf(' <error>Failed to remove file at path "%s"</error>', $path),
+                sprintf(' <error> Failed to remove file at path "%s" </error>', $path),
                 ' <info>You may need to remove a blocking file manually with elevated privilages</info>'
             ]);
 

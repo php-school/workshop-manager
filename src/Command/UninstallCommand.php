@@ -74,22 +74,21 @@ class UninstallCommand extends Command
         try {
             $workshop = $this->workshopRepository->getByName($workshopName);
         } catch (WorkshopNotFoundException $e) {
-            $output->writeln(sprintf(' <error>No workshops found matching "%s"</error>', $workshopName));
-            return;
-        }
-
-        if (!$this->linker->unlink($workshop, $input->getOption('force'))) {
-            $output->writeln(sprintf(' <error>Failed to uninstall workshop "%s"</error>', $workshop->getName()));
+            $output->writeln(sprintf(' <error> No workshops found matching "%s" </error>', $workshopName));
             return;
         }
 
         try {
+            $this->linker->unlink($workshop, $input->getOption('force'));
             $this->uninstaller->uninstallWorkshop($workshop);
         } catch (WorkshopNotInstalledException $e) {
-            $output->writeln(sprintf(' <error>Workshop "%s" not currently installed</error>', $workshop->getName()));
+            $output->writeln(sprintf(' <error> Workshop "%s" not currently installed </error>', $workshop->getName()));
             return;
         } catch (\RuntimeException $e) {
-            $output->writeln(sprintf(' <error>Failed to uninstall workshop "%s"</error>', $workshop->getName()));
+            $output->writeln([
+                '',
+                sprintf(' <error> Failed to uninstall workshop "%s" </error>', $workshop->getName())
+            ]);
             return;
         }
 

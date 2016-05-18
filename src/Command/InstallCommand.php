@@ -77,7 +77,7 @@ class InstallCommand extends Command
         try {
             $workshop = $this->workshopRepository->getByName($workshopName);
         } catch (WorkshopNotFoundException $e) {
-            $output->writeln(sprintf(' <error>No workshops found matching "%s"</error>', $workshopName));
+            $output->writeln(sprintf(' <error> No workshops found matching "%s" </error>', $workshopName));
             return;
         }
 
@@ -87,7 +87,7 @@ class InstallCommand extends Command
             $output->writeln(sprintf(' <info>"%s" is already installed, your ready to learn!</info>', $workshopName));
             return;
         } catch (\Exception $e) {
-            $output->writeln(sprintf(' <error>There was a problem installing "%s"</error>', $workshopName));
+            $output->writeln(sprintf(' <error>There was a problem installing "%s" </error>', $workshopName));
             return;
         }
 

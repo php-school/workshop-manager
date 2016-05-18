@@ -27,7 +27,7 @@ $container = (new \DI\ContainerBuilder())
     ->useAutowiring(false)
     ->build();
 
-if (!file_exists('/usr/local/bin')) {
+if (DIRECTORY_SEPARATOR === '\\') {
     $container->get(\Composer\IO\IOInterface::class)->write([
         '',
         ' Woops!... It looks like your not running in a Unix envirnoment',
