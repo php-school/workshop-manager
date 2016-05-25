@@ -24,11 +24,6 @@ final class Linker
     private $filesystem;
 
     /**
-     * @var bool
-     */
-    private $useSystem;
-
-    /**
      * @var IOInterface
      */
     private $io;
@@ -43,7 +38,6 @@ final class Linker
         $this->state      = $state;
         $this->filesystem = $filesystem;
         $this->io         = $io;
-        $this->useSystem  = strpos(getenv('PATH'), $filesystem->getAdapter()->applyPathPrefix('bin')) === false;
     }
 
     /**
@@ -63,15 +57,16 @@ final class Linker
 
         $this->removeWorkshopBin($localTarget, $force);
 
-        return $this->useSystem
+        return $this->useSytemPaths()
             ? $this->link($workshop, $localTarget) && $this->symlinkToSystem($workshop, $force)
             : $this->link($workshop, $localTarget);
     }
 
     /**
      * @param Workshop $workshop
-     * @param $force
-     * @return bool
+     * @param bool $force
+     *
+     * @throws \RuntimeException
      */
     private function symlinkToSystem(Workshop $workshop, $force)
     {
@@ -106,30 +101,38 @@ final class Linker
                 )
             ]);
 
-            return false;
+            throw new \RuntimeException;
         }
 
         $this->removeWorkshopBin($systemTarget, $force);
 
-        return $this->link($workshop, $systemTarget);
+        $this->link($workshop, $systemTarget);
     }
 
     /**
      * @param Workshop $workshop
-     * @param $target
+     * @param string $target
      *
-     * @return bool
+     * @throws \RuntimeException
      */
     private function link(Workshop $workshop, $target)
     {
-        if (!symlink($this->getWorkshopSrcPath($workshop), $target)) {
-            $this->io->write(' <error> Unexpected error occurred </error>');
-            $this->io->write(sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $target));
-            return false;
+        if (!@symlink($this->getWorkshopSrcPath($workshop), $target)) {
+            $this->io->write([
+                ' <error> Unexpected error occurred </error>',
+                sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $target)
+            ]);
+            throw new \RuntimeException;
         }
-        chmod($target, 0755);
 
-        return true;
+        if (!chmod($target, 0755)) {
+            $this->io->write([
+                ' <error> Unable to make workshop executable </error>',
+                ' You may have to run the following with elevated privilages:',
+                sprintf(' <info>$ chmod +x %s</info>', $target)
+            ]);
+            throw new \RuntimeException;
+        }
     }
 
     /**
@@ -148,9 +151,7 @@ final class Linker
         $systemTarget = $this->getSystemInstallPath($workshop->getName());
         $localTarget  = $this->filesystem->getAdapter()->applyPathPrefix(sprintf('bin/%s', $workshop->getName()));
 
-        $removed = $this->useSystem
-            ? $this->removeWorkshopBin($systemTarget, $force) && $this->removeWorkshopBin($localTarget, $force)
-            : $this->removeWorkshopBin($localTarget, $force);
+        $removed = $this->removeWorkshopBin($systemTarget, $force) && $this->removeWorkshopBin($localTarget, $force);
 
         if (!$removed) {
             throw new \RuntimeException;
@@ -223,5 +224,15 @@ final class Linker
     private function getSystemInstallPath($binary)
     {
         return sprintf('/usr/local/bin/%s', $binary);
+    }
+
+    /**
+     * Use system paths if PHP School dir is not in PATH variable
+     *
+     * @return bool
+     */
+    private function useSytemPaths()
+    {
+        return strpos(getenv('PATH'), $this->filesystem->getAdapter()->applyPathPrefix('bin')) === false;
     }
 }

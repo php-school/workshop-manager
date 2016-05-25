@@ -65,6 +65,7 @@ class UninstallCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
+     * @throws \RuntimeException
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -89,6 +90,10 @@ class UninstallCommand extends Command
                 '',
                 sprintf(' <error> Failed to uninstall workshop "%s" </error>', $workshop->getName())
             ]);
+
+            if ($$output->isVerbose()) {
+                throw $e;
+            }
             return;
         }
 

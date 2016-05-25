@@ -32,12 +32,17 @@ if (DIRECTORY_SEPARATOR === '\\') {
         '',
         ' Woops!... It looks like your not running in a Unix envirnoment',
         '',
-        ' Currently we only support Unix based systems, if your running Windows please use Cygwin',
+        ' Currently we only support Unix based systems, if you\'re running Windows please use Cygwin',
         ' See <info>https://phpschool.io/install#windows</info> for more details',
         ''
     ]);
     exit;
 }
 
-$container->get(Application::class)->run();
-$container->get(ManagerState::class)->clearTemp();
+try {
+    $container->get(Application::class)->run();
+} catch (\Exception $e) {
+    throw $e;
+} finally {
+    $container->get(ManagerState::class)->clearTemp();
+}

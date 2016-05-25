@@ -3,13 +3,15 @@
 namespace PhpSchool\WorkshopManager;
 
 use Composer\Installer as ComposerInstaller;
-use Composer\Factory;
+use Composer\Factory as ComposerFactory;
 use Composer\IO\IOInterface;
+use League\Flysystem\Exception as FlysystemException;
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
+use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
+use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Installer
@@ -33,7 +35,7 @@ final class Installer
     private $filesystem;
 
     /**
-     * @var Factory
+     * @var ComposerFactory
      */
     private $factory;
 
@@ -46,14 +48,14 @@ final class Installer
      * @param ManagerState $state
      * @param Downloader $downloader
      * @param Filesystem $filesystem
-     * @param Factory $factory
+     * @param ComposerFactory $factory
      * @param IOInterface $io
      */
     public function __construct(
         ManagerState $state,
         Downloader $downloader,
         Filesystem $filesystem,
-        Factory $factory,
+        ComposerFactory $factory,
         IOInterface $io
     ) {
         $this->state      = $state;
@@ -65,7 +67,11 @@ final class Installer
 
     /**
      * @param Workshop $workshop
-     * @throws \League\Flysystem\FileExistsException
+     *
+     * @throws WorkshopAlreadyInstalledException
+     * @throws ComposerFailureException
+     * @throws DownloadFailureException
+     * @throws FailedToMoveWorkshopException
      */
     public function installWorkshop(Workshop $workshop)
     {
@@ -79,39 +85,35 @@ final class Installer
         $zipArchive->open($pathToZip);
         $zipArchive->extractTo(dirname($pathToZip));
 
-        /**
-         * TODO: Handle exceptions...
-         *      FileExistsException     [ ]
-         *      FileNotFoundException   [ ]
-         */
-        $this->filesystem->rename(
-            sprintf('.temp/%s', $zipArchive->getNameIndex(0)),
-            sprintf('workshops/%s', $workshop->getName())
-        );
+        $srcPath  = sprintf('.temp/%s', $zipArchive->getNameIndex(0));
+        $destPath = sprintf('workshops/%s', $workshop->getName());
 
-        $currentPath  = getcwd();
-        $workshopPath = $this->filesystem->getAdapter()->applyPathPrefix(sprintf('workshops/%s', $workshop->getName()));
-
-        /**
-         * TODO: Handle exceptions...
-         *      InvalidArgumentException : No composer.json file found                      [ ]
-         *      UnexpectedValueException : COMPOSER_AUTH environment variable is malformed  [ ]
-         */
-        $composer = $this->factory->createComposer(
-            $this->io,
-            sprintf('%s/composer.json', $workshopPath),
-            false,
-            $workshopPath
-        );
-
-        $installer = ComposerInstaller::create($this->io, $composer);
-
-        chdir($workshopPath);
         try {
-            $installer->run();
-        } catch (\Exception $e) {
-            // TODO: Exception handling
+            $this->filesystem->rename($srcPath, $destPath);
+        } catch (FlysystemException $e) {
+            throw new FailedToMoveWorkshopException($srcPath, $destPath);
         }
-        chdir($currentPath);
+
+        try {
+            $currentPath  = getcwd();
+            $workshopPath = $this->filesystem->getAdapter()->applyPathPrefix(
+                sprintf('workshops/%s', $workshop->getName())
+            );
+
+            $composer = $this->factory->createComposer(
+                $this->io,
+                sprintf('%s/composer.json', $workshopPath),
+                false,
+                $workshopPath
+            );
+
+            $installer = ComposerInstaller::create($this->io, $composer);
+
+            chdir($workshopPath);
+            $installer->run();
+            chdir($currentPath);
+        } catch (\Exception $e) {
+            throw ComposerFailureException::fromException($e);
+        }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
+use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
+use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
+use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer;
@@ -68,6 +71,9 @@ class InstallCommand extends Command
      * @param OutputInterface $output
      *
      * @return void
+     * @throws WorkshopAlreadyInstalledException
+     * @throws DownloadFailureException
+     * @throws ComposerFailureException
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -83,16 +89,32 @@ class InstallCommand extends Command
 
         try {
             $this->installer->installWorkshop($workshop);
+            $this->linker->symlink($workshop, $input->getOption('force'));
         } catch (WorkshopAlreadyInstalledException $e) {
             $output->writeln(sprintf(' <info>"%s" is already installed, your ready to learn!</info>', $workshopName));
-            return;
-        } catch (\Exception $e) {
-            $output->writeln(sprintf(' <error>There was a problem installing "%s" </error>', $workshopName));
+        } catch (DownloadFailureException $e) {
+            $output->writeln(
+                sprintf(' <error> There was a problem downloading the workshop "%s" </error>', $workshopName)
+            );
+        } catch (FailedToMoveWorkshopException $e) {
+            $output->writeln([
+                sprintf(' <error> There was a problem moving downloaded files for "%s" </error>', $workshopName),
+                ' Please check your file permissions for the following paths',
+                sprintf(' <info>%s</info>', dirname($e->getSrcPath())),
+                sprintf(' <info>%s</info>', dirname($e->getDestPath())),
+            ]);
+        } catch (ComposerFailureException $e) {
+            $output->writeln(
+                sprintf(' <error> There was a problem installing dependencies for "%s" </error>', $workshopName)
+            );
+        }
+
+        if (isset($e) && $output->isVerbose()) {
+            throw $e;
+        } elseif (isset($e)) {
             return;
         }
 
-        if ($this->linker->symlink($workshop, $input->getOption('force'))) {
-            $output->writeln(sprintf(' <info>Successfully installed "%s"</info>', $workshop->getName()));
-        }
+        $output->writeln(sprintf(' <info>Successfully installed "%s"</info>', $workshop->getName()));
     }
 }
