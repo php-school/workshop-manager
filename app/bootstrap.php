@@ -27,5 +27,22 @@ $container = (new \DI\ContainerBuilder())
     ->useAutowiring(false)
     ->build();
 
-$container->get(Application::class)->run();
-$container->get(ManagerState::class)->clearTemp();
+if (DIRECTORY_SEPARATOR === '\\') {
+    $container->get(\Composer\IO\IOInterface::class)->write([
+        '',
+        ' Woops!... It looks like your not running in a Unix envirnoment',
+        '',
+        ' Currently we only support Unix based systems, if you\'re running Windows please use Cygwin',
+        ' See <info>https://phpschool.io/install#windows</info> for more details',
+        ''
+    ]);
+    exit;
+}
+
+try {
+    $container->get(Application::class)->run();
+} catch (\Exception $e) {
+    throw $e;
+} finally {
+    $container->get(ManagerState::class)->clearTemp();
+}

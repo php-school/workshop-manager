@@ -6,6 +6,7 @@ use Github\Client;
 use League\Flysystem\FileExistsException;
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 
 /**
  * Class Downloader
@@ -48,28 +49,32 @@ class Downloader
     /**
      * @param Workshop $workshop
      *
-     * @return string               Path to downloaded zipball
-     * @throws FileExistsException  When unable to clean tempdir
-     * @throws \RuntimeException    On write failure
+     * @return string Path to downloaded zipball
+     * @throws DownloadFailureException
      */
     public function download(Workshop $workshop)
     {
         $path = sprintf('.temp/%s.zip', $workshop->getName());
-        $tags = $this->client->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
-        $data = $this->client->api('repo')->contents()->archive(
-            $workshop->getOwner(),
-            $workshop->getRepo(),
-            'zipball',
-            end($tags)['object']['sha']
-        );
+        
+        try {
+            $tags = $this->client->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
+            $data = $this->client->api('repo')->contents()->archive(
+                $workshop->getOwner(),
+                $workshop->getRepo(),
+                'zipball',
+                end($tags)['object']['sha']
+            );
+        } catch (\InvalidArgumentException $e) {
+            throw DownloadFailureException::fromException($e);
+        }
 
         try {
             if (!$this->filesystem->write($path, $data)) {
-                throw new \RuntimeException;
+                throw new DownloadFailureException('Failed to write zipball to filesystem');
             }
         } catch (FileExistsException $e) {
             if ($this->cleaned) {
-                throw $e;
+                throw DownloadFailureException::fromException($e);
             }
 
             $this->cleaned = true;

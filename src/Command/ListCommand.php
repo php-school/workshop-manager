@@ -55,7 +55,7 @@ class ListCommand extends Command
             return;
         }
 
-        $output->writeln("\n <info>Installed workshops</info>");
+        $output->writeln("\n <info>Installed Workshops</info>");
         $output->writeln(" ===================");
 
         (new Table($output))
