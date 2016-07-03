@@ -10,11 +10,11 @@
     ],
     "minimum-stability": "beta",
     "require": {
-        "symfony/console": "^3.0",
         "php-di/php-di": "^5.2",
         "league/flysystem": "^1.0",
         "knplabs/github-api": "^1.5",
-        "composer/composer": "^1.0@beta"
+        "composer/composer": "^1.0@beta",
+        "mnapoli/silly-php-di": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.0",

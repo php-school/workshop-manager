@@ -7,10 +7,10 @@ use Github\Client;
 use Interop\Container\ContainerInterface;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
-use PhpSchool\WorkshopManager\Command\InstallCommand;
-use PhpSchool\WorkshopManager\Command\ListCommand;
-use PhpSchool\WorkshopManager\Command\SearchCommand;
-use PhpSchool\WorkshopManager\Command\UninstallCommand;
+use PhpSchool\WorkshopManager\Command\InstallWorkshop;
+use PhpSchool\WorkshopManager\Command\ListWorkshops;
+use PhpSchool\WorkshopManager\Command\SearchWorkshops;
+use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\IOFactory;
@@ -19,41 +19,54 @@ use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
 use PhpSchool\WorkshopManager\WorkshopDataSource;
-use Symfony\Component\Console\Application;
+use Silly\Edition\PhpDi\Application;
+use Symfony\Component\Console\Helper\DescriptorHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
-        $application = new Application();
-        $application->add($c->get(InstallCommand::class));
-        $application->add($c->get(UninstallCommand::class));
-        $application->add($c->get(SearchCommand::class));
-        $application->add($c->get(ListCommand::class));
+        $application = new Application('PHP School workshop manager', '1.0.0', $c);
+        $application->command('install workshop [-f|--force]', InstallWorkshop::class)
+            ->setDescription('Install a PHP School workshop');
+        $application->command('uninstall workshop [-f|--force]', UninstallWorkshop::class)
+            ->setDescription('Uninstall a PHP School workshop');
+        $application->command('search workshop', SearchWorkshops::class)
+            ->setDescription('Search for a PHP School workshop');
+        $application->command('list', ListWorkshops::class)
+            ->setDescription('List installed PHP School workshops');
+
+        $application
+            ->command('list-commands', function (OutputInterface $output) use ($application) {
+                $helper = new DescriptorHelper();
+                $helper->describe($output, $application);
+            });
+
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
+        $application->setDefaultCommand('list-commands');
 
         return $application;
     }),
-    InstallCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new InstallCommand(
+    InstallWorkshop::class => \DI\factory(function (ContainerInterface $c) {
+        return new InstallWorkshop(
             $c->get(Installer::class),
             $c->get(Linker::class),
             $c->get('workshopRepository')
         );
     }),
-    UninstallCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new UninstallCommand(
+    UninstallWorkshop::class => \DI\factory(function (ContainerInterface $c) {
+        return new UninstallWorkshop(
             $c->get(Uninstaller::class),
             $c->get('installedWorkshopRepository'),
             $c->get(Linker::class)
         );
     }),
-    SearchCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new SearchCommand($c->get('workshopRepository'));
+    SearchWorkshops::class => \DI\factory(function (ContainerInterface $c) {
+        return new SearchWorkshops($c->get('workshopRepository'));
     }),
-    ListCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new ListCommand($c->get(ManagerState::class));
+    ListWorkshops::class => \DI\factory(function (ContainerInterface $c) {
+        return new ListWorkshops($c->get(ManagerState::class));
     }),
     Linker::class => \DI\factory(function (ContainerInterface $c) {
         return new Linker(

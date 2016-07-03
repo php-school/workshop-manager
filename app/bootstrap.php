@@ -17,9 +17,9 @@ switch (true) {
         throw new RuntimeException('Unable to locate Composer autoloader; please run "composer install".');
 }
 
-use PhpSchool\WorkshopManager\Application;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\ManagerState;
+use Silly\Edition\PhpDi\Application;
 
 ini_set('display_errors', 1);
 
@@ -42,7 +42,7 @@ $app = $container->get(Application::class);
 if (DIRECTORY_SEPARATOR === '\\') {
     $container->get(\Composer\IO\IOInterface::class)->write([
         '',
-        ' Woops!... It looks like your not running in a Unix envirnoment',
+        ' Woops!... It looks like your not running in a Unix environment',
         '',
         ' Currently we only support Unix based systems, if you\'re running Windows please use Cygwin',
         ' See <info>https://phpschool.io/install#windows</info> for more details',
@@ -50,6 +50,7 @@ if (DIRECTORY_SEPARATOR === '\\') {
     ]);
     exit;
 }
+
 
 try {
     $app->run();

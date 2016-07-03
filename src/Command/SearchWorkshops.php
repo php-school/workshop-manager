@@ -5,17 +5,14 @@ namespace PhpSchool\WorkshopManager\Command;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SearchCommand
+ * Class SearchWorkshops
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class SearchCommand extends Command
+class SearchWorkshops
 {
     /**
      * @var WorkshopRepository
@@ -28,33 +25,20 @@ class SearchCommand extends Command
     public function __construct(WorkshopRepository $repository)
     {
         $this->workshopRepository = $repository;
-        parent::__construct();
     }
 
     /**
-     * Configure the command
-     */
-    protected function configure()
-    {
-        $this
-            ->setName('search')
-            ->setDescription('Search for a PHP School workshop')
-            ->addArgument('workshop', InputArgument::REQUIRED, 'What workshop are you searching for');
-    }
-
-    /**
-     * @param InputInterface $input
+     * @param string $workshopName
      * @param OutputInterface $output
      *
      * @return void
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function __invoke(OutputInterface $output, $workshopName)
     {
-        $name = $input->getArgument('workshop');
         $output->writeln('');
 
         try {
-            $workshops = $this->workshopRepository->find($name);
+            $workshops = $this->workshopRepository->find($workshopName);
         } catch (WorkshopNotFoundException $e) {
             $output->writeln(sprintf(' No workshops found matching "%s"', $name));
             return;

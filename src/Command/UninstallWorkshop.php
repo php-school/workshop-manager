@@ -15,10 +15,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class UninstallCommand
+ * Class UninstallWorkshop
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class UninstallCommand extends Command
+class UninstallWorkshop
 {
     /**
      * @var Uninstaller
@@ -56,32 +56,17 @@ class UninstallCommand extends Command
         $this->workshopRepository = $installedRepository;
         $this->linker             = $linker;
         $this->managerState       = $managerState;
-
-        parent::__construct();
     }
 
     /**
-     * Configure the command
-     */
-    protected function configure()
-    {
-        $this
-            ->setName('uninstall')
-            ->setDescription('Uninstall a PHP School workshop')
-            ->addArgument('workshop', InputArgument::REQUIRED, 'What workshop would you like to uninstall')
-            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Attempt to force the removal of blocking files');
-    }
-
-    /**
-     * @param InputInterface $input
      * @param OutputInterface $output
+     * @param string $workshopName
      *
      * @return void
      * @throws \RuntimeException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function __invoke(OutputInterface $output, $workshopName)
     {
-        $workshopName = $input->getArgument('workshop');
         $output->writeln('');
 
         try {

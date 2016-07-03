@@ -11,17 +11,13 @@ use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class InstallCommand
+ * Class InstallWorkshop
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class InstallCommand extends Command
+class InstallWorkshop
 {
     /**
      * @var WorkshopRepository
@@ -59,35 +55,20 @@ class InstallCommand extends Command
         $this->linker             = $linker;
         $this->workshopRepository = $workshopRepository;
         $this->managerState       = $managerState;
-
-        parent::__construct();
     }
 
     /**
-     * Configure the command
-     */
-    protected function configure()
-    {
-        $this
-            ->setName('install')
-            ->setDescription('Install a PHP School workshop')
-            ->addArgument('workshop', InputArgument::REQUIRED, 'What workshop would you like to install')
-            ->addOption('force', 'f', InputOption::VALUE_OPTIONAL, 'Attempt to force the removal of blocking files');
-    }
-
-    /**
-     * @param InputInterface $input
      * @param OutputInterface $output
+     * @param string $workshopName
      *
      * @return void
      * @throws WorkshopAlreadyInstalledException
      * @throws DownloadFailureException
      * @throws ComposerFailureException
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function __invoke(OutputInterface $output, $workshopName)
     {
         $output->writeln('');
-        $workshopName = $input->getArgument('workshop');
 
         try {
             $workshop = $this->workshopRepository->getByName($workshopName);
