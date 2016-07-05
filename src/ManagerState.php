@@ -26,12 +26,12 @@ final class ManagerState
     /**
      * @var Workshop[]
      */
-    private $workshopsToAdd;
+    private $workshopsToAdd = [];
 
     /**
      * @var Workshop[]
      */
-    private $workshopsToRemove;
+    private $workshopsToRemove = [];
 
     /**
      * @param Filesystem $filesystem
@@ -81,7 +81,7 @@ final class ManagerState
             ];
         }
 
-        $this->stateFile->write(json_encode($state));
+        $this->stateFile->write($state);
     }
 
     /**
@@ -89,7 +89,11 @@ final class ManagerState
      */
     private function readState()
     {
-        return json_decode(file_get_contents($this->stateFile), true);
+        if ($this->stateFile->exists()) {
+            return $this->stateFile->read();
+        }
+
+        return [];
     }
 
     /**

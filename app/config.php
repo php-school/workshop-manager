@@ -132,12 +132,12 @@ return [
         return new \Symfony\Component\Console\Output\ConsoleOutput($verbosity);
     }),
     'workshopRepository' => \DI\factory(function () {
-        return new WorkshopRepository(WorkshopDataSource::createFromExternalSrc(
+        return WorkshopRepository::fromDataSource(WorkshopDataSource::createFromExternalSrc(
             'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json'
         ));
     }),
     'installedWorkshopRepository' => \DI\factory(function (ContainerInterface $c) {
-        return new WorkshopRepository(WorkshopDataSource::createFromLocalPath(
+        return WorkshopRepository::fromDataSource(WorkshopDataSource::createFromLocalPath(
             $c->get('stateFile')
         ));
     }),
@@ -148,7 +148,6 @@ return [
     ManagerState::class => \DI\factory(function (ContainerInterface $c) {
         return new ManagerState(
             $c->get(Filesystem::class),
-            $c->get('installedWorkshopRepository'),
             $c->get('stateFile')
         );
     }),

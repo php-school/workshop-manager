@@ -38,10 +38,6 @@ final class WorkshopDataSource
      */
     public static function createFromLocalPath(JsonFile $file)
     {
-        if (!$file->exists()) {
-            throw new FileNotFoundException($file->getPath());
-        }
-
         return new self($file->getPath());
     }
 
