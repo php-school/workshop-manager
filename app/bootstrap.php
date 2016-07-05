@@ -17,15 +17,27 @@ switch (true) {
         throw new RuntimeException('Unable to locate Composer autoloader; please run "composer install".');
 }
 
+use PhpSchool\WorkshopManager\Application;
+use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\ManagerState;
-use Symfony\Component\Console\Application;
 
 ini_set('display_errors', 1);
 
-$container = (new \DI\ContainerBuilder())
-    ->addDefinitions(__DIR__ . '/config.php')
-    ->useAutowiring(false)
-    ->build();
+try {
+    $container = (new \DI\ContainerBuilder())
+        ->addDefinitions(__DIR__ . '/config.php')
+        ->useAutowiring(false)
+        ->build();
+} catch (RequiresNetworkAccessException $e) {
+    $container->get(\Composer\IO\IOInterface::class)->write([
+        '',
+        ' Darn it!! This command requires network access! ',
+        ''
+    ]);
+    exit;
+}
+
+$app = $container->get(Application::class);
 
 if (DIRECTORY_SEPARATOR === '\\') {
     $container->get(\Composer\IO\IOInterface::class)->write([
@@ -40,9 +52,12 @@ if (DIRECTORY_SEPARATOR === '\\') {
 }
 
 try {
-    $container->get(Application::class)->run();
+    $app->run();
 } catch (\Exception $e) {
-    throw $e;
+    $app->renderException($e, $container->get(Symfony\Component\Console\Output\OutputInterface::class));
 } finally {
-    $container->get(ManagerState::class)->clearTemp();
+    $managerState = $container->get(ManagerState::class);
+
+    $managerState->clearTemp();
+    $managerState->writeState();
 }

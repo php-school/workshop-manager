@@ -12,6 +12,7 @@ use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 
 /**
  * Class Installer
@@ -19,11 +20,6 @@ use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
  */
 final class Installer
 {
-    /**
-     * @var ManagerState
-     */
-    private $state;
-
     /**
      * @var Downloader
      */
@@ -43,26 +39,30 @@ final class Installer
      * @var IOInterface
      */
     private $io;
+    /**
+     * @var WorkshopRepository
+     */
+    private $installedWorkshops;
 
     /**
-     * @param ManagerState $state
+     * @param WorkshopRepository $installedWorkshops
      * @param Downloader $downloader
      * @param Filesystem $filesystem
      * @param ComposerFactory $factory
      * @param IOInterface $io
      */
     public function __construct(
-        ManagerState $state,
+        WorkshopRepository $installedWorkshops,
         Downloader $downloader,
         Filesystem $filesystem,
         ComposerFactory $factory,
         IOInterface $io
     ) {
-        $this->state      = $state;
-        $this->downloader = $downloader;
-        $this->filesystem = $filesystem;
-        $this->factory    = $factory;
-        $this->io         = $io;
+        $this->downloader         = $downloader;
+        $this->filesystem         = $filesystem;
+        $this->factory            = $factory;
+        $this->io                 = $io;
+        $this->installedWorkshops = $installedWorkshops;
     }
 
     /**
@@ -75,7 +75,7 @@ final class Installer
      */
     public function installWorkshop(Workshop $workshop)
     {
-        if ($this->state->isWorkshopInstalled($workshop)) {
+        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
             throw new WorkshopAlreadyInstalledException;
         }
 

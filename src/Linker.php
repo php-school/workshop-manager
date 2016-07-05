@@ -6,6 +6,7 @@ use Composer\IO\IOInterface;
 use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
+use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 
 /**
  * Class Linker
@@ -13,11 +14,6 @@ use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
  */
 final class Linker
 {
-    /**
-     * @var ManagerState
-     */
-    private $state;
-
     /**
      * @var Filesystem
      */
@@ -27,17 +23,21 @@ final class Linker
      * @var IOInterface
      */
     private $io;
+    /**
+     * @var WorkshopRepository
+     */
+    private $installedWorkshops;
 
     /**
-     * @param ManagerState $state
+     * @param WorkshopRepository $installedWorkshops
      * @param Filesystem $filesystem
      * @param IOInterface $io
      */
-    public function __construct(ManagerState $state, Filesystem $filesystem, IOInterface $io)
+    public function __construct(WorkshopRepository $installedWorkshops, Filesystem $filesystem, IOInterface $io)
     {
-        $this->state      = $state;
-        $this->filesystem = $filesystem;
-        $this->io         = $io;
+        $this->filesystem         = $filesystem;
+        $this->io                 = $io;
+        $this->installedWorkshops = $installedWorkshops;
     }
 
     /**
@@ -45,10 +45,11 @@ final class Linker
      * @param bool $force
      *
      * @return bool
+     * @throws \RuntimeException
      */
     public function symlink(Workshop $workshop, $force = false)
     {
-        if (!$this->state->isWorkshopInstalled($workshop)) {
+        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
             $this->io->write(sprintf(' <error> Workshop "%s" not installed </error>', $workshop->getName()));
             return false;
         }
@@ -57,7 +58,7 @@ final class Linker
 
         $this->removeWorkshopBin($localTarget, $force);
 
-        return $this->useSytemPaths()
+        $this->useSytemPaths()
             ? $this->link($workshop, $localTarget) && $this->symlinkToSystem($workshop, $force)
             : $this->link($workshop, $localTarget);
     }
@@ -144,7 +145,7 @@ final class Linker
      */
     public function unlink(Workshop $workshop, $force = false)
     {
-        if (!$this->state->isWorkshopInstalled($workshop)) {
+        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
             throw new WorkshopNotInstalledException;
         }
 

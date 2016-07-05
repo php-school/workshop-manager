@@ -2,10 +2,10 @@
 
 namespace PhpSchool\WorkshopManager;
 
+use Composer\Json\JsonFile;
 use League\Flysystem\Filesystem;
+use League\Flysystem\RootViolationException;
 use PhpSchool\WorkshopManager\Entity\Workshop;
-use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 
 /**
  * Class ManagerState
@@ -19,51 +19,83 @@ final class ManagerState
     private $filesystem;
 
     /**
-     * @var WorkshopRepository
+     * @var JsonFile
      */
-    private $repository;
+    private $stateFile;
+
+    /**
+     * @var Workshop[]
+     */
+    private $workshopsToAdd;
+
+    /**
+     * @var Workshop[]
+     */
+    private $workshopsToRemove;
 
     /**
      * @param Filesystem $filesystem
-     * @param WorkshopRepository $repository
+     * @param JsonFile $stateFile
      */
-    public function __construct(Filesystem $filesystem, WorkshopRepository $repository)
-    {
+    public function __construct(
+        Filesystem $filesystem,
+        JsonFile $stateFile
+    ) {
         $this->filesystem = $filesystem;
-        $this->repository = $repository;
+        $this->stateFile  = $stateFile;
     }
 
-    /**
-     * @return Workshop[]
-     */
-    public function getInstalledWorkshops()
+    public function addWorkshop(Workshop $workshop)
     {
-        return array_filter(array_map(function ($listing) {
-            try {
-                return $this->repository->getByName($listing['basename']);
-            } catch (WorkshopNotFoundException $e) {
-                return false;
-            }
-        }, $this->filesystem->listContents('workshops')));
+        $this->workshopsToAdd[$workshop->getName()] = $workshop;
     }
 
-    /**
-     * @param Workshop $workshop
-     * @return bool
-     */
-    public function isWorkshopInstalled(Workshop $workshop)
+    public function removeWorkshop(Workshop $workshop)
     {
-        foreach ($this->getInstalledWorkshops() as $installedWorkshop) {
-            if ($workshop->getName() === $installedWorkshop->getName()) {
-                return true;
+        $this->workshopsToRemove[$workshop->getName()] = $workshop;
+    }
+
+    public function writeState()
+    {
+        // Read to array.
+        $state = $this->readState();
+
+        if (!array_key_exists('workshops', $state)) {
+            $state['workshops'] = [];
+        }
+
+        foreach ($state['workshops'] as $key => $workshop) {
+            // TODO: Maybe remove if it's in the to add list too?
+            if (array_key_exists($workshop['name'], $this->workshopsToRemove)) {
+                unset($state['workshops'][$key]);
             }
         }
 
-        return false;
+        foreach ($this->workshopsToAdd as $workshop) {
+            $state['workshops'][] = [
+                'name'         => $workshop->getName(),
+                'display_name' => $workshop->getDisplayName(),
+                'owner'        => $workshop->getOwner(),
+                'repo'         => $workshop->getRepo(),
+                'description'  => $workshop->getDescription()
+            ];
+        }
+
+        $this->stateFile->write(json_encode($state));
+    }
+
+    /**
+     * @return array
+     */
+    private function readState()
+    {
+        return json_decode(file_get_contents($this->stateFile), true);
     }
 
     /**
      * @return bool
+     *
+     * @throws RootViolationException In non existant circumstances
      */
     public function clearTemp()
     {

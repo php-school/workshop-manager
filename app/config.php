@@ -2,6 +2,7 @@
 
 use Composer\Factory;
 use Composer\IO\IOInterface;
+use Composer\Json\JsonFile;
 use Github\Client;
 use Interop\Container\ContainerInterface;
 use League\Flysystem\Adapter\Local;
@@ -11,13 +12,13 @@ use PhpSchool\WorkshopManager\Command\ListCommand;
 use PhpSchool\WorkshopManager\Command\SearchCommand;
 use PhpSchool\WorkshopManager\Command\UninstallCommand;
 use PhpSchool\WorkshopManager\Downloader;
-use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
+use PhpSchool\WorkshopManager\WorkshopDataSource;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,6 +31,7 @@ return [
         $application->add($c->get(SearchCommand::class));
         $application->add($c->get(ListCommand::class));
         $application->setAutoExit(false);
+        $application->setCatchExceptions(false);
 
         return $application;
     }),
@@ -37,32 +39,32 @@ return [
         return new InstallCommand(
             $c->get(Installer::class),
             $c->get(Linker::class),
-            $c->get(WorkshopRepository::class)
+            $c->get('workshopRepository')
         );
     }),
     UninstallCommand::class => \DI\factory(function (ContainerInterface $c) {
         return new UninstallCommand(
             $c->get(Uninstaller::class),
-            $c->get(WorkshopRepository::class),
+            $c->get('installedWorkshopRepository'),
             $c->get(Linker::class)
         );
     }),
     SearchCommand::class => \DI\factory(function (ContainerInterface $c) {
-        return new SearchCommand($c->get(WorkshopRepository::class));
+        return new SearchCommand($c->get('workshopRepository'));
     }),
     ListCommand::class => \DI\factory(function (ContainerInterface $c) {
         return new ListCommand($c->get(ManagerState::class));
     }),
     Linker::class => \DI\factory(function (ContainerInterface $c) {
         return new Linker(
-            $c->get(ManagerState::class),
+            $c->get('installedWorkshopRepository'),
             $c->get(Filesystem::class),
             $c->get(IOInterface::class)
         );
     }),
     Installer::class => \DI\factory(function (ContainerInterface $c) {
         return new Installer(
-            $c->get(ManagerState::class),
+            $c->get('installedWorkshopRepository'),
             $c->get(Downloader::class),
             $c->get(Filesystem::class),
             $c->get(Factory::class),
@@ -72,7 +74,7 @@ return [
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
         return new Uninstaller(
             $c->get(Filesystem::class),
-            $c->get(ManagerState::class)
+            $c->get('installedWorkshopRepository')
         );
     }),
     Downloader::class => \DI\factory(function (ContainerInterface $c) {
@@ -116,32 +118,31 @@ return [
 
         return new \Symfony\Component\Console\Output\ConsoleOutput($verbosity);
     }),
-    WorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {
-        return new WorkshopRepository($c->get('workshops'));
+    'workshopRepository' => \DI\factory(function () {
+        return new WorkshopRepository(WorkshopDataSource::createFromExternalSrc(
+            'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json'
+        ));
     }),
-    'workshops' => \DI\factory(function (ContainerInterface $c) {
-        $workshopsJson = $c->get('workshopData');
-        return array_map(function ($workshop) {
-            return new Workshop(
-                $workshop['name'],
-                $workshop['display_name'],
-                $workshop['owner'],
-                $workshop['repo'],
-                $workshop['description']
-            );
-        }, $workshopsJson['workshops']);
+    'installedWorkshopRepository' => \DI\factory(function (ContainerInterface $c) {
+        return new WorkshopRepository(WorkshopDataSource::createFromLocalPath(
+            $c->get('stateFile')
+        ));
     }),
-    'workshopSrc' => 'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json',
-    'workshopData' => \DI\factory(function (ContainerInterface $c) {
-        return json_decode(file_get_contents($c->get('workshopSrc')), true);
-    }),
+    'appDir' => sprintf('%s/.php-school', getenv('HOME')),
+    'stateFile' => function (ContainerInterface $c) {
+        return new JsonFile(sprintf('%s/installed.json', $c->get('appDir')));
+    },
     ManagerState::class => \DI\factory(function (ContainerInterface $c) {
-        return new ManagerState($c->get(Filesystem::class), $c->get(WorkshopRepository::class));
+        return new ManagerState(
+            $c->get(Filesystem::class),
+            $c->get('installedWorkshopRepository'),
+            $c->get('stateFile')
+        );
     }),
     Filesystem::class => \DI\factory(function (ContainerInterface $c) {
         return new Filesystem($c->get(Local::class));
     }),
-    Local::class => \DI\factory(function () {
-        return new Local(sprintf('%s/.php-school', getenv('HOME')));
-    })
+    Local::class => \DI\factory(function (ContainerInterface $c) {
+        return new Local($c->get('appDir'));
+    }),
 ];

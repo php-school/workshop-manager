@@ -6,7 +6,7 @@ namespace PhpSchool\WorkshopManager\Exception;
  * Class FailedToMoveWorkshopException
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class FailedToMoveWorkshopException extends \RuntimeException
+final class FailedToMoveWorkshopException extends \RuntimeException
 {
     /**
      * @var string

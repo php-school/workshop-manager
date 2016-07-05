@@ -6,7 +6,7 @@ namespace PhpSchool\WorkshopManager\Exception;
  * Class ComposerFailureException
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class ComposerFailureException extends \RuntimeException
+final class ComposerFailureException extends \RuntimeException
 {
     /**
      * @param \Exception $e

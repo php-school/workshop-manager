@@ -4,6 +4,7 @@ namespace PhpSchool\WorkshopManager\Repository;
 
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
+use PhpSchool\WorkshopManager\WorkshopDataSource;
 
 /**
  * Class WorkshopRepository
@@ -14,25 +15,33 @@ class WorkshopRepository implements RepositoryInterface
     /**
      * @var Workshop[]
      */
-    private $workshops;
+    private $workshops = [];
 
     /**
      * @var int[]
      */
-    private $searchableWorkshops;
+    private $searchableWorkshops = [];
 
     /**
-     * @param Workshop[] $workshops
+     * @param WorkshopDataSource $workshopSrc
      */
-    public function __construct(array $workshops)
+    public function __construct(WorkshopDataSource $workshopSrc)
     {
-        foreach ($workshops as $workshop) {
-            if ($workshop instanceof Workshop) {
-                $this->workshops[$workshop->getName()]                  = $workshop;
-                $this->searchableWorkshops[$workshop->getName()]        = $workshop->getName();
-                $this->searchableWorkshops[$workshop->getDisplayName()] = $workshop->getName();
-            }
+        $this->workshops = $workshopSrc->fetchWorkshops();
+        
+        foreach ($this->workshops as $workshop) {
+            $this->workshops[$workshop->getName()]                  = $workshop;
+            $this->searchableWorkshops[$workshop->getName()]        = $workshop->getName();
+            $this->searchableWorkshops[$workshop->getDisplayName()] = $workshop->getName();
         }
+    }
+
+    /**
+     * @return Workshop[]
+     */
+    public function getAllWorkshops()
+    {
+        return $this->workshops;
     }
 
     /**
@@ -80,5 +89,13 @@ class WorkshopRepository implements RepositoryInterface
         }
 
         return $results;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isempty()
+    {
+        return count($this->workshops) === 0;
     }
 }

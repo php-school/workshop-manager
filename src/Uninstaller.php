@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManager;
 
 use League\Flysystem\Filesystem;
+use League\Flysystem\RootViolationException;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
@@ -19,18 +20,18 @@ final class Uninstaller
     private $filesystem;
     
     /**
-     * @var ManagerState
+     * @var WorkshopRepository
      */
-    private $state;
+    private $installedWorkshops;
 
     /**
      * @param Filesystem $filesystem
-     * @param ManagerState $state
+     * @param WorkshopRepository $installedWorkshops
      */
-    public function __construct(Filesystem $filesystem, ManagerState $state)
+    public function __construct(Filesystem $filesystem, WorkshopRepository $installedWorkshops)
     {
-        $this->filesystem = $filesystem;
-        $this->state      = $state;
+        $this->filesystem         = $filesystem;
+        $this->installedWorkshops = $installedWorkshops;
     }
 
     /**
@@ -38,10 +39,11 @@ final class Uninstaller
      *
      * @throws WorkshopNotInstalledException
      * @throws \RuntimeException When filesystem delete fails
+     * @throws RootViolationException In non existant circumstances :)
      */
     public function uninstallWorkshop(Workshop $workshop)
     {
-        if (!$this->state->isWorkshopInstalled($workshop)) {
+        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
             throw new WorkshopNotInstalledException;
         }
 

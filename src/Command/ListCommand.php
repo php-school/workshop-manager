@@ -3,7 +3,7 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Entity\Workshop;
-use PhpSchool\WorkshopManager\ManagerState;
+use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -17,16 +17,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ListCommand extends Command
 {
     /**
-     * @var ManagerState
+     * @var WorkshopRepository
      */
-    private $state;
+    private $installedWorkshops;
 
     /**
-     * @param ManagerState $state
+     * @param WorkshopRepository $installedWorkshops
      */
-    public function __construct(ManagerState $state)
+    public function __construct(WorkshopRepository $installedWorkshops)
     {
-        $this->state = $state;
+        $this->installedWorkshops = $installedWorkshops;
         parent::__construct();
     }
 
@@ -48,9 +48,7 @@ class ListCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $workshops = $this->state->getInstalledWorkshops();
-
-        if (!$workshops) {
+        if (!$this->installedWorkshops->isempty()) {
             $output->writeln("\n There are currently no workshops installed");
             return;
         }
@@ -62,7 +60,7 @@ class ListCommand extends Command
             ->setHeaders(['Name', 'Description', 'Package'])
             ->setRows(array_map(function (Workshop $workshop) {
                 return [$workshop->getDisplayName(), wordwrap($workshop->getDescription(), 50), $workshop->getName()];
-            }, $workshops))
+            }, $this->installedWorkshops->getAllWorkshops()))
             ->setStyle('borderless')
             ->render();
     }

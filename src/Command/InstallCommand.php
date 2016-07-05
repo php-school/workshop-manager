@@ -9,6 +9,7 @@ use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\Linker;
+use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,18 +39,26 @@ class InstallCommand extends Command
     private $linker;
 
     /**
+     * @var ManagerState
+     */
+    private $managerState;
+
+    /**
      * @param Installer $installer
      * @param Linker $linker
      * @param WorkshopRepository $workshopRepository
+     * @param ManagerState $managerState
      */
     public function __construct(
         Installer $installer,
         Linker $linker,
-        WorkshopRepository $workshopRepository
+        WorkshopRepository $workshopRepository,
+        ManagerState $managerState
     ) {
         $this->installer          = $installer;
         $this->linker             = $linker;
         $this->workshopRepository = $workshopRepository;
+        $this->managerState       = $managerState;
 
         parent::__construct();
     }
@@ -115,6 +124,7 @@ class InstallCommand extends Command
             return;
         }
 
+        $this->managerState->addWorkshop($workshop);
         $output->writeln(sprintf(' <info>Successfully installed "%s"</info>', $workshop->getName()));
     }
 }

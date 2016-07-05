@@ -5,6 +5,7 @@ namespace PhpSchool\WorkshopManager\Command;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Linker;
+use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
 use Symfony\Component\Console\Command\Command;
@@ -35,15 +36,26 @@ class UninstallCommand extends Command
     private $linker;
 
     /**
-     * @param Uninstaller $uninstaller
-     * @param WorkshopRepository $workshopRepository
-     * @param Linker $linker
+     * @var ManagerState
      */
-    public function __construct(Uninstaller $uninstaller, WorkshopRepository $workshopRepository, Linker $linker)
-    {
+    private $managerState;
+
+    /**
+     * @param Uninstaller $uninstaller
+     * @param WorkshopRepository $installedRepository
+     * @param Linker $linker
+     * @param ManagerState $managerState
+     */
+    public function __construct(
+        Uninstaller $uninstaller,
+        WorkshopRepository $installedRepository,
+        Linker $linker,
+        ManagerState $managerState
+    ) {
         $this->uninstaller        = $uninstaller;
-        $this->workshopRepository = $workshopRepository;
+        $this->workshopRepository = $installedRepository;
         $this->linker             = $linker;
+        $this->managerState       = $managerState;
 
         parent::__construct();
     }
@@ -97,6 +109,7 @@ class UninstallCommand extends Command
             return;
         }
 
+        $this->managerState->removeWorkshop($workshop);
         $output->writeln(sprintf(' <info>Successfully uninstalled "%s"</info>', $workshop->getName()));
     }
 }
