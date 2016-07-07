@@ -6,6 +6,9 @@
     "src",
     "app"
   ],
+  "files": [
+    "vendor/composer/ca-bundle/res/cacert.pem"
+  ],
   "finder": [
     {
       "name": "*.php",
