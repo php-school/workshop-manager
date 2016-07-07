@@ -49,6 +49,7 @@ return [
         return $application;
     }),
     SelfUpdate::class => \DI\object(),
+    SelfRollback::class => \DI\object(),
     InstallWorkshop::class => \DI\factory(function (ContainerInterface $c) {
         return new InstallWorkshop(
             $c->get(Installer::class),
