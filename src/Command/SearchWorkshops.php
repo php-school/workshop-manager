@@ -32,8 +32,8 @@ class SearchWorkshops
      */
     public function __construct(
         RemoteWorkshopRepository $remoteWorkshopRepository,
-        InstalledWorkshopRepository $installedWorkshopRepository)
-    {
+        InstalledWorkshopRepository $installedWorkshopRepository
+    ) {
         $this->remoteWorkshopRepository = $remoteWorkshopRepository;
         $this->installedWorkshopRepository = $installedWorkshopRepository;
     }

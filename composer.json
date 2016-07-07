@@ -41,6 +41,10 @@
             "@composer install --no-dev",
             "box build -vv"
         ],
+        "test": [
+            "phpunit",
+            "phpcs --standard=PSR2 src"
+        ],
         "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",
         "post-update-cmd": "Tooly\\ScriptHandler::installPharTools"
     },

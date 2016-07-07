@@ -89,7 +89,9 @@ class InstallWorkshop
         try {
             $this->installer->installWorkshop($workshop);
         } catch (WorkshopAlreadyInstalledException $e) {
-            $output->writeln(sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName));
+            $output->writeln(
+                sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
+            );
         } catch (DownloadFailureException $e) {
             $output->writeln(
                 sprintf(' <error> There was a problem downloading the workshop "%s"</error>\n', $workshopName)
