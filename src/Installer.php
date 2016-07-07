@@ -2,67 +2,65 @@
 
 namespace PhpSchool\WorkshopManager;
 
-use Composer\Installer as ComposerInstaller;
-use Composer\Factory as ComposerFactory;
-use Composer\IO\IOInterface;
-use League\Flysystem\Exception as FlysystemException;
-use League\Flysystem\Filesystem;
+use Github\Client;
+use InvalidArgumentException;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class Installer
  * @author Michael Woodward <mikeymike.mw@gmail.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 final class Installer
 {
-    /**
-     * @var Downloader
-     */
-    private $downloader;
-
     /**
      * @var Filesystem
      */
     private $filesystem;
 
     /**
-     * @var ComposerFactory
+     * @var ComposerInstallerFactory
      */
-    private $factory;
+    private $composerFactory;
 
-    /**
-     * @var IOInterface
-     */
-    private $io;
     /**
      * @var WorkshopRepository
      */
     private $installedWorkshops;
+    /**
+     * @var string
+     */
+    private $workshopHomeDirectory;
+
+    /**
+     * @var Client
+     */
+    private $gitHubClient;
 
     /**
      * @param WorkshopRepository $installedWorkshops
-     * @param Downloader $downloader
      * @param Filesystem $filesystem
-     * @param ComposerFactory $factory
-     * @param IOInterface $io
+     * @param string $workshopHomeDirectory
+     * @param ComposerInstallerFactory $composerFactory
+     * @param Client $gitHubClient
      */
     public function __construct(
         WorkshopRepository $installedWorkshops,
-        Downloader $downloader,
         Filesystem $filesystem,
-        ComposerFactory $factory,
-        IOInterface $io
+        $workshopHomeDirectory,
+        ComposerInstallerFactory $composerFactory,
+        Client $gitHubClient
     ) {
-        $this->downloader         = $downloader;
-        $this->filesystem         = $filesystem;
-        $this->factory            = $factory;
-        $this->io                 = $io;
-        $this->installedWorkshops = $installedWorkshops;
+        $this->filesystem            = $filesystem;
+        $this->workshopHomeDirectory = $workshopHomeDirectory;
+        $this->composerFactory       = $composerFactory;
+        $this->installedWorkshops    = $installedWorkshops;
+        $this->gitHubClient          = $gitHubClient;
     }
 
     /**
@@ -79,41 +77,73 @@ final class Installer
             throw new WorkshopAlreadyInstalledException;
         }
 
-        $pathToZip  = $this->downloader->download($workshop);
+        $pathToZip  = $this->download($workshop);
         $zipArchive = new \ZipArchive();
 
         $zipArchive->open($pathToZip);
         $zipArchive->extractTo(dirname($pathToZip));
 
-        $srcPath  = sprintf('.temp/%s', $zipArchive->getNameIndex(0));
-        $destPath = sprintf('workshops/%s', $workshop->getName());
+        $sourcePath  = sprintf('%s/.temp/%s', $this->workshopHomeDirectory, $zipArchive->getNameIndex(0));
+        $destinationPath = sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getName());
 
-        try {
-            $this->filesystem->rename($srcPath, $destPath);
-        } catch (FlysystemException $e) {
-            throw new FailedToMoveWorkshopException($srcPath, $destPath);
+        $zipArchive->close();
+        $this->filesystem->remove($pathToZip);
+
+        //if destination exists we can just remove it as it's not installed
+        //according to repo
+        if ($this->filesystem->exists($destinationPath)) {
+            $this->filesystem->remove($destinationPath);
         }
 
         try {
-            $currentPath  = getcwd();
-            $workshopPath = $this->filesystem->getAdapter()->applyPathPrefix(
-                sprintf('workshops/%s', $workshop->getName())
-            );
+            $this->filesystem->rename($sourcePath, $destinationPath);
+        } catch (IOException $e) {
+            throw new FailedToMoveWorkshopException($sourcePath, $destinationPath);
+        }
 
-            $composer = $this->factory->createComposer(
-                $this->io,
-                sprintf('%s/composer.json', $workshopPath),
-                false,
-                $workshopPath
-            );
-
-            $installer = ComposerInstaller::create($this->io, $composer);
-
-            chdir($workshopPath);
-            $installer->run();
-            chdir($currentPath);
+        try {
+            $this->filesystem->executeInPath($destinationPath, function ($path) {
+                $this->composerFactory->create($path)->run();
+            });
         } catch (\Exception $e) {
             throw ComposerFailureException::fromException($e);
         }
+    }
+
+    /**
+     * @param Workshop $workshop
+     * @return string
+     */
+    private function download(Workshop $workshop)
+    {
+        $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getName());
+
+        try {
+            $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
+            $data = $this->gitHubClient->api('repo')->contents()->archive(
+                $workshop->getOwner(),
+                $workshop->getRepo(),
+                'zipball',
+                end($tags)['object']['sha']
+            );
+        } catch (InvalidArgumentException $e) {
+            throw DownloadFailureException::fromException($e);
+        }
+
+        if ($this->filesystem->exists($path)) {
+            try {
+                $this->filesystem->remove($path);
+            } catch (IOException $e) {
+                throw DownloadFailureException::fromException($e);
+            }
+        }
+
+        try {
+            $this->filesystem->dumpFile($path, $data);
+        } catch (IOException $e) {
+            throw new DownloadFailureException('Failed to write zipball to filesystem');
+        }
+
+        return $path;
     }
 }

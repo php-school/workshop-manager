@@ -1,3 +1,7 @@
 .DS_Store
 /vendor
 /.idea
+/.travis/phar-private.pem
+/build/workshop-manager.phar
+/build/workshop-manager.phar.pubkey
+/build/workshop-manager.phar.version

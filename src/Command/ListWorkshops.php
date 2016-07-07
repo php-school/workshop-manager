@@ -6,6 +6,7 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -34,20 +35,28 @@ class ListWorkshops
      */
     public function __invoke(OutputInterface $output)
     {
-        if (!$this->installedWorkshops->isempty()) {
-            $output->writeln("\n There are currently no workshops installed");
+        if ($this->installedWorkshops->isEmpty()) {
+            $output->writeln("\n <fg=green>There are currently no workshops installed</>\n");
+            $output->writeln(" <fg=green>Search and install one - maybe you can learn something!</>\n");
             return;
         }
 
-        $output->writeln("\n <info>Installed Workshops</info>");
-        $output->writeln(" ===================");
+        $output->writeln("\n <info>*** Installed Workshops ***</info>");
+        $output->writeln("");
+
+        $style = (new TableStyle())
+            ->setHorizontalBorderChar('<fg=magenta>-</>')
+            ->setVerticalBorderChar('<fg=magenta>|</>')
+            ->setCrossingChar('<fg=magenta>+</>');
 
         (new Table($output))
             ->setHeaders(['Name', 'Description', 'Package'])
             ->setRows(array_map(function (Workshop $workshop) {
                 return [$workshop->getDisplayName(), wordwrap($workshop->getDescription(), 50), $workshop->getName()];
-            }, $this->installedWorkshops->getAllWorkshops()))
-            ->setStyle('borderless')
+            }, $this->installedWorkshops->getAll()))
+            ->setStyle($style)
             ->render();
+
+        $output->writeln("");
     }
 }

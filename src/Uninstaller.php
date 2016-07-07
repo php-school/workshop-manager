@@ -2,11 +2,11 @@
 
 namespace PhpSchool\WorkshopManager;
 
-use League\Flysystem\Filesystem;
-use League\Flysystem\RootViolationException;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class Uninstaller
@@ -25,13 +25,23 @@ final class Uninstaller
     private $installedWorkshops;
 
     /**
-     * @param Filesystem $filesystem
-     * @param WorkshopRepository $installedWorkshops
+     * @var string
      */
-    public function __construct(Filesystem $filesystem, WorkshopRepository $installedWorkshops)
-    {
+    private $workshopHomeDirectory;
+
+    /**
+     * @param InstalledWorkshopRepository $installedWorkshops
+     * @param Filesystem $filesystem
+     * @param string $workshopHomeDirectory
+     */
+    public function __construct(
+        InstalledWorkshopRepository $installedWorkshops,
+        Filesystem $filesystem,
+        $workshopHomeDirectory
+    ) {
         $this->filesystem         = $filesystem;
         $this->installedWorkshops = $installedWorkshops;
+        $this->workshopHomeDirectory = $workshopHomeDirectory;
     }
 
     /**
@@ -43,12 +53,14 @@ final class Uninstaller
      */
     public function uninstallWorkshop(Workshop $workshop)
     {
-        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
+        if (!$this->installedWorkshops->hasWorkshop($workshop->getName())) {
             throw new WorkshopNotInstalledException;
         }
 
-        if (!$this->filesystem->deleteDir(sprintf('workshops/%s', $workshop->getName()))) {
-            throw new \RuntimeException;
+        try {
+            $this->filesystem->remove(sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getName()));
+        } catch (IOException $e) {
+            throw $e;
         }
     }
 }

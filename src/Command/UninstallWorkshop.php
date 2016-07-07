@@ -6,6 +6,7 @@ use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
 use Symfony\Component\Console\Command\Command;
@@ -13,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class UninstallWorkshop
@@ -26,7 +28,7 @@ class UninstallWorkshop
     private $uninstaller;
     
     /**
-     * @var WorkshopRepository
+     * @var InstalledWorkshopRepository
      */
     private $workshopRepository;
 
@@ -36,65 +38,69 @@ class UninstallWorkshop
     private $linker;
 
     /**
-     * @var ManagerState
-     */
-    private $managerState;
-
-    /**
      * @param Uninstaller $uninstaller
-     * @param WorkshopRepository $installedRepository
+     * @param InstalledWorkshopRepository $installedRepository
      * @param Linker $linker
-     * @param ManagerState $managerState
      */
     public function __construct(
         Uninstaller $uninstaller,
-        WorkshopRepository $installedRepository,
-        Linker $linker,
-        ManagerState $managerState
+        InstalledWorkshopRepository $installedRepository,
+        Linker $linker
     ) {
         $this->uninstaller        = $uninstaller;
         $this->workshopRepository = $installedRepository;
         $this->linker             = $linker;
-        $this->managerState       = $managerState;
     }
 
     /**
      * @param OutputInterface $output
      * @param string $workshopName
+     * @param bool force
      *
      * @return void
      * @throws \RuntimeException
      */
-    public function __invoke(OutputInterface $output, $workshopName)
+    public function __invoke(OutputInterface $output, $workshopName, $force)
     {
         $output->writeln('');
 
         try {
             $workshop = $this->workshopRepository->getByName($workshopName);
         } catch (WorkshopNotFoundException $e) {
-            $output->writeln(sprintf(' <error> No workshops found matching "%s" </error>', $workshopName));
+            $output->writeln(
+                [
+                    sprintf(
+                        ' <fg=magenta> It doesn\'t look like "%s" is installed, did you spell it correctly? </>',
+                        $workshopName
+                    ),
+                    ''
+                ]
+            );
+            return;
+        }
+
+        if (!$this->linker->unlink($workshop, $force)) {
             return;
         }
 
         try {
-            $this->linker->unlink($workshop, $input->getOption('force'));
             $this->uninstaller->uninstallWorkshop($workshop);
-        } catch (WorkshopNotInstalledException $e) {
-            $output->writeln(sprintf(' <error> Workshop "%s" not currently installed </error>', $workshop->getName()));
-            return;
-        } catch (\RuntimeException $e) {
+        } catch (IOException $e) {
             $output->writeln([
                 '',
-                sprintf(' <error> Failed to uninstall workshop "%s" </error>', $workshop->getName())
+                sprintf(
+                    ' <error> Failed to uninstall workshop "%s". Error: "%s" </error>',
+                    $workshop->getName(),
+                    $e->getMessage()
+                ),
+                ''
             ]);
-
-            if ($$output->isVerbose()) {
-                throw $e;
-            }
             return;
         }
 
-        $this->managerState->removeWorkshop($workshop);
-        $output->writeln(sprintf(' <info>Successfully uninstalled "%s"</info>', $workshop->getName()));
+        $this->workshopRepository->removeWorkshop($workshop);
+        $this->workshopRepository->save();
+
+        $output->writeln(sprintf(" <info>Successfully uninstalled \"%s\"</info>\n", $workshop->getName()));
     }
 }

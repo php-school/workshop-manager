@@ -1,0 +1,25 @@
+{
+  "algorithm": "OPENSSL",
+  "chmod": "0755",
+  "compression": "GZ",
+  "directories": [
+    "src",
+    "app"
+  ],
+  "finder": [
+    {
+      "name": "*.php",
+      "exclude": [
+        "tests",
+        "test"
+      ],
+      "in": "vendor"
+    }
+  ],
+  "git-version": "package_version",
+  "intercept": true,
+  "key": ".travis/phar-private.pem",
+  "main": "bin/workshop-manager",
+  "output": "build/workshop-manager.phar",
+  "stub": true
+}

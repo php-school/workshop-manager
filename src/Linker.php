@@ -3,10 +3,10 @@
 namespace PhpSchool\WorkshopManager;
 
 use Composer\IO\IOInterface;
-use League\Flysystem\Filesystem;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class Linker
@@ -29,15 +29,26 @@ final class Linker
     private $installedWorkshops;
 
     /**
+     * @var string
+     */
+    private $workshopHomeDirectory;
+
+    /**
      * @param WorkshopRepository $installedWorkshops
      * @param Filesystem $filesystem
+     * @param $workshopHomeDirectory
      * @param IOInterface $io
      */
-    public function __construct(WorkshopRepository $installedWorkshops, Filesystem $filesystem, IOInterface $io)
-    {
-        $this->filesystem         = $filesystem;
-        $this->io                 = $io;
-        $this->installedWorkshops = $installedWorkshops;
+    public function __construct(
+        WorkshopRepository $installedWorkshops,
+        Filesystem $filesystem,
+        $workshopHomeDirectory,
+        IOInterface $io
+    ) {
+        $this->filesystem            = $filesystem;
+        $this->io                    = $io;
+        $this->installedWorkshops    = $installedWorkshops;
+        $this->workshopHomeDirectory = $workshopHomeDirectory;
     }
 
     /**
@@ -50,8 +61,7 @@ final class Linker
     public function symlink(Workshop $workshop, $force = false)
     {
         if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
-            $this->io->write(sprintf(' <error> Workshop "%s" not installed </error>', $workshop->getName()));
-            return false;
+            throw new WorkshopNotInstalledException;
         }
 
         $localTarget = $this->getLocalTargetPath($workshop);
@@ -65,17 +75,15 @@ final class Linker
 
     /**
      * @param Workshop $workshop
+     * @param string $localTarget
      * @param bool $force
-     *
-     * @throws \RuntimeException
      */
-    private function symlinkToSystem(Workshop $workshop, $force)
+    private function symlinkToSystem(Workshop $workshop, $localTarget, $force)
     {
-        $localTarget  = $this->getLocalTargetPath($workshop);
         $systemTarget = $this->getSystemInstallPath($workshop->getName());
 
-        if (!is_writable(dirname($systemTarget))) {
-            $this->io->write([
+        if (!$this->filesystem->isWriteable(dirname($systemTarget))) {
+            return $this->io->write([
                 sprintf(
                     ' <error> The system directory: "%s" is not writeable. </error>',
                     dirname($systemTarget)
@@ -101,12 +109,9 @@ final class Linker
                     $localTarget
                 )
             ]);
-
-            throw new \RuntimeException;
         }
 
         $this->removeWorkshopBin($systemTarget, $force);
-
         $this->link($workshop, $systemTarget);
     }
 
@@ -118,21 +123,21 @@ final class Linker
      */
     private function link(Workshop $workshop, $target)
     {
-        if (!@symlink($this->getWorkshopSrcPath($workshop), $target)) {
+        try {
+            $this->filesystem->symlink($this->getWorkshopSrcPath($workshop), $target);
+        } catch (IOException $e) {
             $this->io->write([
-                ' <error> Unexpected error occurred </error>',
-                sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $target)
+                    ' <error> Unexpected error occurred </error>',
+                    sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $target)
             ]);
-            throw new \RuntimeException;
+            return;
         }
 
-        if (!chmod($target, 0755)) {
-            $this->io->write([
-                ' <error> Unable to make workshop executable </error>',
-                ' You may have to run the following with elevated privilages:',
-                sprintf(' <info>$ chmod +x %s</info>', $target)
-            ]);
-            throw new \RuntimeException;
+        try {
+            $this->filesystem->chmod($target, 0755);
+        } catch (IOException $e) {
+            //if we couldn't chmod - remove it
+            $this->filesystem->remove($target);
         }
     }
 
@@ -140,23 +145,19 @@ final class Linker
      * @param Workshop $workshop
      * @param bool $force
      *
+     * @return bool
      * @throws WorkshopNotInstalledException
-     * @throws \RuntimeException
      */
     public function unlink(Workshop $workshop, $force = false)
     {
-        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
+        if (!$this->installedWorkshops->hasWorkshop($workshop->getName())) {
             throw new WorkshopNotInstalledException;
         }
 
         $systemTarget = $this->getSystemInstallPath($workshop->getName());
-        $localTarget  = $this->filesystem->getAdapter()->applyPathPrefix(sprintf('bin/%s', $workshop->getName()));
+        $localTarget  = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
 
-        $removed = $this->removeWorkshopBin($systemTarget, $force) && $this->removeWorkshopBin($localTarget, $force);
-
-        if (!$removed) {
-            throw new \RuntimeException;
-        }
+        return $this->removeWorkshopBin($systemTarget, $force) && $this->removeWorkshopBin($localTarget, $force);
     }
 
     /**
@@ -167,11 +168,11 @@ final class Linker
      */
     private function removeWorkshopBin($path, $force)
     {
-        if (!file_exists($path)) {
+        if (!$this->filesystem->exists($path)) {
             return true;
         }
 
-        if (!$force && !is_link($path)) {
+        if (!$force && !$this->filesystem->isLink($path)) {
             $this->io->write([
                 sprintf(' <error> File already exists at path "%s" </error>', $path),
                 ' <info>Try again using --force or manually remove the file</info>'
@@ -180,10 +181,12 @@ final class Linker
             return false;
         }
 
-        if (!unlink($path)) {
+        try {
+            $this->filesystem->remove($path);
+        } catch (IOException $e) {
             $this->io->write([
-                sprintf(' <error> Failed to remove file at path "%s" </error>', $path),
-                ' <info>You may need to remove a blocking file manually with elevated privilages</info>'
+                    sprintf(' <error> Failed to remove file at path "%s" </error>', $path),
+                    ' <info>You may need to remove a blocking file manually with elevated privileges</info>'
             ]);
 
             return false;
@@ -198,11 +201,12 @@ final class Linker
      */
     private function getWorkshopSrcPath(Workshop $workshop)
     {
-        return $this->filesystem->getAdapter()->applyPathPrefix(sprintf(
-            'workshops/%s/bin/%s',
+        return sprintf(
+            '%s/workshops/%s/bin/%s',
+            $this->workshopHomeDirectory,
             $workshop->getName(),
             $workshop->getName()
-        ));
+        );
     }
 
     /**
@@ -212,10 +216,10 @@ final class Linker
     private function getLocalTargetPath(Workshop $workshop)
     {
         // Ensure bin dir exists
-        $path = sprintf('bin/%s', $workshop->getName());
-        $this->filesystem->createDir(dirname($path));
+        $path = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
+        $this->filesystem->mkdir(dirname($path));
 
-        return $this->filesystem->getAdapter()->applyPathPrefix($path);
+        return $path;
     }
 
     /**
@@ -234,6 +238,6 @@ final class Linker
      */
     private function useSytemPaths()
     {
-        return strpos(getenv('PATH'), $this->filesystem->getAdapter()->applyPathPrefix('bin')) === false;
+        return strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) === false;
     }
 }

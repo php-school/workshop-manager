@@ -4,27 +4,38 @@ namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class SearchWorkshops
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
 class SearchWorkshops
 {
     /**
-     * @var WorkshopRepository
+     * @var RemoteWorkshopRepository
      */
-    private $workshopRepository;
+    private $remoteWorkshopRepository;
 
     /**
-     * @param WorkshopRepository $repository
+     * @var InstalledWorkshopRepository
      */
-    public function __construct(WorkshopRepository $repository)
+    private $installedWorkshopRepository;
+
+    /**
+     * @param RemoteWorkshopRepository $remoteWorkshopRepository
+     * @param InstalledWorkshopRepository $installedWorkshopRepository
+     */
+    public function __construct(
+        RemoteWorkshopRepository $remoteWorkshopRepository,
+        InstalledWorkshopRepository $installedWorkshopRepository)
     {
-        $this->workshopRepository = $repository;
+        $this->remoteWorkshopRepository = $remoteWorkshopRepository;
+        $this->installedWorkshopRepository = $installedWorkshopRepository;
     }
 
     /**
@@ -37,22 +48,45 @@ class SearchWorkshops
     {
         $output->writeln('');
 
-        try {
-            $workshops = $this->workshopRepository->find($workshopName);
-        } catch (WorkshopNotFoundException $e) {
-            $output->writeln(sprintf(' No workshops found matching "%s"', $name));
+        $workshops = $this->remoteWorkshopRepository->find($workshopName);
+
+        if (empty($workshops)) {
+            $output->writeln(sprintf(' No workshops found matching "%s"', $workshopName));
             return;
         }
 
-        $output->writeln(' <info>Search Results</info>');
-        $output->writeln(' ==============');
+        $output->writeln(' <info>*** Matches ***</info>');
+        $output->writeln('');
+
+        $style = (new TableStyle())
+            ->setHorizontalBorderChar('<fg=magenta>-</>')
+            ->setVerticalBorderChar('<fg=magenta>|</>')
+            ->setCrossingChar('<fg=magenta>+</>');
 
         (new Table($output))
-            ->setHeaders(['Name', 'Description', 'Package'])
+            ->setHeaders(['Name', 'Description', 'Package', 'Installed?'])
             ->setRows(array_map(function (Workshop $workshop) {
-                return [$workshop->getDisplayName(), wordwrap($workshop->getDescription(), 50), $workshop->getName()];
+
+                $installed = $this->installedWorkshopRepository->hasWorkshop($workshop->getName())
+                    ? '<fg=green>    ✔</>'
+                    : '<fg=red>    ✘</>';
+
+                return [
+                    $workshop->getDisplayName(),
+                    wordwrap($workshop->getDescription(), 50),
+                    $workshop->getName(),
+                    $installed
+                ];
             }, $workshops))
-            ->setStyle('borderless')
+            ->setStyle($style)
             ->render();
+
+        $output->writeln([
+            '',
+            sprintf('  You can install a workshop by typing: %s install workshop-name', $_SERVER['argv'][0]),
+            '',
+            sprintf('  Eg: <fg=magenta>%s install learnyouphp</>', $_SERVER['argv'][0]),
+            ''
+        ]);
     }
 }

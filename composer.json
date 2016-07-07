@@ -11,10 +11,12 @@
     "minimum-stability": "beta",
     "require": {
         "php-di/php-di": "^5.2",
-        "league/flysystem": "^1.0",
         "knplabs/github-api": "^1.5",
         "composer/composer": "^1.0@beta",
-        "mnapoli/silly-php-di": "^1.0"
+        "mnapoli/silly-php-di": "^1.0",
+        "tightenco/collect": "^5.2",
+        "symfony/filesystem": "^3.1",
+        "tm/tooly-composer-script": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.0",
@@ -28,6 +30,25 @@
     "autoload-dev": {
         "psr-4": { 
             "PhpSchool\\WorkshopManagerTest\\": "test" 
+        }
+    },
+    "bin": [
+        "bin/workshop-manager"
+    ],
+    "scripts": {
+        "phar": [
+            "@composer install --no-dev",
+            "box build -vv"
+        ],
+        "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",
+        "post-update-cmd": "Tooly\\ScriptHandler::installPharTools"
+    },
+    "extra": {
+        "tools": {
+            "box": {
+                "url": "https://github.com/box-project/box2/releases/download/2.7.2/box-2.7.2.phar",
+                "only-dev": true
+            }
         }
     }
 }

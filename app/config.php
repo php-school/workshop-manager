@@ -2,49 +2,43 @@
 
 use Composer\Factory;
 use Composer\IO\IOInterface;
+use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
+use Composer\Util\RemoteFilesystem;
 use Github\Client;
 use Interop\Container\ContainerInterface;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
+use PhpSchool\WorkshopManager\Application;
 use PhpSchool\WorkshopManager\Command\InstallWorkshop;
 use PhpSchool\WorkshopManager\Command\ListWorkshops;
 use PhpSchool\WorkshopManager\Command\SearchWorkshops;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
+use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Downloader;
+use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
-use PhpSchool\WorkshopManager\WorkshopDataSource;
-use Silly\Edition\PhpDi\Application;
-use Symfony\Component\Console\Helper\DescriptorHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
-        $application = new Application('PHP School workshop manager', '1.0.0', $c);
-        $application->command('install workshop [-f|--force]', InstallWorkshop::class)
+        $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.0.0', $c);
+        $application->command('install workshopName [-f|--force]', InstallWorkshop::class)
             ->setDescription('Install a PHP School workshop');
-        $application->command('uninstall workshop [-f|--force]', UninstallWorkshop::class)
+        $application->command('uninstall workshopName [-f|--force]', UninstallWorkshop::class)
             ->setDescription('Uninstall a PHP School workshop');
-        $application->command('search workshop', SearchWorkshops::class)
+        $application->command('search workshopName', SearchWorkshops::class)
             ->setDescription('Search for a PHP School workshop');
-        $application->command('list', ListWorkshops::class)
+        $application->command('installed', ListWorkshops::class)
             ->setDescription('List installed PHP School workshops');
-
-        $application
-            ->command('list-commands', function (OutputInterface $output) use ($application) {
-                $helper = new DescriptorHelper();
-                $helper->describe($output, $application);
-            });
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
-        $application->setDefaultCommand('list-commands');
 
         return $application;
     }),
@@ -52,49 +46,49 @@ return [
         return new InstallWorkshop(
             $c->get(Installer::class),
             $c->get(Linker::class),
-            $c->get('workshopRepository')
+            $c->get(InstalledWorkshopRepository::class),
+            $c->get(RemoteWorkshopRepository::class)
         );
     }),
     UninstallWorkshop::class => \DI\factory(function (ContainerInterface $c) {
         return new UninstallWorkshop(
             $c->get(Uninstaller::class),
-            $c->get('installedWorkshopRepository'),
+            $c->get(InstalledWorkshopRepository::class),
             $c->get(Linker::class)
         );
     }),
     SearchWorkshops::class => \DI\factory(function (ContainerInterface $c) {
-        return new SearchWorkshops($c->get('workshopRepository'));
+        return new SearchWorkshops(
+            $c->get(RemoteWorkshopRepository::class),
+            $c->get(InstalledWorkshopRepository::class)
+        );
     }),
     ListWorkshops::class => \DI\factory(function (ContainerInterface $c) {
-        return new ListWorkshops($c->get(ManagerState::class));
+        return new ListWorkshops($c->get(InstalledWorkshopRepository::class));
     }),
     Linker::class => \DI\factory(function (ContainerInterface $c) {
         return new Linker(
-            $c->get('installedWorkshopRepository'),
+            $c->get(InstalledWorkshopRepository::class),
             $c->get(Filesystem::class),
+            $c->get('appDir'),
             $c->get(IOInterface::class)
         );
     }),
     Installer::class => \DI\factory(function (ContainerInterface $c) {
+        $io = $c->get(IOFactory::class)->getNullableIO($c->get(InputInterface::class), $c->get(OutputInterface::class));
         return new Installer(
-            $c->get('installedWorkshopRepository'),
-            $c->get(Downloader::class),
+            $c->get(InstalledWorkshopRepository::class),
             $c->get(Filesystem::class),
-            $c->get(Factory::class),
-            $c->get(IOFactory::class)->getNullableIO($c->get(InputInterface::class), $c->get(OutputInterface::class))
+            $c->get('appDir'),
+            new ComposerInstallerFactory($c->get(Factory::class), $io),
+            $c->get(Client::class)
         );
     }),
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
         return new Uninstaller(
+            $c->get(InstalledWorkshopRepository::class),
             $c->get(Filesystem::class),
-            $c->get('installedWorkshopRepository')
-        );
-    }),
-    Downloader::class => \DI\factory(function (ContainerInterface $c) {
-        return new Downloader(
-            $c->get(Client::class),
-            $c->get(Filesystem::class),
-            $c->get(ManagerState::class)
+            $c->get('appDir')
         );
     }),
     Client::class => \DI\object(),
@@ -131,19 +125,26 @@ return [
 
         return new \Symfony\Component\Console\Output\ConsoleOutput($verbosity);
     }),
-    'workshopRepository' => \DI\factory(function () {
-        return WorkshopRepository::fromDataSource(WorkshopDataSource::createFromExternalSrc(
-            'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json'
-        ));
+    RemoteWorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {
+        return new RemoteWorkshopRepository(
+            new JsonFile(
+                'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json',
+                new RemoteFilesystem(new NullIo)
+            )
+        );
     }),
-    'installedWorkshopRepository' => \DI\factory(function (ContainerInterface $c) {
-        return WorkshopRepository::fromDataSource(WorkshopDataSource::createFromLocalPath(
-            $c->get('stateFile')
-        ));
+    InstalledWorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {
+        return new InstalledWorkshopRepository($c->get('stateFile'));
     }),
     'appDir' => sprintf('%s/.php-school', getenv('HOME')),
     'stateFile' => function (ContainerInterface $c) {
-        return new JsonFile(sprintf('%s/installed.json', $c->get('appDir')));
+        $stateFile = new JsonFile(sprintf('%s/installed.json', $c->get('appDir')));
+
+        if (!$stateFile->exists()) {
+            $stateFile->write(['workshops' => []]);
+        }
+
+        return $stateFile;
     },
     ManagerState::class => \DI\factory(function (ContainerInterface $c) {
         return new ManagerState(
@@ -152,9 +153,14 @@ return [
         );
     }),
     Filesystem::class => \DI\factory(function (ContainerInterface $c) {
-        return new Filesystem($c->get(Local::class));
+        return new Filesystem;
     }),
-    Local::class => \DI\factory(function (ContainerInterface $c) {
-        return new Local($c->get('appDir'));
-    }),
+
+
+//    Filesystem::class => \DI\factory(function (ContainerInterface $c) {
+//        return new Filesystem($c->get(Local::class));
+//    }),
+//    Local::class => \DI\factory(function (ContainerInterface $c) {
+//        return new Local($c->get('appDir'));
+//    }),
 ];
