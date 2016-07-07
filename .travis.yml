@@ -10,6 +10,8 @@ matrix:
   fast_finish: true
   include:
   - php: 5.6
+    env:
+    - EXECUTE_DEPLOYMENT=true
   - php: 7
 
 before_install:
@@ -23,3 +25,6 @@ install:
 
 script:
 - composer test
+
+after_success:
+- if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
