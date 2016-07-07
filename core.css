@@ -1,0 +1,61 @@
+body {
+    background-image: url(/header-bg.jpg);
+    background-size: 600px;
+    background-color: #002835;
+    color: #fff;
+    text-align: center;
+    font-family: monospace;
+    font-weight: 100;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: 100;
+    padding-bottom: 50px;
+    color: #fff;
+}
+
+.container {
+    max-width: 1024px;
+    margin: 0 auto;
+}
+
+.logo {
+    padding-top: 100px;
+    padding-bottom: 50px;
+    display: block;
+}
+
+.logo img {
+    width: 15em;
+}
+
+.download {
+    width: 400px;
+    margin: 0 auto;
+}
+
+.btn-primary {
+    border:none;
+    padding: 13.5px 25px;
+    background: #e91e63;
+    display: inline-block;
+    margin: 10px;
+    position: relative;
+    -webkit-transition: all .3s ease;
+    transition: all .3s ease;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.btn-primary:hover {
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+    background: #aa1145;
+    text-decoration: none;
+}
+
+.btn-primary span {
+    font-size: 20px;
+    top: 3px;
+}

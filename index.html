@@ -6,21 +6,31 @@
         <meta name="Description"
               content="Learn PHP the right way... the open source way. PHP School Open Source Learning for PHP">
 
-        <link href="/img/favicon.ico" rel="shortcut icon" type="image/ico">
-        <link href="/img/apple-touch-icon-72x72.png" rel="apple-touch-icon-precomposed" sizes="72x72">
-        <link href="/img/apple-touch-icon-144x144.png" rel="apple-touch-icon-precomposed" sizes="144x144">
-        <link href="/css/core.css" rel="stylesheet" type="text/css">
+        <link href="/favicon.ico" rel="shortcut icon" type="image/ico">
+        <link href="/apple-touch-icon-72x72.png" rel="apple-touch-icon-precomposed" sizes="72x72">
+        <link href="/apple-touch-icon-144x144.png" rel="apple-touch-icon-precomposed" sizes="144x144">
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+              integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+              crossorigin="anonymous">
+        <link href="/core.css" rel="stylesheet" type="text/css">
     </head>
     <body>
         <header class="site-header">
             <div class="container">
                 <figure class="logo">
-                    <svg class="svg-icon">
-                        <use xmlns:xlink="http://www.w3.org/1999/xlink"
-                             xlink:href="https://www.phpschool.io/img/icons/icons.svg#svg-logo"></use>
-                    </svg>
+                    <img src="logo.svg">
                 </figure>
             </div>
         </header>
+        <h1>Workshop Manager Download</h1>
+        <div class="download">
+            <a href="workshop-manager.phar" download type="button" class="btn btn-primary btn-lg btn-block">
+                <span class="glyphicon glyphicon-download"></span> workshop-manager.phar
+            </a>
+            <a href="workshop-manager.phar.pubkey" download type="button" class="btn btn-primary btn-lg btn-block">
+                <span class="glyphicon glyphicon-download"></span> workshop-manager.phar.pubkey
+            </a>
+        </div>
     </body>
 </html>
