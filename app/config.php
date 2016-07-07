@@ -11,6 +11,7 @@ use PhpSchool\WorkshopManager\Application;
 use PhpSchool\WorkshopManager\Command\InstallWorkshop;
 use PhpSchool\WorkshopManager\Command\ListWorkshops;
 use PhpSchool\WorkshopManager\Command\SearchWorkshops;
+use PhpSchool\WorkshopManager\Command\SelfUpdate;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Downloader;
@@ -36,12 +37,15 @@ return [
             ->setDescription('Search for a PHP School workshop');
         $application->command('installed', ListWorkshops::class)
             ->setDescription('List installed PHP School workshops');
+        $application->command('self-update', SelfUpdate::class)
+            ->setDescription('Update the workshop manager to the latest version.');
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
 
         return $application;
     }),
+    SelfUpdate::class => \DI\object(),
     InstallWorkshop::class => \DI\factory(function (ContainerInterface $c) {
         return new InstallWorkshop(
             $c->get(Installer::class),
@@ -155,12 +159,4 @@ return [
     Filesystem::class => \DI\factory(function (ContainerInterface $c) {
         return new Filesystem;
     }),
-
-
-//    Filesystem::class => \DI\factory(function (ContainerInterface $c) {
-//        return new Filesystem($c->get(Local::class));
-//    }),
-//    Local::class => \DI\factory(function (ContainerInterface $c) {
-//        return new Local($c->get('appDir'));
-//    }),
 ];

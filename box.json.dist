@@ -20,6 +20,6 @@
   "intercept": true,
   "key": ".travis/phar-private.pem",
   "main": "bin/workshop-manager",
-  "output": "build/workshop-manager.phar",
+  "output": "workshop-manager.phar",
   "stub": true
 }

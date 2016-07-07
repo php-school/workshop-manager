@@ -16,7 +16,8 @@
         "mnapoli/silly-php-di": "^1.0",
         "tightenco/collect": "^5.2",
         "symfony/filesystem": "^3.1",
-        "tm/tooly-composer-script": "^1.0"
+        "tm/tooly-composer-script": "^1.0",
+        "padraic/phar-updater": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "~5.0",
@@ -46,8 +47,7 @@
     "extra": {
         "tools": {
             "box": {
-                "url": "https://github.com/box-project/box2/releases/download/2.7.2/box-2.7.2.phar",
-                "only-dev": true
+                "url": "https://github.com/box-project/box2/releases/download/2.7.2/box-2.7.2.phar"
             }
         }
     }
