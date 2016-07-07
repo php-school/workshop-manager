@@ -11,6 +11,7 @@ use PhpSchool\WorkshopManager\Application;
 use PhpSchool\WorkshopManager\Command\InstallWorkshop;
 use PhpSchool\WorkshopManager\Command\ListWorkshops;
 use PhpSchool\WorkshopManager\Command\SearchWorkshops;
+use PhpSchool\WorkshopManager\Command\SelfRollback;
 use PhpSchool\WorkshopManager\Command\SelfUpdate;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
@@ -30,15 +31,17 @@ return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
         $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.0.0', $c);
         $application->command('install workshopName [-f|--force]', InstallWorkshop::class)
-            ->setDescription('Install a PHP School workshop');
+            ->setDescription('Install a PHP School workshop.');
         $application->command('uninstall workshopName [-f|--force]', UninstallWorkshop::class)
-            ->setDescription('Uninstall a PHP School workshop');
+            ->setDescription('Uninstall a PHP School workshop.');
         $application->command('search workshopName', SearchWorkshops::class)
-            ->setDescription('Search for a PHP School workshop');
+            ->setDescription('Search for a PHP School workshop.');
         $application->command('installed', ListWorkshops::class)
-            ->setDescription('List installed PHP School workshops');
+            ->setDescription('List installed PHP School workshops.');
         $application->command('self-update', SelfUpdate::class)
             ->setDescription('Update the workshop manager to the latest version.');
+        $application->command('rollback', SelfRollback::class)
+            ->setDescription('Rollback the workshop manager to the previous version.');
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);

@@ -9,40 +9,36 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package PhpSchool\WorkshopManager\Command
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class SelfUpdate
+class SelfRollback
 {
     private static $pharFile = 'https://php-school.github.io/workshop-manager/workshop-manager.phar';
     private static $versionFile = 'https://php-school.github.io/workshop-manager/workshop-manager.phar.version';
 
     public function __invoke(OutputInterface $output)
     {
-        $updater = new Updater(null, false);
-        $updater->getStrategy()->setPharUrl(static::$pharFile);
-        $updater->getStrategy()->setVersionUrl(static::$versionFile);
 
+        $updater = new Updater(null, false);
         try {
-            $result = $updater->update();
+            $result = $updater->rollback();
             if (!$result) {
                 return $output->writeln([
                     '',
-                    '<fg=magenta>No update necessary!</>',
+                    '<error>Unknown error rolling back workshop-manager</error>',
                     ''
                 ]);
             }
-            $new = $updater->getNewVersion();
-            $old = $updater->getOldVersion();
-
-            $output->writeln([
-                '',
-                sprintf('<fg=magenta>Updated workshop-manager from version %s to %s</>', $old, $new),
-                ''
-            ]);
         } catch (\Exception $e) {
-            $output->writeln([
+            return $output->writeln([
                 '',
-                sprintf('<error>Error updating workshop-manager: %s</error>', $e->getMessage()),
+                sprintf('<error>Error rolling back workshop-manager: %s</error>', $e->getMessage()),
                 ''
             ]);
         }
+
+        $output->writeln([
+            '',
+            sprintf('<fg=magenta>Successfully rolled back to previous version of workshop-manager</>'),
+            ''
+        ]);
     }
 }
