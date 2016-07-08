@@ -6,32 +6,32 @@ namespace PhpSchool\WorkshopManager\Entity;
  * Class Workshop
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-final class Workshop
+class Workshop
 {
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var string
      */
-    private $displayName;
+    protected $displayName;
 
     /**
      * @var string
      */
-    private $owner;
+    protected $owner;
 
     /**
      * @var string
      */
-    private $repo;
+    protected $repo;
 
     /**
      * @var string
      */
-    private $description;
+    protected $description;
 
     /**
      * @param string $name

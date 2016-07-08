@@ -3,7 +3,8 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Entity\Workshop;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
+use PhpSchool\WorkshopManager\VersionChecker;
 use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableStyle;
@@ -21,11 +22,18 @@ class ListWorkshops
     private $installedWorkshops;
 
     /**
-     * @param WorkshopRepository $installedWorkshops
+     * @var VersionChecker
      */
-    public function __construct(WorkshopRepository $installedWorkshops)
+    private $versionChecker;
+
+    /**
+     * @param InstalledWorkshopRepository $installedWorkshops
+     * @param VersionChecker $versionChecker
+     */
+    public function __construct(InstalledWorkshopRepository $installedWorkshops, VersionChecker $versionChecker)
     {
         $this->installedWorkshops = $installedWorkshops;
+        $this->versionChecker = $versionChecker;
     }
 
     /**
@@ -50,9 +58,18 @@ class ListWorkshops
             ->setCrossingChar('<fg=magenta>+</>');
 
         (new Table($output))
-            ->setHeaders(['Name', 'Description', 'Package'])
+            ->setHeaders(['Name', 'Description', 'Package', 'Version', 'New version available?'])
             ->setRows(array_map(function (Workshop $workshop) {
-                return [$workshop->getDisplayName(), wordwrap($workshop->getDescription(), 50), $workshop->getName()];
+
+                return [
+                    $workshop->getDisplayName(),
+                    wordwrap($workshop->getDescription(), 50),
+                    $workshop->getName(),
+                    $workshop->getVersion(),
+                    $this->versionChecker->checkForUpdates($workshop, function ($version, $updated) {
+                        return $updated ? 'Yes - ' . $version : 'Nope!';
+                    })
+                ];
             }, $this->installedWorkshops->getAll()))
             ->setStyle($style)
             ->render();

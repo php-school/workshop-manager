@@ -7,13 +7,12 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 
 /**
- * Class InstalledWorkshopRepository
  * @package PhpSchool\WorkshopManager\Repository
  * @author Aydin Hassan <aydin@hotmail.co.uk>
+ * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-class RemoteWorkshopRepository implements WorkshopRepository
+class RemoteWorkshopRepository
 {
-
     /**
      * flag to indicate remote repo has been loaded
      *
@@ -22,14 +21,14 @@ class RemoteWorkshopRepository implements WorkshopRepository
     private $initialised = false;
 
     /**
-     * @var InstalledWorkshopRepository|null
-     */
-    private $wrapped = null;
-
-    /**
      * @var JsonFile
      */
     private $remoteJsonFile;
+
+    /**
+     * @var array
+     */
+    private $workshops = [];
 
     /**
      * @param JsonFile $remoteJsonFile
@@ -42,18 +41,9 @@ class RemoteWorkshopRepository implements WorkshopRepository
     /**
      * @param Workshop $workshop
      */
-    public function addWorkshop(Workshop $workshop)
+    private function addWorkshop(Workshop $workshop)
     {
-        return $this->wrapped->addWorkshop($workshop);
-    }
-
-    /**
-     * @return array
-     */
-    public function getAll()
-    {
-        $this->init();
-        return $this->wrapped->getAll();
+        $this->workshops[$workshop->getName()] = $workshop;
     }
 
     /**
@@ -65,7 +55,11 @@ class RemoteWorkshopRepository implements WorkshopRepository
     public function getByName($name)
     {
         $this->init();
-        return $this->wrapped->getByName($name);
+        if (!$this->hasWorkshop($name)) {
+            throw new WorkshopNotFoundException;
+        }
+
+        return $this->workshops[$name];
     }
 
     /**
@@ -75,27 +69,67 @@ class RemoteWorkshopRepository implements WorkshopRepository
     public function hasWorkshop($name)
     {
         $this->init();
-        return $this->wrapped->hasWorkshop($name);
+        return array_key_exists($name, $this->workshops);
     }
 
     /**
      * @param string $searchName
      *
      * @return Workshop[]
+     * @throws WorkshopNotFoundException
      */
     public function find($searchName)
     {
         $this->init();
-        return $this->wrapped->find($searchName);
+        $searchName = strtolower($searchName);
+
+        return array_filter(
+            $this->workshops,
+            function (Workshop $workshop) use ($searchName) {
+                return $this->matchesWorkshop($workshop, $searchName);
+            }
+        );
     }
 
     /**
+     * Check if a workshop matches a search term.
+     *
+     * @param Workshop $workshop
+     * @param string $searchTerm
      * @return bool
      */
-    public function isEmpty()
+    private function matchesWorkshop(Workshop $workshop, $searchTerm)
     {
-        $this->init();
-        return $this->wrapped->isEmpty();
+        if ($this->matches($workshop->getName(), $searchTerm)) {
+            return true;
+        }
+
+        if ($this->matches($workshop->getDisplayName(), $searchTerm)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a string matches a search term.
+     *
+     * @param string $string
+     * @param string $searchTerm
+     * @return bool
+     */
+    private function matches($string, $searchTerm)
+    {
+        $string = strtolower($string);
+        if (false !== strpos($string, $searchTerm)) {
+            return true;
+        }
+
+        if (levenshtein($searchTerm, $string) <= 3) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -113,7 +147,33 @@ class RemoteWorkshopRepository implements WorkshopRepository
             throw new RequiresNetworkAccessException;
         }
 
-        $this->wrapped = new InstalledWorkshopRepository($this->remoteJsonFile);
+        collect($this->remoteJsonFile->read()['workshops'])
+            ->filter(
+                function ($workshopData) {
+                    $missingKeyCount = collect($workshopData)
+                        ->keys()
+                        ->diffKeys(['name', 'display_name', 'owner', 'repo', 'description'])
+                        ->count();
+
+                    //true if no missing keys
+                    return $missingKeyCount === 0;
+                }
+            )
+            ->map(
+                function ($workshopData) {
+                    return new Workshop(
+                        $workshopData['name'],
+                        $workshopData['display_name'],
+                        $workshopData['owner'],
+                        $workshopData['repo'],
+                        $workshopData['description']
+                    );
+                }
+            )
+            ->each(function (Workshop $workshop) {
+                $this->addWorkshop($workshop);
+            });
+
         $this->initialised = true;
     }
 }

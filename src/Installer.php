@@ -9,6 +9,7 @@ use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -29,7 +30,7 @@ final class Installer
     private $composerFactory;
 
     /**
-     * @var WorkshopRepository
+     * @var InstalledWorkshopRepository
      */
     private $installedWorkshops;
     /**
@@ -43,14 +44,14 @@ final class Installer
     private $gitHubClient;
 
     /**
-     * @param WorkshopRepository $installedWorkshops
+     * @param InstalledWorkshopRepository $installedWorkshops
      * @param Filesystem $filesystem
      * @param string $workshopHomeDirectory
      * @param ComposerInstallerFactory $composerFactory
      * @param Client $gitHubClient
      */
     public function __construct(
-        WorkshopRepository $installedWorkshops,
+        InstalledWorkshopRepository $installedWorkshops,
         Filesystem $filesystem,
         $workshopHomeDirectory,
         ComposerInstallerFactory $composerFactory,
@@ -65,6 +66,7 @@ final class Installer
 
     /**
      * @param Workshop $workshop
+     * @return string $version The version number of the workshop that was downloaded
      *
      * @throws WorkshopAlreadyInstalledException
      * @throws ComposerFailureException
@@ -77,7 +79,9 @@ final class Installer
             throw new WorkshopAlreadyInstalledException;
         }
 
-        $pathToZip  = $this->download($workshop);
+        list($version, $sha) = $this->getLatestVersionData($workshop);
+
+        $pathToZip  = $this->download($workshop, $sha);
         $zipArchive = new \ZipArchive();
 
         $zipArchive->open($pathToZip);
@@ -95,6 +99,11 @@ final class Installer
             $this->filesystem->remove($destinationPath);
         }
 
+        //ensure workshops dir exists
+        if (!$this->filesystem->exists(sprintf('%s/workshops', $this->workshopHomeDirectory))) {
+            $this->filesystem->mkdir(sprintf('%s/workshops', $this->workshopHomeDirectory));
+        }
+
         try {
             $this->filesystem->rename($sourcePath, $destinationPath);
         } catch (IOException $e) {
@@ -108,23 +117,39 @@ final class Installer
         } catch (\Exception $e) {
             throw ComposerFailureException::fromException($e);
         }
+
+        return $version;
     }
 
     /**
      * @param Workshop $workshop
+     * @return array First element the version tag, eg 1.0.0, second the commit hash.
+     */
+    private function getLatestVersionData(Workshop $workshop)
+    {
+        $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
+        $tag  = end($tags);
+        return [
+            substr($tag['ref'], 10), //strip of refs/tags/
+            $tag['object']['sha'],
+        ];
+    }
+
+    /**
+     * @param Workshop $workshop
+     * @param string $sha The commit hash to download as an archive
      * @return string
      */
-    private function download(Workshop $workshop)
+    private function download(Workshop $workshop, $sha)
     {
         $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getName());
 
         try {
-            $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
             $data = $this->gitHubClient->api('repo')->contents()->archive(
                 $workshop->getOwner(),
                 $workshop->getRepo(),
                 'zipball',
-                end($tags)['object']['sha']
+                $sha
             );
         } catch (InvalidArgumentException $e) {
             throw DownloadFailureException::fromException($e);

@@ -5,6 +5,7 @@ namespace PhpSchool\WorkshopManager;
 use Composer\IO\IOInterface;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
+use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -34,13 +35,13 @@ final class Linker
     private $workshopHomeDirectory;
 
     /**
-     * @param WorkshopRepository $installedWorkshops
+     * @param InstalledWorkshopRepository $installedWorkshops
      * @param Filesystem $filesystem
      * @param $workshopHomeDirectory
      * @param IOInterface $io
      */
     public function __construct(
-        WorkshopRepository $installedWorkshops,
+        InstalledWorkshopRepository $installedWorkshops,
         Filesystem $filesystem,
         $workshopHomeDirectory,
         IOInterface $io

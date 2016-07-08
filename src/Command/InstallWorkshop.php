@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use League\Flysystem\Exception;
+use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
@@ -87,7 +88,7 @@ class InstallWorkshop
         }
 
         try {
-            $this->installer->installWorkshop($workshop);
+            $version = $this->installer->installWorkshop($workshop);
         } catch (WorkshopAlreadyInstalledException $e) {
             $output->writeln(
                 sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
@@ -123,7 +124,7 @@ class InstallWorkshop
             }
         }
 
-        $this->installedWorkshopRepository->addWorkshop($workshop);
+        $this->installedWorkshopRepository->addWorkshop(InstalledWorkshop::fromWorkshop($workshop, $version));
         $this->installedWorkshopRepository->save();
         $output->writeln(sprintf(" <info>Successfully installed \"%s\"</info>\n", $workshop->getName()));
     }

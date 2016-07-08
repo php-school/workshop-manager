@@ -4,6 +4,7 @@ use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
+use Composer\Semver\VersionParser;
 use Composer\Util\RemoteFilesystem;
 use Github\Client;
 use Interop\Container\ContainerInterface;
@@ -14,6 +15,7 @@ use PhpSchool\WorkshopManager\Command\SearchWorkshops;
 use PhpSchool\WorkshopManager\Command\SelfRollback;
 use PhpSchool\WorkshopManager\Command\SelfUpdate;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
+use PhpSchool\WorkshopManager\Command\UpdateWorkshop;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Filesystem;
@@ -24,6 +26,7 @@ use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
+use PhpSchool\WorkshopManager\VersionChecker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -34,6 +37,8 @@ return [
             ->setDescription('Install a PHP School workshop.');
         $application->command('uninstall workshopName [-f|--force]', UninstallWorkshop::class)
             ->setDescription('Uninstall a PHP School workshop.');
+        $application->command('update workshopName', UpdateWorkshop::class)
+            ->setDescription('update a PHP School workshop.');
         $application->command('search workshopName', SearchWorkshops::class)
             ->setDescription('Search for a PHP School workshop.');
         $application->command('installed', ListWorkshops::class)
@@ -65,6 +70,14 @@ return [
             $c->get(Linker::class)
         );
     }),
+    UpdateWorkshop::class => \DI\factory(function (ContainerInterface $c) {
+        return new UpdateWorkshop(
+            $c->get(InstalledWorkshopRepository::class),
+            $c->get(VersionChecker::class),
+            $c->get(Uninstaller::class),
+            $c->get(Installer::class)
+        );
+    }),
     SearchWorkshops::class => \DI\factory(function (ContainerInterface $c) {
         return new SearchWorkshops(
             $c->get(RemoteWorkshopRepository::class),
@@ -72,7 +85,10 @@ return [
         );
     }),
     ListWorkshops::class => \DI\factory(function (ContainerInterface $c) {
-        return new ListWorkshops($c->get(InstalledWorkshopRepository::class));
+        return new ListWorkshops(
+            $c->get(InstalledWorkshopRepository::class),
+            $c->get(VersionChecker::class)
+        );
     }),
     Linker::class => \DI\factory(function (ContainerInterface $c) {
         return new Linker(
@@ -98,6 +114,9 @@ return [
             $c->get(Filesystem::class),
             $c->get('appDir')
         );
+    }),
+    VersionChecker::class => \DI\factory(function (ContainerInterface $c) {
+        return new VersionChecker($c->get(Client::class));
     }),
     Client::class => \DI\object(),
     Factory::class => \DI\object(),
