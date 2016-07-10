@@ -72,7 +72,7 @@ final class Linker
     {
         $systemTarget = $this->getSystemInstallPath($workshop->getName());
 
-        if (!$this->filesystem->isWriteable(dirname($systemTarget))) {
+        if (!$this->filesystem->isWritable(dirname($systemTarget))) {
             return $this->io->write([
                 sprintf(
                     ' <error> The system directory: "%s" is not writeable. </error>',

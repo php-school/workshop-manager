@@ -23,7 +23,7 @@ class Filesystem extends SymfonyFilesystem
         $currentPath = getcwd();
 
         if (!$this->exists($path)) {
-            throw new IOException('Path: "%s" does not exist.');
+            throw new IOException(sprintf('Path: "%s" does not exist.', $path));
         }
 
         chdir($path);
@@ -44,7 +44,7 @@ class Filesystem extends SymfonyFilesystem
      * @param string $path
      * @return bool
      */
-    public function isWriteable($path)
+    public function isWritable($path)
     {
         return is_writable($path);
     }

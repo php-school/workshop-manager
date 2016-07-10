@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManager;
 
 use Github\Client;
+use Github\Exception\ExceptionInterface;
 use InvalidArgumentException;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
@@ -33,6 +34,7 @@ final class Installer
      * @var InstalledWorkshopRepository
      */
     private $installedWorkshops;
+
     /**
      * @var string
      */
@@ -57,10 +59,10 @@ final class Installer
         ComposerInstallerFactory $composerFactory,
         Client $gitHubClient
     ) {
+        $this->installedWorkshops    = $installedWorkshops;
         $this->filesystem            = $filesystem;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
         $this->composerFactory       = $composerFactory;
-        $this->installedWorkshops    = $installedWorkshops;
         $this->gitHubClient          = $gitHubClient;
     }
 
@@ -127,7 +129,11 @@ final class Installer
      */
     private function getLatestVersionData(Workshop $workshop)
     {
-        $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
+        try {
+            $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
+        } catch (ExceptionInterface $e) {
+            throw DownloadFailureException::fromException($e);
+        }
         $tag  = end($tags);
         return [
             substr($tag['ref'], 10), //strip of refs/tags/
@@ -144,17 +150,6 @@ final class Installer
     {
         $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getName());
 
-        try {
-            $data = $this->gitHubClient->api('repo')->contents()->archive(
-                $workshop->getOwner(),
-                $workshop->getRepo(),
-                'zipball',
-                $sha
-            );
-        } catch (InvalidArgumentException $e) {
-            throw DownloadFailureException::fromException($e);
-        }
-
         if ($this->filesystem->exists($path)) {
             try {
                 $this->filesystem->remove($path);
@@ -164,9 +159,20 @@ final class Installer
         }
 
         try {
+            $data = $this->gitHubClient->api('repo')->contents()->archive(
+                $workshop->getOwner(),
+                $workshop->getRepo(),
+                'zipball',
+                $sha
+            );
+        } catch (ExceptionInterface $e) {
+            throw DownloadFailureException::fromException($e);
+        }
+
+        try {
             $this->filesystem->dumpFile($path, $data);
         } catch (IOException $e) {
-            throw new DownloadFailureException('Failed to write zipball to filesystem');
+            throw DownloadFailureException::fromException($e);
         }
 
         return $path;
