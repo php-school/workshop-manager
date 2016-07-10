@@ -3,16 +3,15 @@
 namespace PhpSchool\WorkshopManager\Entity;
 
 /**
- * Class InstalledWorkshop
  * @package PhpSchool\WorkshopManager\Entity
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class InstalledWorkshop extends Workshop
+final class InstalledWorkshop extends Workshop
 {
     /**
      * @var string
      */
-    protected $version;
+    private $version;
 
     /**
      * @param string $name

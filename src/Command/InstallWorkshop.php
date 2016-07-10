@@ -124,7 +124,7 @@ class InstallWorkshop
             }
         }
 
-        $this->installedWorkshopRepository->addWorkshop(InstalledWorkshop::fromWorkshop($workshop, $version));
+        $this->installedWorkshopRepository->add(InstalledWorkshop::fromWorkshop($workshop, $version));
         $this->installedWorkshopRepository->save();
         $output->writeln(sprintf(" <info>Successfully installed \"%s\"</info>\n", $workshop->getName()));
     }

@@ -35,7 +35,7 @@ class InstalledWorkshopRepository
                 function ($workshopData) {
                     $missingKeyCount = collect($workshopData)
                         ->keys()
-                        ->diffKeys(['name', 'display_name', 'owner', 'repo', 'description', 'version'])
+                        ->diff(['name', 'display_name', 'owner', 'repo', 'description', 'version'])
                         ->count();
 
                     //true if no missing keys
@@ -55,14 +55,14 @@ class InstalledWorkshopRepository
                 }
             )
             ->each(function (InstalledWorkshop $workshop) {
-                $this->addWorkshop($workshop);
+                $this->add($workshop);
             });
     }
 
     /**
      * @param InstalledWorkshop $workshop
      */
-    public function addWorkshop(InstalledWorkshop $workshop)
+    public function add(InstalledWorkshop $workshop)
     {
         $this->workshops[$workshop->getName()] = $workshop;
     }
@@ -71,7 +71,7 @@ class InstalledWorkshopRepository
      * @param Workshop $workshopToRemove
      * @throws WorkshopNotFoundException
      */
-    public function removeWorkshop(Workshop $workshopToRemove)
+    public function remove(Workshop $workshopToRemove)
     {
         if (!$this->hasWorkshop($workshopToRemove->getName())) {
             throw new WorkshopNotFoundException;

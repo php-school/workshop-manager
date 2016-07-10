@@ -98,7 +98,7 @@ class UninstallWorkshop
             return;
         }
 
-        $this->workshopRepository->removeWorkshop($workshop);
+        $this->workshopRepository->remove($workshop);
         $this->workshopRepository->save();
 
         $output->writeln(sprintf(" <info>Successfully uninstalled \"%s\"</info>\n", $workshop->getName()));

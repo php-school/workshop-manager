@@ -24,10 +24,6 @@ final class Linker
      * @var IOInterface
      */
     private $io;
-    /**
-     * @var WorkshopRepository
-     */
-    private $installedWorkshops;
 
     /**
      * @var string
@@ -35,20 +31,17 @@ final class Linker
     private $workshopHomeDirectory;
 
     /**
-     * @param InstalledWorkshopRepository $installedWorkshops
      * @param Filesystem $filesystem
      * @param $workshopHomeDirectory
      * @param IOInterface $io
      */
     public function __construct(
-        InstalledWorkshopRepository $installedWorkshops,
         Filesystem $filesystem,
         $workshopHomeDirectory,
         IOInterface $io
     ) {
         $this->filesystem            = $filesystem;
         $this->io                    = $io;
-        $this->installedWorkshops    = $installedWorkshops;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
     }
 
@@ -61,10 +54,6 @@ final class Linker
      */
     public function symlink(Workshop $workshop, $force = false)
     {
-        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
-            throw new WorkshopNotInstalledException;
-        }
-
         $localTarget = $this->getLocalTargetPath($workshop);
 
         $this->removeWorkshopBin($localTarget, $force);

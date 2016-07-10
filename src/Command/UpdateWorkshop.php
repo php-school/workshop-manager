@@ -3,11 +3,16 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
+use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
+use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
+use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
 use PhpSchool\WorkshopManager\VersionChecker;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class UpdateWorkshop
@@ -95,15 +100,11 @@ class UpdateWorkshop
             return;
         }
 
-        $this->installedWorkshopRepository->removeWorkshop($workshop);
+        $this->installedWorkshopRepository->remove($workshop);
         $this->installedWorkshopRepository->save();
 
         try {
             $version = $this->installer->installWorkshop($workshop);
-        } catch (WorkshopAlreadyInstalledException $e) {
-            $output->writeln(
-                sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
-            );
         } catch (DownloadFailureException $e) {
             $output->writeln(
                 sprintf(' <error> There was a problem downloading the workshop "%s"</error>\n', $workshopName)
@@ -127,7 +128,7 @@ class UpdateWorkshop
             return;
         }
 
-        $this->installedWorkshopRepository->addWorkshop(InstalledWorkshop::fromWorkshop($workshop, $version));
+        $this->installedWorkshopRepository->add(InstalledWorkshop::fromWorkshop($workshop, $version));
         $this->installedWorkshopRepository->save();
         $output->writeln(
             sprintf(" <info>Successfully updated %s to version %s</info>\n", $workshop->getName(), $version)
