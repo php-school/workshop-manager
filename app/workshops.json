@@ -6,6 +6,13 @@
       "owner": "php-school",
       "repo": "learn-you-php",
       "description": "A simple introduction into PHP and the workshop format."
+    },
+    {
+      "name": "php7way",
+      "display_name": "PHP7 way",
+      "owner": "NastasiaSaby",
+      "repo": "php7-way",
+      "description": "A PHP School workshop about some new features in PHP7."
     }
   ]
 }
