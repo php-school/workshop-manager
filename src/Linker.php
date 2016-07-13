@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManager;
 
 use Composer\IO\IOInterface;
+use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
@@ -10,10 +11,9 @@ use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class Linker
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-final class Linker
+class Linker
 {
     /**
      * @var Filesystem
@@ -46,29 +46,29 @@ final class Linker
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @param bool $force
      *
      * @return bool
      * @throws \RuntimeException
      */
-    public function symlink(Workshop $workshop, $force = false)
+    public function link(InstalledWorkshop $workshop, $force = false)
     {
         $localTarget = $this->getLocalTargetPath($workshop);
 
         $this->removeWorkshopBin($localTarget, $force);
 
         $this->useSytemPaths()
-            ? $this->link($workshop, $localTarget) && $this->symlinkToSystem($workshop, $force)
-            : $this->link($workshop, $localTarget);
+            ? $this->symlink($workshop, $localTarget) && $this->symlinkToSystem($workshop, $force)
+            : $this->symlink($workshop, $localTarget);
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @param string $localTarget
      * @param bool $force
      */
-    private function symlinkToSystem(Workshop $workshop, $localTarget, $force)
+    private function symlinkToSystem(InstalledWorkshop $workshop, $localTarget, $force)
     {
         $systemTarget = $this->getSystemInstallPath($workshop->getName());
 
@@ -102,16 +102,16 @@ final class Linker
         }
 
         $this->removeWorkshopBin($systemTarget, $force);
-        $this->link($workshop, $systemTarget);
+        $this->symlink($workshop, $systemTarget);
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @param string $target
      *
      * @throws \RuntimeException
      */
-    private function link(Workshop $workshop, $target)
+    private function symlink(InstalledWorkshop $workshop, $target)
     {
         try {
             $this->filesystem->symlink($this->getWorkshopSrcPath($workshop), $target);
@@ -132,18 +132,14 @@ final class Linker
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @param bool $force
      *
      * @return bool
      * @throws WorkshopNotInstalledException
      */
-    public function unlink(Workshop $workshop, $force = false)
+    public function unlink(InstalledWorkshop $workshop, $force = false)
     {
-        if (!$this->installedWorkshops->hasWorkshop($workshop->getName())) {
-            throw new WorkshopNotInstalledException;
-        }
-
         $systemTarget = $this->getSystemInstallPath($workshop->getName());
         $localTarget  = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
 
@@ -186,10 +182,10 @@ final class Linker
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @return string
      */
-    private function getWorkshopSrcPath(Workshop $workshop)
+    private function getWorkshopSrcPath(InstalledWorkshop $workshop)
     {
         return sprintf(
             '%s/workshops/%s/bin/%s',
@@ -200,10 +196,10 @@ final class Linker
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @return string
      */
-    private function getLocalTargetPath(Workshop $workshop)
+    private function getLocalTargetPath(InstalledWorkshop $workshop)
     {
         // Ensure bin dir exists
         $path = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());

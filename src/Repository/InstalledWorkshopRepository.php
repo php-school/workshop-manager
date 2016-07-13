@@ -68,10 +68,10 @@ class InstalledWorkshopRepository
     }
 
     /**
-     * @param Workshop $workshopToRemove
+     * @param InstalledWorkshop $workshopToRemove
      * @throws WorkshopNotFoundException
      */
-    public function remove(Workshop $workshopToRemove)
+    public function remove(InstalledWorkshop $workshopToRemove)
     {
         if (!$this->hasWorkshop($workshopToRemove->getName())) {
             throw new WorkshopNotFoundException;

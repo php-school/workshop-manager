@@ -4,6 +4,7 @@ namespace PhpSchool\WorkshopManagerTest;
 
 use Composer\Factory;
 use Composer\IO\NullIO;
+use Composer\Json\JsonFile;
 use Github\Api\GitData;
 use Github\Api\GitData\Tags;
 use Github\Api\Repo;
@@ -11,14 +12,19 @@ use Github\Api\Repository\Contents;
 use Github\Client;
 use Github\Exception\RuntimeException;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
+use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
+use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -28,27 +34,43 @@ use PHPUnit_Framework_TestCase;
  */
 class InstallerTest extends PHPUnit_Framework_TestCase
 {
-    private $filesystem;
-    private $composerFactory;
+    private $localJsonFile;
     private $installedWorkshopRepo;
+    private $remoteWorkshopRepo;
+    private $linker;
+    private $filesystem;
     private $workshopHomeDir;
+    private $composerFactory;
+    private $versionChecker;
     private $ghClient;
     private $installer;
 
     public function setup()
     {
+        $this->localJsonFile = $this->createMock(JsonFile::class);
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('read')
+            ->willReturn(['workshops' => []]);
+
+        $this->installedWorkshopRepo = new InstalledWorkshopRepository($this->localJsonFile);
+        $this->remoteWorkshopRepo = $this->createMock(RemoteWorkshopRepository::class);
+        $this->linker = $this->createMock(Linker::class);
         $this->filesystem = new Filesystem;
-        $this->composerFactory = new ComposerInstallerFactory(new Factory, new NullIO);
-        $this->installedWorkshopRepo = $this->createMock(InstalledWorkshopRepository::class);
         $this->workshopHomeDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
+        $this->composerFactory = new ComposerInstallerFactory(new Factory, new NullIO);
         @mkdir($this->workshopHomeDir);
         $this->ghClient = $this->createMock(Client::class);
+        $this->versionChecker = new VersionChecker($this->ghClient);
         $this->installer = new Installer(
             $this->installedWorkshopRepo,
+            $this->remoteWorkshopRepo,
+            $this->linker,
             $this->filesystem,
             $this->workshopHomeDir,
             $this->composerFactory,
-            $this->ghClient
+            $this->ghClient,
+            $this->versionChecker
         );
     }
 
@@ -59,24 +81,31 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->filesystem->remove($this->workshopHomeDir);
     }
 
-
     public function testExceptionIsThrownIfWorkshopWithSameNameAlreadyExists()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $this->installedWorkshopRepo->add(
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', '1.0.0')
+        );
 
-        $this->installedWorkshopRepo
+        $this->expectException(WorkshopAlreadyInstalledException::class);
+        $this->installer->installWorkshop('learn-you-php');
+    }
+
+    public function testExceptionIsThrowIfWorkshopDoesNotExistInRegistry()
+    {
+        $this->remoteWorkshopRepo
             ->expects($this->once())
             ->method('hasWorkshop')
             ->with('learn-you-php')
-            ->willReturn(true);
+            ->willReturn(false);
 
-        $this->expectException(WorkshopAlreadyInstalledException::class);
-        $this->installer->installWorkshop($workshop);
+        $this->expectException(WorkshopNotFoundException::class);
+        $this->installer->installWorkshop('learn-you-php');
     }
 
-    public function testExceptionIsThrownIfTagsCannotBeLoaded()
+    public function testExceptionIsWrappedIfGetLatestReleaseThrowsException()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
 
         $gitData = $this->createMock(GitData::class);
         $tags = $this->createMock(Tags::class);
@@ -99,14 +128,14 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->willThrowException(new RuntimeException('Tag Failure'));
 
         $this->expectException(DownloadFailureException::class);
-        $this->expectExceptionMessage('Tag Failure');
+        $this->expectExceptionMessage('Cannot communicate with GitHub - check your internet connection');
 
-        $this->installer->installWorkshop($workshop);
+        $this->installer->installWorkshop($workshop->getName());
     }
 
     public function testExceptionIsThrowIfWorkshopTempDownloadFileExistsAndCannotBeRemoved()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
 
         $path = sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir);
@@ -117,14 +146,14 @@ class InstallerTest extends PHPUnit_Framework_TestCase
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessageRegExp('/Failed to remove file.*/');
-        $this->installer->installWorkshop($workshop);
+        $this->installer->installWorkshop($workshop->getName());
         unlink($path);
         rmdir(dirname($path));
     }
 
     public function testExceptionIsThrownIfWorkshopCannotBeDownloaded()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
 
         $this->configureTags($workshop);
 
@@ -151,13 +180,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessage('Download failure');
 
-        $this->installer->installWorkshop($workshop);
-
+        $this->installer->installWorkshop($workshop->getName());
     }
 
     public function testExceptionIsThrownIfWorkshopCannotBeSaved()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
 
@@ -168,12 +196,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessageRegExp('/^Unable to write to the.*/');
 
-        $this->installer->installWorkshop($workshop);
+        $this->installer->installWorkshop($workshop->getName());
     }
 
     public function testExceptionIsThrownIfCannotMoveWorkshopToInstallDir()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
 
@@ -190,12 +218,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->installer->installWorkshop($workshop);
+        $this->installer->installWorkshop($workshop->getName());
     }
 
     public function testExceptionIsThrownIfCannotRunComposerInstall()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop, false);
 
@@ -205,38 +233,92 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->expectException(ComposerFailureException::class);
         $this->expectExceptionMessageRegExp('/^Composer could not find the config.*/');
 
-        $this->installer->installWorkshop($workshop);
+        $this->installer->installWorkshop($workshop->getName());
     }
 
     public function testSuccessfulInstall()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
 
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
 
-        $this->assertSame('1.0.0', $this->installer->installWorkshop($workshop));
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('link')
+            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+
+        $this->installer->installWorkshop($workshop->getName());
+
+        $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
+        $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 
     public function testWorkshopDirIsCreatedIfNotExists()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
 
-        $this->assertSame('1.0.0', $this->installer->installWorkshop($workshop));
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('link')
+            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+
+        $this->installer->installWorkshop($workshop->getName());
+
+        $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
+        $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 
     public function testWorkshopNameFolderIsRemovedIfExists()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
         mkdir(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775, true);
 
-        $this->assertSame('1.0.0', $this->installer->installWorkshop($workshop));
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('link')
+            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+
+        $this->installer->installWorkshop($workshop->getName());
+
+        $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
+        $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
+    }
+
+    private function configureRemoteRepository()
+    {
+        $this->remoteWorkshopRepo
+            ->expects($this->once())
+            ->method('hasWorkshop')
+            ->with('learn-you-php')
+            ->willReturn(true);
+
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $this->remoteWorkshopRepo
+            ->expects($this->once())
+            ->method('getByName')
+            ->with('learn-you-php')
+            ->willReturn($workshop);
+
+        return $workshop;
     }
 
     private function configureTags(Workshop $workshop)

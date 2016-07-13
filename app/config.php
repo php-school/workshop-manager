@@ -4,9 +4,9 @@ use Composer\Factory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
-use Composer\Semver\VersionParser;
 use Composer\Util\RemoteFilesystem;
 use Github\Client;
+use Humbug\SelfUpdate\Updater as PharUpdater;
 use Interop\Container\ContainerInterface;
 use PhpSchool\WorkshopManager\Application;
 use PhpSchool\WorkshopManager\Command\InstallWorkshop;
@@ -26,6 +26,7 @@ use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
+use PhpSchool\WorkshopManager\Updater;
 use PhpSchool\WorkshopManager\VersionChecker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -37,7 +38,7 @@ return [
             ->setDescription('Install a PHP School workshop.');
         $application->command('uninstall workshopName [-f|--force]', UninstallWorkshop::class)
             ->setDescription('Uninstall a PHP School workshop.');
-        $application->command('update workshopName', UpdateWorkshop::class)
+        $application->command('update workshopName [-f|--force]', UpdateWorkshop::class)
             ->setDescription('update a PHP School workshop.');
         $application->command('search workshopName', SearchWorkshops::class)
             ->setDescription('Search for a PHP School workshop.');
@@ -53,8 +54,19 @@ return [
 
         return $application;
     }),
-    SelfUpdate::class => \DI\object(),
-    SelfRollback::class => \DI\object(),
+    SelfUpdate::class => \DI\factory(function (ContainerInterface $c) {
+        return new SelfUpdate($c->get(PharUpdater::class));
+    }),
+    SelfRollback::class => \DI\factory(function (ContainerInterface $c) {
+        return new SelfRollback($c->get(PharUpdater::class));
+    }),
+    PharUpdater::class => \DI\factory(function (ContainerInterface $c) {
+        $updater = new PharUpdater(null, false);
+        $strategy = $updater->getStrategy();
+        $strategy->setPharUrl('https://php-school.github.io/workshop-manager/workshop-manager.phar');
+        $strategy->setVersionUrl('https://php-school.github.io/workshop-manager/workshop-manager.phar.version');
+        return $updater;
+    }),
     InstallWorkshop::class => \DI\factory(function (ContainerInterface $c) {
         return new InstallWorkshop(
             $c->get(Installer::class),
@@ -72,10 +84,7 @@ return [
     }),
     UpdateWorkshop::class => \DI\factory(function (ContainerInterface $c) {
         return new UpdateWorkshop(
-            $c->get(InstalledWorkshopRepository::class),
-            $c->get(VersionChecker::class),
-            $c->get(Uninstaller::class),
-            $c->get(Installer::class)
+            $c->get(Updater::class)
         );
     }),
     SearchWorkshops::class => \DI\factory(function (ContainerInterface $c) {
@@ -92,7 +101,6 @@ return [
     }),
     Linker::class => \DI\factory(function (ContainerInterface $c) {
         return new Linker(
-            $c->get(InstalledWorkshopRepository::class),
             $c->get(Filesystem::class),
             $c->get('appDir'),
             $c->get(IOInterface::class)
@@ -102,6 +110,8 @@ return [
         $io = $c->get(IOFactory::class)->getNullableIO($c->get(InputInterface::class), $c->get(OutputInterface::class));
         return new Installer(
             $c->get(InstalledWorkshopRepository::class),
+            $c->get(RemoteWorkshopRepository::class),
+            $c->get(Linker::class),
             $c->get(Filesystem::class),
             $c->get('appDir'),
             new ComposerInstallerFactory($c->get(Factory::class), $io),
@@ -111,14 +121,25 @@ return [
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {
         return new Uninstaller(
             $c->get(InstalledWorkshopRepository::class),
+            $c->get(Linker::class),
             $c->get(Filesystem::class),
             $c->get('appDir')
+        );
+    }),
+    Updater::class => \DI\factory(function (ContainerInterface $c) {
+        return new Updater(
+            $c->get(Installer::class),
+            $c->get(Uninstaller::class),
+            $c->get(InstalledWorkshopRepository::class),
+            $c->get(VersionChecker::class)
         );
     }),
     VersionChecker::class => \DI\factory(function (ContainerInterface $c) {
         return new VersionChecker($c->get(Client::class));
     }),
-    Client::class => \DI\object(),
+    Client::class => \DI\factory(function (ContainerInterface $c) {
+        return new Client(new \Github\HttpClient\CachedHttpClient);
+    }),
     Factory::class => \DI\object(),
     IOFactory::class => \DI\object(),
     IOInterface::class => \DI\factory(function (ContainerInterface $c) {

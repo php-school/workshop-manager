@@ -2,6 +2,7 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
+use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
@@ -11,8 +12,8 @@ use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class ListWorkshops
  * @author Michael Woodward <mikeymike.mw@gmail.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class ListWorkshops
 {
@@ -66,8 +67,8 @@ class ListWorkshops
                     wordwrap($workshop->getDescription(), 50),
                     $workshop->getName(),
                     $workshop->getVersion(),
-                    $this->versionChecker->checkForUpdates($workshop, function ($version, $updated) {
-                        return $updated ? 'Yes - ' . $version : 'Nope!';
+                    $this->versionChecker->checkForUpdates($workshop, function (Release $release, $updated) {
+                        return $updated ? 'Yes - ' . $release->getTag() : 'Nope!';
                     })
                 ];
             }, $this->installedWorkshops->getAll()))

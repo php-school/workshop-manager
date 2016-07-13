@@ -3,11 +3,13 @@
 namespace PhpSchool\WorkshopManager;
 
 use Github\Client;
+use Github\Exception\ExceptionInterface;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
+use PhpSchool\WorkshopManager\Entity\Release;
+use PhpSchool\WorkshopManager\Entity\Workshop;
+use RuntimeException;
 
 /**
- * Class VersionChecker
- * @package PhpSchool\WorkshopManager
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class VersionChecker
@@ -17,9 +19,44 @@ class VersionChecker
      */
     private $gitHubClient;
 
+    /**
+     * @param Client $gitHubClient
+     */
     public function __construct(Client $gitHubClient)
     {
         $this->gitHubClient = $gitHubClient;
+    }
+
+    /**
+     * @param Workshop $workshop
+     * @return Release
+     * @throws RuntimeException
+     */
+    public function getLatestRelease(Workshop $workshop)
+    {
+        try {
+            $tags = collect($this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo()));
+        } catch (ExceptionInterface $e) {
+            throw new RuntimeException('Cannot communicate with GitHub - check your internet connection');
+        }
+
+        if ($tags->isEmpty()) {
+            throw new RuntimeException('This workshop has no tagged releases.');
+        }
+
+        $tags = $tags
+            ->keyBy(function ($tag) {
+                return $tag['object']['sha'];
+            })
+            ->map(function ($tag) {
+                return substr($tag['ref'], 10);
+            });
+
+        $latestVersion = $tags->reduce(function ($highest, $current) {
+            return version_compare($highest, $current, '>') ? $highest : $current;
+        });
+
+        return new Release($latestVersion, $tags->search($latestVersion));
     }
 
     /**
@@ -29,14 +66,12 @@ class VersionChecker
      */
     public function checkForUpdates(InstalledWorkshop $workshop, callable $callback)
     {
-        $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
-        $latestTag = end($tags); //last tag may not be the newest - could be a bug
-        $version = substr($latestTag['ref'], 10);
+        $latestVersion = $this->getLatestRelease($workshop);
 
-        if (version_compare($version, $workshop->getVersion())) {
-            return $callback($version, true);
+        if (version_compare($latestVersion->getTag(), $workshop->getVersion())) {
+            return $callback($latestVersion, true);
         }
 
-        return $callback($version, false);
+        return $callback($latestVersion, false);
     }
 }

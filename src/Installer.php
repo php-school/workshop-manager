@@ -5,35 +5,44 @@ namespace PhpSchool\WorkshopManager;
 use Github\Client;
 use Github\Exception\ExceptionInterface;
 use InvalidArgumentException;
+use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-final class Installer
+class Installer
 {
+    /**
+     * @var InstalledWorkshopRepository
+     */
+    private $installedWorkshopRepository;
+
+    /**
+     * @var RemoteWorkshopRepository
+     */
+    private $remoteWorkshopRepository;
+
+    /**
+     * @var Linker
+     */
+    private $linker;
+
     /**
      * @var Filesystem
      */
     private $filesystem;
-
-    /**
-     * @var ComposerInstallerFactory
-     */
-    private $composerFactory;
-
-    /**
-     * @var InstalledWorkshopRepository
-     */
-    private $installedWorkshops;
 
     /**
      * @var string
@@ -46,28 +55,48 @@ final class Installer
     private $gitHubClient;
 
     /**
+     * @var VersionChecker
+     */
+    private $versionChecker;
+
+    /**
+     * @var ComposerInstallerFactory
+     */
+    private $composerFactory;
+
+    /**
      * @param InstalledWorkshopRepository $installedWorkshops
+     * @param RemoteWorkshopRepository $remoteWorkshopRepository
+     * @param Linker $linker
      * @param Filesystem $filesystem
      * @param string $workshopHomeDirectory
      * @param ComposerInstallerFactory $composerFactory
      * @param Client $gitHubClient
+     * @param VersionChecker $versionChecker
      */
     public function __construct(
         InstalledWorkshopRepository $installedWorkshops,
+        RemoteWorkshopRepository $remoteWorkshopRepository,
+        Linker $linker,
         Filesystem $filesystem,
         $workshopHomeDirectory,
         ComposerInstallerFactory $composerFactory,
-        Client $gitHubClient
+        Client $gitHubClient,
+        VersionChecker $versionChecker
     ) {
-        $this->installedWorkshops    = $installedWorkshops;
-        $this->filesystem            = $filesystem;
-        $this->workshopHomeDirectory = $workshopHomeDirectory;
-        $this->composerFactory       = $composerFactory;
-        $this->gitHubClient          = $gitHubClient;
+        $this->installedWorkshopRepository  = $installedWorkshops;
+        $this->remoteWorkshopRepository     = $remoteWorkshopRepository;
+        $this->linker                       = $linker;
+        $this->filesystem                   = $filesystem;
+        $this->workshopHomeDirectory        = $workshopHomeDirectory;
+        $this->composerFactory              = $composerFactory;
+        $this->gitHubClient                 = $gitHubClient;
+        $this->versionChecker               = $versionChecker;
     }
 
     /**
-     * @param Workshop $workshop
+     * @param string $workshop
+     * @param bool $force
      * @return string $version The version number of the workshop that was downloaded
      *
      * @throws WorkshopAlreadyInstalledException
@@ -75,15 +104,25 @@ final class Installer
      * @throws DownloadFailureException
      * @throws FailedToMoveWorkshopException
      */
-    public function installWorkshop(Workshop $workshop)
+    public function installWorkshop($workshop, $force = false)
     {
-        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
+        if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
             throw new WorkshopAlreadyInstalledException;
         }
 
-        list($version, $sha) = $this->getLatestVersionData($workshop);
+        if (!$this->remoteWorkshopRepository->hasWorkshop($workshop)) {
+            throw new WorkshopNotFoundException;
+        }
 
-        $pathToZip  = $this->download($workshop, $sha);
+        $workshop = $this->remoteWorkshopRepository->getByName($workshop);
+
+        try {
+            $release = $this->versionChecker->getLatestRelease($workshop);
+        } catch (RuntimeException $e) {
+            throw DownloadFailureException::fromException($e);
+        }
+
+        $pathToZip  = $this->download($workshop, $release->getSha());
         $zipArchive = new \ZipArchive();
 
         $zipArchive->open($pathToZip);
@@ -120,25 +159,11 @@ final class Installer
             throw ComposerFailureException::fromException($e);
         }
 
-        return $version;
-    }
+        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, $release->getTag());
+        $this->installedWorkshopRepository->add($installedWorkshop);
+        $this->installedWorkshopRepository->save();
 
-    /**
-     * @param Workshop $workshop
-     * @return array First element the version tag, eg 1.0.0, second the commit hash.
-     */
-    private function getLatestVersionData(Workshop $workshop)
-    {
-        try {
-            $tags = $this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo());
-        } catch (ExceptionInterface $e) {
-            throw DownloadFailureException::fromException($e);
-        }
-        $tag  = end($tags);
-        return [
-            substr($tag['ref'], 10), //strip of refs/tags/
-            $tag['object']['sha'],
-        ];
+        $this->linker->link($installedWorkshop, $force);
     }
 
     /**

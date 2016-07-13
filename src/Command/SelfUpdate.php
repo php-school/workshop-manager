@@ -11,17 +11,23 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SelfUpdate
 {
-    private static $pharFile = 'https://php-school.github.io/workshop-manager/workshop-manager.phar';
-    private static $versionFile = 'https://php-school.github.io/workshop-manager/workshop-manager.phar.version';
+    /**
+     * @var Updater
+     */
+    private $updater;
+
+    /**
+     * @param Updater $updater
+     */
+    public function __construct(Updater $updater)
+    {
+        $this->updater = $updater;
+    }
 
     public function __invoke(OutputInterface $output)
     {
-        $updater = new Updater(null, false);
-        $updater->getStrategy()->setPharUrl(static::$pharFile);
-        $updater->getStrategy()->setVersionUrl(static::$versionFile);
-
         try {
-            $result = $updater->update();
+            $result = $this->updater->update();
             if (!$result) {
                 return $output->writeln([
                     '',
@@ -29,12 +35,12 @@ class SelfUpdate
                     ''
                 ]);
             }
-            $new = $updater->getNewVersion();
-            $old = $updater->getOldVersion();
+            $new = $this->updater->getNewVersion();
+            $old = $this->updater->getOldVersion();
 
             $output->writeln([
                 '',
-                sprintf('<fg=magenta>Updated workshop-manager from version %s to %s</>', $old, $new),
+                sprintf('<fg=magenta>Successfully updated workshop-manager from version %s to %s</>', $old, $new),
                 ''
             ]);
         } catch (\Exception $e) {

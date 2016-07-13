@@ -2,112 +2,68 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
-use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
+use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Installer;
-use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
-use PhpSchool\WorkshopManager\Uninstaller;
-use PhpSchool\WorkshopManager\VersionChecker;
+use PhpSchool\WorkshopManager\Updater;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class UpdateWorkshop
- * @package PhpSchool\WorkshopManager\Command
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class UpdateWorkshop
 {
     /**
-     * @var InstalledWorkshopRepository
+     * @var Updater
      */
-    private $installedWorkshopRepository;
-    /**
-     * @var VersionChecker
-     */
-    private $versionChecker;
-    /**
-     * @var Uninstaller
-     */
-    private $uninstaller;
-    /**
-     * @var Installer
-     */
-    private $installer;
+    private $updater;
 
     /**
-     * @param InstalledWorkshopRepository $workshopRepository
-     * @param VersionChecker $versionChecker
-     * @param Uninstaller $uninstaller
-     * @param Installer $installer
+     * @param Updater $updater
      */
-    public function __construct(
-        InstalledWorkshopRepository $workshopRepository,
-        VersionChecker $versionChecker,
-        Uninstaller $uninstaller,
-        Installer $installer
-    ) {
-        $this->installedWorkshopRepository = $workshopRepository;
-        $this->versionChecker = $versionChecker;
-        $this->uninstaller = $uninstaller;
-        $this->installer = $installer;
+    public function __construct(Updater $updater)
+    {
+        $this->updater = $updater;
     }
 
-    public function __invoke(OutputInterface $output, $workshopName)
+    /**
+     * @param OutputInterface $output
+     * @param string $workshopName
+     * @param bool $force
+     */
+    public function __invoke(OutputInterface $output, $workshopName, $force)
     {
         $output->writeln('');
 
         try {
-            $workshop = $this->installedWorkshopRepository->getByName($workshopName);
+            $version = $this->updater->updateWorkshop($workshopName, $force);
         } catch (WorkshopNotFoundException $e) {
-            $output->writeln([
+            return $output->writeln(
                 sprintf(
-                    ' <fg=magenta> It doesn\'t look like "%s" is installed, did you spell it correctly? </>',
+                    " <fg=magenta> It doesn't look like \"%s\" is installed, did you spell it correctly?</>\n",
                     $workshopName
-                ),
-                ''
-            ]);
-            return;
-        }
-
-        $updated = $this->versionChecker->checkForUpdates($workshop, function ($version, $updated) {
-            return $updated;
-        });
-        if (!$updated) {
-            $output->writeln([
-                '',
-                sprintf(' <fg=magenta> There are no updates available for workshop "%s".</>', $workshopName),
-                ''
-            ]);
-            return;
-        }
-
-        try {
-            $this->uninstaller->uninstallWorkshop($workshop);
+                )
+            );
+        } catch (NoUpdateAvailableException $e) {
+            return $output->writeln(
+                sprintf(" <fg=magenta> There are no updates available for workshop \"%s\".</>\n", $workshopName)
+            );
         } catch (IOException $e) {
-            $output->writeln([
-                '',
+            $output->writeln(
                 sprintf(
-                    ' <error> Failed to uninstall workshop "%s". Error: "%s" </error>',
-                    $workshop->getName(),
+                    " <error> Failed to uninstall workshop \"%s\". Error: \"%s\" </error>\n",
+                    $workshopName,
                     $e->getMessage()
-                ),
-                ''
-            ]);
-            return;
-        }
-
-        $this->installedWorkshopRepository->remove($workshop);
-        $this->installedWorkshopRepository->save();
-
-        try {
-            $version = $this->installer->installWorkshop($workshop);
+                )
+            );
         } catch (DownloadFailureException $e) {
             $output->writeln(
-                sprintf(' <error> There was a problem downloading the workshop "%s"</error>\n', $workshopName)
+                sprintf(
+                    " <error> There was a problem downloading the workshop. Error: \"%s\"</error>\n", $e->getMessage()
+                )
             );
         } catch (FailedToMoveWorkshopException $e) {
             $output->writeln([
@@ -115,10 +71,15 @@ class UpdateWorkshop
                 " Please check your file permissions for the following paths\n",
                 sprintf(' <info>%s</info>', dirname($e->getSrcPath())),
                 sprintf(' <info>%s</info>', dirname($e->getDestPath())),
+                ''
             ]);
         } catch (ComposerFailureException $e) {
             $output->writeln(
-                sprintf(' <error> There was a problem installing dependencies for "%s" </error>', $workshopName)
+                sprintf(" <error> There was a problem installing dependencies for \"%s\" </error>\n", $workshopName)
+            );
+        } catch (\Exception $e) {
+            $output->writeln(
+                sprintf(" <error> An unknown error occurred: \"%s\" </error>\n", $e->getMessage())
             );
         }
 
@@ -128,10 +89,8 @@ class UpdateWorkshop
             return;
         }
 
-        $this->installedWorkshopRepository->add(InstalledWorkshop::fromWorkshop($workshop, $version));
-        $this->installedWorkshopRepository->save();
         $output->writeln(
-            sprintf(" <info>Successfully updated %s to version %s</info>\n", $workshop->getName(), $version)
+            sprintf(" <info>Successfully updated %s to version %s</info>\n", $workshopName, $version)
         );
     }
 }

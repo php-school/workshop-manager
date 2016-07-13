@@ -13,6 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Michael Woodward <mikeymike.mw@gmail.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class SearchWorkshops
 {
@@ -51,8 +52,7 @@ class SearchWorkshops
         $workshops = $this->remoteWorkshopRepository->find($workshopName);
 
         if (empty($workshops)) {
-            $output->writeln(sprintf(' No workshops found matching "%s"', $workshopName));
-            return;
+            return $output->writeln(sprintf(" <info>No workshops found matching \"%s\"</info>\n", $workshopName));
         }
 
         $output->writeln(' <info>*** Matches ***</info>');
