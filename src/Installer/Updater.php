@@ -1,10 +1,10 @@
 <?php
 
-namespace PhpSchool\WorkshopManager;
+namespace PhpSchool\WorkshopManager\Installer;
 
-use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
+use PhpSchool\WorkshopManager\VersionChecker;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
@@ -58,21 +58,15 @@ class Updater
     {
         $workshop = $this->installedWorkshopRepository->getByName($workshopName);
 
-        if (!$this->versionChecker->hasUpdate($workshop)) {
-            throw new NoUpdateAvailableException;
-        }
+        $latestRelease = $this->versionChecker->getLatestRelease($workshop);
 
-        $version = $this->versionChecker->checkForUpdates($workshop, function (Release $release, $updated) {
-            return $updated ? $release->getTag() : null;
-        });
-
-        if (!$version) {
+        if ($latestRelease->getTag() === $workshop->getVersion()) {
             throw new NoUpdateAvailableException;
         }
 
         $this->uninstaller->uninstallWorkshop($workshopName, $force);
         $this->installer->installWorkshop($workshopName, $force);
 
-        return $version;
+        return $latestRelease->getTag();
     }
 }

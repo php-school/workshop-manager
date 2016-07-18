@@ -1,10 +1,10 @@
 <?php
 
-namespace PhpSchool\WorkshopManager;
+namespace PhpSchool\WorkshopManager\Installer;
 
 use Github\Client;
 use Github\Exception\ExceptionInterface;
-use InvalidArgumentException;
+use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
@@ -12,9 +12,11 @@ use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
+use PhpSchool\WorkshopManager\Filesystem;
+use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use PhpSchool\WorkshopManager\VersionChecker;
 use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -184,6 +186,7 @@ class Installer
         }
 
         try {
+            /** @noinspection PhpUndefinedMethodInspection */
             $data = $this->gitHubClient->api('repo')->contents()->archive(
                 $workshop->getOwner(),
                 $workshop->getRepo(),

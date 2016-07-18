@@ -4,9 +4,9 @@ namespace PhpSchool\WorkshopManager;
 
 use Github\Client;
 use Github\Exception\ExceptionInterface;
-use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use RuntimeException;
 
 /**
@@ -35,9 +35,10 @@ class VersionChecker
     public function getLatestRelease(Workshop $workshop)
     {
         try {
+            /** @noinspection PhpUndefinedMethodInspection */
             $tags = collect($this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo()));
         } catch (ExceptionInterface $e) {
-            throw new RuntimeException('Cannot communicate with GitHub - check your internet connection');
+            throw new RequiresNetworkAccessException('Cannot communicate with GitHub - check your internet connection');
         }
 
         if ($tags->isEmpty()) {
@@ -52,26 +53,12 @@ class VersionChecker
                 return substr($tag['ref'], 10);
             });
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $latestVersion = $tags->reduce(function ($highest, $current) {
             return version_compare($highest, $current, '>') ? $highest : $current;
         });
 
+        /** @noinspection PhpUndefinedMethodInspection */
         return new Release($latestVersion, $tags->search($latestVersion));
-    }
-
-    /**
-     * @param InstalledWorkshop $workshop
-     * @param callable $callback
-     * @return mixed
-     */
-    public function checkForUpdates(InstalledWorkshop $workshop, callable $callback)
-    {
-        $latestVersion = $this->getLatestRelease($workshop);
-
-        if (version_compare($latestVersion->getTag(), $workshop->getVersion())) {
-            return $callback($latestVersion, true);
-        }
-
-        return $callback($latestVersion, false);
     }
 }

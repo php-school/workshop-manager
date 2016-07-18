@@ -3,10 +3,8 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Entity\Workshop;
-use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;

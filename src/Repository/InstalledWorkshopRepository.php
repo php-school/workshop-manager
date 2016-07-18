@@ -4,7 +4,6 @@ namespace PhpSchool\WorkshopManager\Repository;
 
 use Composer\Json\JsonFile;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
-use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 
 /**

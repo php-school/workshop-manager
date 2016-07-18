@@ -1,10 +1,11 @@
 <?php
 
-namespace PhpSchool\WorkshopManager;
+namespace PhpSchool\WorkshopManager\Installer;
 
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
+use PhpSchool\WorkshopManager\Filesystem;
+use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -14,7 +15,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 class Uninstaller
 {
     /**
-     * @var WorkshopRepository
+     * @var InstalledWorkshopRepository
      */
     private $installedWorkshops;
 
@@ -35,7 +36,6 @@ class Uninstaller
     private $workshopHomeDirectory;
 
     /**
-     * Uninstaller constructor.
      * @param InstalledWorkshopRepository $installedWorkshops
      * @param Linker $linker
      * @param Filesystem $filesystem
@@ -59,7 +59,6 @@ class Uninstaller
      *
      * @throws WorkshopNotInstalledException
      * @throws \RuntimeException When filesystem delete fails
-     * @throws RootViolationException In non existent circumstances :)
      */
     public function uninstallWorkshop($workshop, $force = false)
     {

@@ -7,7 +7,7 @@ use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\Installer\Installer;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

@@ -7,7 +7,7 @@ use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Updater;
+use PhpSchool\WorkshopManager\Installer\Updater;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -89,6 +89,7 @@ class UpdateWorkshop
             return;
         }
 
+        /** @noinspection PhpUndefinedVariableInspection */
         $output->writeln(
             sprintf(" <info>Successfully updated %s to version %s</info>\n", $workshopName, $version)
         );

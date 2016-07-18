@@ -1,6 +1,6 @@
 <?php
 
-namespace PhpSchool\WorkshopManagerTest;
+namespace PhpSchool\WorkshopManagerTest\Installer;
 
 use Composer\Factory;
 use Composer\IO\NullIO;
@@ -20,7 +20,7 @@ use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Filesystem;
-use PhpSchool\WorkshopManager\Installer;
+use PhpSchool\WorkshopManager\Installer\Installer;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
@@ -28,8 +28,6 @@ use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit_Framework_TestCase;
 
 /**
- * Class InstallerTest
- * @package PhpSchool\WorkshopManagerTest
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class InstallerTest extends PHPUnit_Framework_TestCase
@@ -287,6 +285,29 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
         mkdir(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775, true);
+
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('link')
+            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+
+        $this->installer->installWorkshop($workshop->getName());
+
+        $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
+        $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
+    }
+
+    public function testWorkshopTempDownloadIsRemovedIfExists()
+    {
+        $workshop = $this->configureRemoteRepository();
+        $this->configureTags($workshop);
+        $this->configureDownload($workshop);
+        mkdir(sprintf('%s/.temp', $this->workshopHomeDir), 0775, true);
+        touch(sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir));
 
         $this->localJsonFile
             ->expects($this->once())

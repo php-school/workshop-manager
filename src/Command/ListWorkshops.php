@@ -2,11 +2,9 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
-use PhpSchool\WorkshopManager\Entity\Release;
-use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
-use PhpSchool\WorkshopManager\WorkshopManager;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ListWorkshops
 {
     /**
-     * @var WorkshopRepository
+     * @var InstalledWorkshopRepository
      */
     private $installedWorkshops;
 
@@ -60,16 +58,17 @@ class ListWorkshops
 
         (new Table($output))
             ->setHeaders(['Name', 'Description', 'Package', 'Version', 'New version available?'])
-            ->setRows(array_map(function (Workshop $workshop) {
+            ->setRows(array_map(function (InstalledWorkshop $workshop) {
+                $latestRelease = $this->versionChecker->getLatestRelease($workshop);
 
                 return [
                     $workshop->getDisplayName(),
                     wordwrap($workshop->getDescription(), 50),
                     $workshop->getName(),
                     $workshop->getVersion(),
-                    $this->versionChecker->checkForUpdates($workshop, function (Release $release, $updated) {
-                        return $updated ? 'Yes - ' . $release->getTag() : 'Nope!';
-                    })
+                    $latestRelease->getTag() === $workshop->getVersion()
+                        ? 'Nope!'
+                        : 'Yes - ' . $latestRelease->getTag(),
                 ];
             }, $this->installedWorkshops->getAll()))
             ->setStyle($style)

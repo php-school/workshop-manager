@@ -66,7 +66,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testNewVersionIsShowIfThereIsOne()
+    public function testNewVersionIsShownIfThereIsOne()
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
@@ -74,10 +74,8 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $this->versionChecker
             ->expects($this->once())
-            ->method('checkForUpdates')
-            ->will($this->returnCallback(function ($workshopName, $callback) {
-                return $callback(new Release('2.0.0', 'AAAA'), true);
-            }));
+            ->method('getLatestRelease')
+            ->willReturn(new Release('2.0.0', 'AAAA'));
 
         $this->command->__invoke($this->output);
 
@@ -93,14 +91,8 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $this->versionChecker
             ->expects($this->once())
-            ->method('checkForUpdates')
-            ->will(
-                $this->returnCallback(
-                    function ($workshopName, $callback) {
-                        return $callback(new Release('1.0.0', 'BBBB'), false);
-                    }
-                )
-            );
+            ->method('getLatestRelease')
+            ->willReturn(new Release('1.0.0', 'AAAA'));
 
         $this->command->__invoke($this->output);
 

@@ -4,10 +4,7 @@ namespace PhpSchool\WorkshopManager;
 
 use Composer\IO\IOInterface;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
-use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
-use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -58,8 +55,8 @@ class Linker
 
         $this->removeWorkshopBin($localTarget, $force);
 
-        $this->useSytemPaths()
-            ? $this->symlink($workshop, $localTarget) && $this->symlinkToSystem($workshop, $force)
+        $this->useSystemPaths()
+            ? $this->symlink($workshop, $localTarget) && $this->symlinkToSystem($workshop, $localTarget, $force)
             : $this->symlink($workshop, $localTarget);
     }
 
@@ -222,7 +219,7 @@ class Linker
      *
      * @return bool
      */
-    private function useSytemPaths()
+    private function useSystemPaths()
     {
         return strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) === false;
     }

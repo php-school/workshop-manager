@@ -115,7 +115,8 @@ return [
             $c->get(Filesystem::class),
             $c->get('appDir'),
             new ComposerInstallerFactory($c->get(Factory::class), $io),
-            $c->get(Client::class)
+            $c->get(Client::class),
+            $c->get(VersionChecker::class)
         );
     }),
     Uninstaller::class => \DI\factory(function (ContainerInterface $c) {

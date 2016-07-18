@@ -3,13 +3,7 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\ManagerState;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
-use PhpSchool\WorkshopManager\Uninstaller;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -35,7 +29,7 @@ class UninstallWorkshop
     /**
      * @param OutputInterface $output
      * @param string $workshopName
-     * @param bool force
+     * @param bool $force
      *
      * @return void
      * @throws \RuntimeException

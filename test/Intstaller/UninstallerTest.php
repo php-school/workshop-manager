@@ -1,21 +1,18 @@
 <?php
 
-namespace PhpSchool\WorkshopManagerTest;
+namespace PhpSchool\WorkshopManagerTest\Installer;
 
 use Composer\Json\JsonFile;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
-use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
-use PhpSchool\WorkshopManager\Uninstaller;
+use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use PHPUnit_Framework_TestCase;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class UninstallerTest
- * @package PhpSchool\WorkshopManagerTest
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
 class UninstallerTest extends PHPUnit_Framework_TestCase
