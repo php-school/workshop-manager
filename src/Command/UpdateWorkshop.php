@@ -62,7 +62,8 @@ class UpdateWorkshop
         } catch (DownloadFailureException $e) {
             $output->writeln(
                 sprintf(
-                    " <error> There was a problem downloading the workshop. Error: \"%s\"</error>\n", $e->getMessage()
+                    " <error> There was a problem downloading the workshop. Error: \"%s\"</error>\n",
+                    $e->getMessage()
                 )
             );
         } catch (FailedToMoveWorkshopException $e) {
