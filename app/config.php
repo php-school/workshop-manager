@@ -153,7 +153,7 @@ return [
         return new VersionChecker($c->get(Client::class));
     }),
     Client::class => \DI\factory(function (ContainerInterface $c) {
-        return new Client(new \Github\HttpClient\CachedHttpClient);
+        return new Client;
     }),
     Factory::class => \DI\object(),
     IOFactory::class => \DI\object(),
