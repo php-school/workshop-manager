@@ -1,6 +1,7 @@
 <?php
 
 namespace PhpSchool\WorkshopManager\Command;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -56,7 +57,8 @@ class VerifyInstall
                 ),
                 '',
                 sprintf(
-                    ' Use the command: <info>echo \'export PATH="$PATH:%s/bin"\' >> ~/.bashrc && source ~/.bashrc</info>',
+                    ' Use the command: <info>echo \'export PATH="$PATH:%s/bin"\' >> ~/.bashrc && source' .
+                    ' ~/.bashrc</info>',
                     $this->workshopHomeDirectory
                 ),
                 ' replacing <info>~/.bashrc</info> with your chosen terminal config file e.g. <info>~/.zshrc</info>' .
