@@ -20,13 +20,14 @@ use PhpSchool\WorkshopManager\Command\VerifyInstall;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Filesystem;
+use PhpSchool\WorkshopManager\Installer\Installer;
+use PhpSchool\WorkshopManager\Installer\Uninstaller;
+use PhpSchool\WorkshopManager\Installer\Updater;
 use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
-use PhpSchool\WorkshopManager\Uninstaller;
-use PhpSchool\WorkshopManager\Updater;
 use PhpSchool\WorkshopManager\VersionChecker;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,11 +39,13 @@ return [
         $application->command('install workshopName [-f|--force]', InstallWorkshop::class)
             ->setDescription('Install a PHP School workshop.');
         $application->command('uninstall workshopName [-f|--force]', UninstallWorkshop::class)
-            ->setDescription('Uninstall a PHP School workshop.');
+            ->setDescription('Uninstall a PHP School workshop.')
+            ->setAliases(['remove']);
         $application->command('update workshopName [-f|--force]', UpdateWorkshop::class)
             ->setDescription('update a PHP School workshop.');
         $application->command('search workshopName', SearchWorkshops::class)
-            ->setDescription('Search for a PHP School workshop.');
+            ->setDescription('Search for a PHP School workshop.')
+            ->setAliases(['find']);
         $application->command('installed', ListWorkshops::class)
             ->setDescription('List installed PHP School workshops.');
         $application->command('self-update', SelfUpdate::class)
