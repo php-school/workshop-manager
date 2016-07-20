@@ -131,12 +131,14 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
             ->with('learnyouphp', false)
             ->willThrowException(new ComposerFailureException('Some error'));
 
+        $msg  = " <error> There was a problem installing dependencies for \"learnyouphp\". Try running in verbose mode";
+        $msg .= sprintf(" to see the composer error: %s install -v </error>\n", $_SERVER['argv'][0]);
         $this->output
             ->expects($this->exactly(2))
             ->method('writeln')
             ->withConsecutive(
                 [""],
-                [" <error> There was a problem installing dependencies for \"learnyouphp\" </error>\n"]
+                [$msg]
             );
 
         $this->command->__invoke($this->output, 'learnyouphp', false);
@@ -179,7 +181,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
 
         $this->output
             ->expects($this->once())
-            ->method('isVerbose')
+            ->method('isVeryVerbose')
             ->willReturn(true);
 
         $this->expectException(\Exception::class);

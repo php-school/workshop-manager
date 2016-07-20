@@ -2,6 +2,7 @@
 
 namespace PhpSchool\WorkshopManager\Installer;
 
+use Exception;
 use Github\Client;
 use Github\Exception\ExceptionInterface;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
@@ -153,13 +154,18 @@ class Installer
             throw new FailedToMoveWorkshopException($sourcePath, $destinationPath);
         }
 
-        try {
-            $this->filesystem->executeInPath($destinationPath, function ($path) {
-                $this->composerFactory->create($path)->run();
-            });
-        } catch (\Exception $e) {
-            throw ComposerFailureException::fromException($e);
-        }
+        $this->filesystem->executeInPath($destinationPath, function ($path) {
+            try {
+                $res = $this->composerFactory->create($path)->run();
+            } catch (Exception $e) {
+                throw ComposerFailureException::fromException($e);
+            }
+
+            if ($res > 0) {
+                throw new ComposerFailureException();
+            }
+        });
+
 
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, $release->getTag());
         $this->installedWorkshopRepository->add($installedWorkshop);

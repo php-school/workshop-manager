@@ -69,21 +69,27 @@ class InstallWorkshop
                 ''
             ]);
         } catch (ComposerFailureException $e) {
-            $output->writeln(
-                sprintf(" <error> There was a problem installing dependencies for \"%s\" </error>\n", $workshopName)
-            );
+            $message  = " <error> There was a problem installing dependencies for \"%s\". Try running in verbose";
+            $message .= " mode to see the composer error: %s </error>\n";
+
+            $output->writeln(sprintf($message, $workshopName, $this->getCommand()));
         } catch (\Exception $e) {
             $output->writeln(
                 sprintf(" <error> An unknown error occurred: \"%s\" </error>\n", $e->getMessage())
             );
         }
 
-        if (isset($e) && $output->isVerbose()) {
+        if (isset($e) && $output->isVeryVerbose()) {
             throw $e;
         } elseif (isset($e)) {
             return;
         }
 
         $output->writeln(sprintf(" <info>Successfully installed \"%s\"</info>\n", $workshopName));
+    }
+
+    private function getCommand()
+    {
+        return sprintf('%s install -v', $_SERVER['argv'][0]);
     }
 }
