@@ -7,6 +7,7 @@ use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Linker;
 use PHPUnit_Framework_TestCase;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -37,7 +38,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->filesystem = new Filesystem;
-        $this->io = $this->createMock(IOInterface::class);
+        $this->io = $this->createMock(OutputInterface::class);
         $this->tmpDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         $this->linker = new Linker($this->filesystem, $this->tmpDir, $this->io);
     }
@@ -168,8 +169,9 @@ class LinkerTest extends PHPUnit_Framework_TestCase
 
     public function testSuccessButBinDirNotInPath()
     {
+        putenv('PATH=/not-a-dir');
         $this->io->expects($this->once())
-            ->method('write')
+            ->method('writeln')
             ->with([
                 ' <error>The PHP School bin directory is not in your PATH variable.</error>',
                '',

@@ -9,6 +9,7 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PHPUnit_Framework_TestCase;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,8 +48,9 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $this->localRepo = new InstalledWorkshopRepository($this->localJsonFile);
         $this->remoteRepo = $this->createMock(RemoteWorkshopRepository::class);
-        $this->command = new SearchWorkshops($this->remoteRepo, $this->localRepo);
         $this->output = new BufferedOutput;
+        $this->output->getFormatter()->setStyle('phps', new OutputFormatterStyle('magenta'));
+        $this->command = new SearchWorkshops($this->remoteRepo, $this->localRepo, $this->output);
     }
 
     public function testMessageIsPrintedIfNoResults()
@@ -59,7 +61,7 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
             ->with('php')
             ->willReturn([]);
 
-        $this->command->__invoke($this->output, 'php');
+        $this->command->__invoke('php');
 
         $output = $this->output->fetch();
 
@@ -77,7 +79,7 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
             ->with('php')
             ->willReturn([$workshop]);
 
-        $this->command->__invoke($this->output, 'php');
+        $this->command->__invoke('php');
         $output = $this->output->fetch();
 
         $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\s+✔/', $output);
@@ -92,7 +94,7 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
             ->with('php')
             ->willReturn([$workshop]);
 
-        $this->command->__invoke($this->output, 'php');
+        $this->command->__invoke('php');
         $output = $this->output->fetch();
 
         $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\s+✘/', $output);

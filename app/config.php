@@ -16,10 +16,10 @@ use PhpSchool\WorkshopManager\Command\SelfRollback;
 use PhpSchool\WorkshopManager\Command\SelfUpdate;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
 use PhpSchool\WorkshopManager\Command\UpdateWorkshop;
+use PhpSchool\WorkshopManager\Command\VerifyInstall;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Filesystem;
-use PhpSchool\WorkshopManager\Installer;
 use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
@@ -28,6 +28,7 @@ use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\Uninstaller;
 use PhpSchool\WorkshopManager\Updater;
 use PhpSchool\WorkshopManager\VersionChecker;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -48,6 +49,8 @@ return [
             ->setDescription('Update the workshop manager to the latest version.');
         $application->command('rollback', SelfRollback::class)
             ->setDescription('Rollback the workshop manager to the previous version.');
+        $application->command('verify', VerifyInstall::class)
+            ->descriptions('Verify your installation is working correctly');
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
@@ -90,7 +93,8 @@ return [
     SearchWorkshops::class => \DI\factory(function (ContainerInterface $c) {
         return new SearchWorkshops(
             $c->get(RemoteWorkshopRepository::class),
-            $c->get(InstalledWorkshopRepository::class)
+            $c->get(InstalledWorkshopRepository::class),
+            $c->get(OutputInterface::class)
         );
     }),
     ListWorkshops::class => \DI\factory(function (ContainerInterface $c) {
@@ -99,11 +103,18 @@ return [
             $c->get(VersionChecker::class)
         );
     }),
+    VerifyInstall::class => \DI\factory(function (ContainerInterface $c) {
+        return new VerifyInstall(
+            $c->get(InputInterface::class),
+            $c->get(OutputInterface::class),
+            $c->get('appDir')
+        );
+    }),
     Linker::class => \DI\factory(function (ContainerInterface $c) {
         return new Linker(
             $c->get(Filesystem::class),
             $c->get('appDir'),
-            $c->get(IOInterface::class)
+            $c->get(OutputInterface::class)
         );
     }),
     Installer::class => \DI\factory(function (ContainerInterface $c) {
@@ -152,7 +163,7 @@ return [
     InputInterface::class => \Di\factory(function () {
         return new \Symfony\Component\Console\Input\ArgvInput($_SERVER['argv']);
     }),
-    OutputInterface::class => \Di\factory(function (ContainerInterface $c) {
+    OutputInterface::class => \DI\factory(function (ContainerInterface $c) {
         $input     = $c->get(InputInterface::class);
         $verbosity = OutputInterface::VERBOSITY_NORMAL;
 
@@ -172,7 +183,9 @@ return [
             $verbosity = OutputInterface::VERBOSITY_VERBOSE;
         }
 
-        return new \Symfony\Component\Console\Output\ConsoleOutput($verbosity);
+        $output = new \Symfony\Component\Console\Output\ConsoleOutput($verbosity);
+        $output->getFormatter()->setStyle('phps', new OutputFormatterStyle('magenta'));
+        return $output;
     }),
     RemoteWorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {
         return new RemoteWorkshopRepository(

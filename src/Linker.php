@@ -6,6 +6,7 @@ use Composer\IO\IOInterface;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -19,9 +20,9 @@ class Linker
     private $filesystem;
 
     /**
-     * @var IOInterface
+     * @var OutputInterface
      */
-    private $io;
+    private $output;
 
     /**
      * @var string
@@ -31,16 +32,16 @@ class Linker
     /**
      * @param Filesystem $filesystem
      * @param $workshopHomeDirectory
-     * @param IOInterface $io
+     * @param OutputInterface $output
      */
     public function __construct(
         Filesystem $filesystem,
         $workshopHomeDirectory,
-        IOInterface $io
+        OutputInterface $output
     ) {
         $this->filesystem            = $filesystem;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
-        $this->io                    = $io;
+        $this->output                = $output;
     }
 
     /**
@@ -62,7 +63,7 @@ class Linker
         try {
             $this->filesystem->symlink($this->getWorkshopSrcPath($workshop), $localTarget);
         } catch (IOException $e) {
-            return $this->io->write([
+            return $this->output->write([
                 ' <error> Unable to create symlink for workshop </error>',
                 sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $localTarget)
             ]);
@@ -71,7 +72,7 @@ class Linker
         try {
             $this->filesystem->chmod($this->getWorkshopSrcPath($workshop), 777);
         } catch (IOException $e) {
-            return $this->io->write([
+            return $this->output->write([
                 ' <error> Unable to make workshop executable </error>',
                 ' You may have to run the following with elevated privileges:',
                 sprintf(' <info>$ chmod +x %s</info>', $localTarget)
@@ -79,7 +80,7 @@ class Linker
         }
 
         if (!$this->isBinDirInPath()) {
-            $this->io->write([
+            $this->output->writeln([
                 ' <error>The PHP School bin directory is not in your PATH variable.</error>',
                 '',
                 sprintf(
@@ -114,7 +115,7 @@ class Linker
         }
 
         if (!$this->filesystem->isLink($localTarget)) {
-            return $this->io->write([
+            return $this->output->write([
                 sprintf(' <error> Unknown file exists at path "%s" </error>', $localTarget),
                 ' <info>Not removing</info>'
             ]);
@@ -123,7 +124,7 @@ class Linker
         try {
             $this->filesystem->remove($localTarget);
         } catch (IOException $e) {
-            $this->io->write([
+            $this->output->write([
                 sprintf(' <error> Failed to remove file at path "%s" </error>', $localTarget),
                 ' <info>You may need to remove a blocking file manually with elevated privileges</info>'
             ]);
@@ -141,7 +142,7 @@ class Linker
         }
 
         if (!$this->filesystem->isLink($path)) {
-            $this->io->write([
+            $this->output->write([
                 sprintf(' <error> File already exists at path "%s" </error>', $path),
                 ' <info>Try removing the file, then remove the workshop and install it again</info>'
             ]);
@@ -155,7 +156,7 @@ class Linker
             $msg  = ' <info>You may need to remove a blocking file manually with elevated privileges. Then you can ';
             $msg .= 'remove and try installing the workshop again</info>';
 
-            $this->io->write([
+            $this->output->write([
                 sprintf(' <error> Failed to remove file at path "%s" </error>', $path),
                 $msg
             ]);
