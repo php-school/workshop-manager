@@ -4,20 +4,29 @@ namespace PhpSchool\WorkshopManagerTest\Repository;
 
 use Composer\Json\JsonFile;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PHPUnit_Framework_TestCase;
 
 /**
- * Class WorkshopRepositoryTest
+ * Class RemoteWorkshopRepositoryTest
+ * @package PhpSchool\WorkshopManagerTest\Repository
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class WorkshopRepositoryTest extends PHPUnit_Framework_TestCase
+class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
 {
-    public function test1()
+    public function testExceptionIsThrownIfNoConnection()
     {
-        $this->assertTrue(true);
+        $json = $this->createMock(JsonFile::class);
+        $json
+            ->expects($this->once())
+            ->method('getPath')
+            ->willReturn('http://www.not-a-valid-site.org');
+
+        $repo = new RemoteWorkshopRepository($json);
+        $this->expectException(RequiresNetworkAccessException::class);
+        $repo->getByName('workshop');
     }
 
     public function testGetByNameThrowsExceptionIfWorkshopNotExist()
@@ -34,42 +43,17 @@ class WorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                 )
             );
 
-        $repo = new InstalledWorkshopRepository($json);
+        $json
+            ->expects($this->once())
+            ->method('getPath')
+            ->willReturn('http://www.google.com');
+
+        $repo = new RemoteWorkshopRepository($json);
         $this->expectException(WorkshopNotFoundException::class);
         $repo->getByName('nope');
     }
 
     public function testGetByName()
-    {
-        $json = $this->createMock(JsonFile::class);
-        $json
-            ->expects($this->once())
-            ->method('read')
-            ->will($this->returnValue(
-                [
-                    'workshops' => [
-                        [
-                            'name' => 'workshop',
-                            'display_name' => 'workshop',
-                            'owner' => 'aydin',
-                            'repo' => 'repo',
-                            'description' => 'workshop'
-                        ]
-                    ]
-                ]
-            ));
-
-        $repo = new InstalledWorkshopRepository($json);
-        $workshop = $repo->getByName('workshop');
-        $this->assertInstanceOf(Workshop::class, $workshop);
-        $this->assertEquals('workshop', $workshop->getName());
-        $this->assertEquals('workshop', $workshop->getDisplayName());
-        $this->assertEquals('aydin', $workshop->getOwner());
-        $this->assertEquals('repo', $workshop->getRepo());
-        $this->assertEquals('workshop', $workshop->getDescription());
-    }
-
-    public function testHasWorkshop()
     {
         $json = $this->createMock(JsonFile::class);
         $json
@@ -84,31 +68,26 @@ class WorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                                 'display_name' => 'workshop',
                                 'owner' => 'aydin',
                                 'repo' => 'repo',
-                                'description' => 'workshop'
+                                'description' => 'workshop',
                             ]
                         ]
                     ]
                 )
             );
 
-        $repo = new InstalledWorkshopRepository($json);
-        $this->assertTrue($repo->hasWorkshop('workshop'));
-
-
-        $json = $this->createMock(JsonFile::class);
         $json
             ->expects($this->once())
-            ->method('read')
-            ->will(
-                $this->returnValue(
-                    [
-                        'workshops' => []
-                    ]
-                )
-            );
+            ->method('getPath')
+            ->willReturn('http://www.google.com');
 
-        $repo = new InstalledWorkshopRepository($json);
-        $this->assertFalse($repo->hasWorkshop('workshop'));
+        $repo = new RemoteWorkshopRepository($json);
+        $workshop = $repo->getByName('workshop');
+        $this->assertInstanceOf(Workshop::class, $workshop);
+        $this->assertEquals('workshop', $workshop->getName());
+        $this->assertEquals('workshop', $workshop->getDisplayName());
+        $this->assertEquals('aydin', $workshop->getOwner());
+        $this->assertEquals('repo', $workshop->getRepo());
+        $this->assertEquals('workshop', $workshop->getDescription());
     }
 
     public function testFind()
@@ -126,14 +105,19 @@ class WorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                                 'display_name' => 'learn-you-php',
                                 'owner' => 'aydin',
                                 'repo' => 'repo',
-                                'description' => 'workshop'
+                                'description' => 'workshop',
                             ]
                         ]
                     ]
                 )
             );
 
-        $repo = new InstalledWorkshopRepository($json);
+        $json
+            ->expects($this->once())
+            ->method('getPath')
+            ->willReturn('http://www.google.com');
+
+        $repo = new RemoteWorkshopRepository($json);
 
         $this->assertCount(1, $repo->find('workshop'));
         $this->assertCount(1, $repo->find('worksh'));
@@ -173,7 +157,12 @@ class WorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                 )
             );
 
-        $repo = new InstalledWorkshopRepository($json);
+        $json
+            ->expects($this->once())
+            ->method('getPath')
+            ->willReturn('http://www.google.com');
+
+        $repo = new RemoteWorkshopRepository($json);
 
         $this->assertCount(2, $repo->find('learn'));
         $this->assertCount(2, $repo->find('php'));

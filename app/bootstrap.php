@@ -23,6 +23,7 @@ use PhpSchool\WorkshopManager\ManagerState;
 use Symfony\Component\Console\Output\OutputInterface;
 
 ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
 $container = (new \DI\ContainerBuilder())
     ->addDefinitions(__DIR__ . '/config.php')

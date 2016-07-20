@@ -3,16 +3,7 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
-use PhpSchool\WorkshopManager\Linker;
-use PhpSchool\WorkshopManager\ManagerState;
-use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
-use PhpSchool\WorkshopManager\Uninstaller;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
+use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -26,36 +17,19 @@ class UninstallWorkshop
      * @var Uninstaller
      */
     private $uninstaller;
-    
-    /**
-     * @var InstalledWorkshopRepository
-     */
-    private $workshopRepository;
-
-    /**
-     * @var Linker
-     */
-    private $linker;
 
     /**
      * @param Uninstaller $uninstaller
-     * @param InstalledWorkshopRepository $installedRepository
-     * @param Linker $linker
      */
-    public function __construct(
-        Uninstaller $uninstaller,
-        InstalledWorkshopRepository $installedRepository,
-        Linker $linker
-    ) {
-        $this->uninstaller        = $uninstaller;
-        $this->workshopRepository = $installedRepository;
-        $this->linker             = $linker;
+    public function __construct(Uninstaller $uninstaller)
+    {
+        $this->uninstaller = $uninstaller;
     }
 
     /**
      * @param OutputInterface $output
      * @param string $workshopName
-     * @param bool force
+     * @param bool $force
      *
      * @return void
      * @throws \RuntimeException
@@ -65,42 +39,30 @@ class UninstallWorkshop
         $output->writeln('');
 
         try {
-            $workshop = $this->workshopRepository->getByName($workshopName);
+            $this->uninstaller->uninstallWorkshop($workshopName);
         } catch (WorkshopNotFoundException $e) {
             $output->writeln(
-                [
-                    sprintf(
-                        ' <fg=magenta> It doesn\'t look like "%s" is installed, did you spell it correctly? </>',
-                        $workshopName
-                    ),
-                    ''
-                ]
-            );
-            return;
-        }
-
-        if (!$this->linker->unlink($workshop, $force)) {
-            return;
-        }
-
-        try {
-            $this->uninstaller->uninstallWorkshop($workshop);
-        } catch (IOException $e) {
-            $output->writeln([
-                '',
                 sprintf(
-                    ' <error> Failed to uninstall workshop "%s". Error: "%s" </error>',
-                    $workshop->getName(),
+                    " <fg=magenta> It doesn't look like \"%s\" is installed, did you spell it correctly?</>\n",
+                    $workshopName
+                )
+            );
+        } catch (IOException $e) {
+            $output->writeln(
+                sprintf(
+                    " <error> Failed to uninstall workshop \"%s\". Error: \"%s\" </error>\n",
+                    $workshopName,
                     $e->getMessage()
-                ),
-                ''
-            ]);
+                )
+            );
+        }
+
+        if (isset($e) && $output->isVerbose()) {
+            throw $e;
+        } elseif (isset($e)) {
             return;
         }
 
-        $this->workshopRepository->removeWorkshop($workshop);
-        $this->workshopRepository->save();
-
-        $output->writeln(sprintf(" <info>Successfully uninstalled \"%s\"</info>\n", $workshop->getName()));
+        $output->writeln(sprintf(" <info>Successfully uninstalled \"%s\"</info>\n", $workshopName));
     }
 }

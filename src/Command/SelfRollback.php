@@ -11,15 +11,23 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class SelfRollback
 {
-    private static $pharFile = 'https://php-school.github.io/workshop-manager/workshop-manager.phar';
-    private static $versionFile = 'https://php-school.github.io/workshop-manager/workshop-manager.phar.version';
+    /**
+     * @var Updater
+     */
+    private $updater;
+
+    /**
+     * @param Updater $updater
+     */
+    public function __construct(Updater $updater)
+    {
+        $this->updater = $updater;
+    }
 
     public function __invoke(OutputInterface $output)
     {
-
-        $updater = new Updater(null, false);
         try {
-            $result = $updater->rollback();
+            $result = $this->updater->rollback();
             if (!$result) {
                 return $output->writeln([
                     '',

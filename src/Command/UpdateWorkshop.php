@@ -5,52 +5,58 @@ namespace PhpSchool\WorkshopManager\Command;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
-use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
+use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
-use PhpSchool\WorkshopManager\Installer\Installer;
+use PhpSchool\WorkshopManager\Installer\Updater;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class InstallWorkshop
- * @author Michael Woodward <mikeymike.mw@gmail.com>
+ * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class InstallWorkshop
+class UpdateWorkshop
 {
     /**
-     * @var Installer
+     * @var Updater
      */
-    private $installer;
+    private $updater;
 
     /**
-     * @param Installer $installer
+     * @param Updater $updater
      */
-    public function __construct(Installer $installer)
+    public function __construct(Updater $updater)
     {
-        $this->installer = $installer;
+        $this->updater = $updater;
     }
 
     /**
      * @param OutputInterface $output
      * @param string $workshopName
      * @param bool $force
-     *
-     * @return void
      */
     public function __invoke(OutputInterface $output, $workshopName, $force)
     {
         $output->writeln('');
 
         try {
-            $this->installer->installWorkshop($workshopName, $force);
-        } catch (WorkshopAlreadyInstalledException $e) {
-            return $output->writeln(
-                sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
-            );
+            $version = $this->updater->updateWorkshop($workshopName, $force);
         } catch (WorkshopNotFoundException $e) {
             return $output->writeln(
                 sprintf(
-                    " <fg=magenta> No workshops found matching \"%s\", did you spell it correctly? </>\n",
+                    " <fg=magenta> It doesn't look like \"%s\" is installed, did you spell it correctly?</>\n",
                     $workshopName
+                )
+            );
+        } catch (NoUpdateAvailableException $e) {
+            return $output->writeln(
+                sprintf(" <fg=magenta> There are no updates available for workshop \"%s\".</>\n", $workshopName)
+            );
+        } catch (IOException $e) {
+            $output->writeln(
+                sprintf(
+                    " <error> Failed to uninstall workshop \"%s\". Error: \"%s\" </error>\n",
+                    $workshopName,
+                    $e->getMessage()
                 )
             );
         } catch (DownloadFailureException $e) {
@@ -84,6 +90,9 @@ class InstallWorkshop
             return;
         }
 
-        $output->writeln(sprintf(" <info>Successfully installed \"%s\"</info>\n", $workshopName));
+        /** @noinspection PhpUndefinedVariableInspection */
+        $output->writeln(
+            sprintf(" <info>Successfully updated %s to version %s</info>\n", $workshopName, $version)
+        );
     }
 }

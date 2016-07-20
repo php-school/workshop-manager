@@ -3,16 +3,16 @@
 namespace PhpSchool\WorkshopManager;
 
 use Composer\IO\IOInterface;
-use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
-use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
+use RuntimeException;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
- * Class Linker
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
-final class Linker
+class Linker
 {
     /**
      * @var Filesystem
@@ -20,13 +20,9 @@ final class Linker
     private $filesystem;
 
     /**
-     * @var IOInterface
+     * @var OutputInterface
      */
-    private $io;
-    /**
-     * @var WorkshopRepository
-     */
-    private $installedWorkshops;
+    private $output;
 
     /**
      * @var string
@@ -34,172 +30,146 @@ final class Linker
     private $workshopHomeDirectory;
 
     /**
-     * @param WorkshopRepository $installedWorkshops
      * @param Filesystem $filesystem
      * @param $workshopHomeDirectory
-     * @param IOInterface $io
+     * @param OutputInterface $output
      */
     public function __construct(
-        WorkshopRepository $installedWorkshops,
         Filesystem $filesystem,
         $workshopHomeDirectory,
-        IOInterface $io
+        OutputInterface $output
     ) {
         $this->filesystem            = $filesystem;
-        $this->io                    = $io;
-        $this->installedWorkshops    = $installedWorkshops;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
+        $this->output                = $output;
     }
 
     /**
-     * @param Workshop $workshop
-     * @param bool $force
+     * @param InstalledWorkshop $workshop
      *
      * @return bool
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function symlink(Workshop $workshop, $force = false)
+    public function link(InstalledWorkshop $workshop)
     {
-        if ($this->installedWorkshops->hasWorkshop($workshop->getName())) {
-            throw new WorkshopNotInstalledException;
-        }
-
         $localTarget = $this->getLocalTargetPath($workshop);
 
-        $this->removeWorkshopBin($localTarget, $force);
-
-        $this->useSytemPaths()
-            ? $this->link($workshop, $localTarget) && $this->symlinkToSystem($workshop, $force)
-            : $this->link($workshop, $localTarget);
-    }
-
-    /**
-     * @param Workshop $workshop
-     * @param string $localTarget
-     * @param bool $force
-     */
-    private function symlinkToSystem(Workshop $workshop, $localTarget, $force)
-    {
-        $systemTarget = $this->getSystemInstallPath($workshop->getName());
-
-        if (!$this->filesystem->isWriteable(dirname($systemTarget))) {
-            return $this->io->write([
-                sprintf(
-                    ' <error> The system directory: "%s" is not writeable. </error>',
-                    dirname($systemTarget)
-                ),
-                sprintf(
-                    ' <info>Workshop "%s" is installed but not linked to an executable path.</info>',
-                    $workshop->getName()
-                ),
-                '',
-                sprintf(' You have two options now:'),
-                sprintf(
-                    '  1. Add the PHP School local bin dir: <info>%s</info> to your PATH variable',
-                    dirname($localTarget)
-                ),
-                sprintf(
-                    '      e.g. Run <info>$ echo \'export PATH="$PATH:%s"\' >> ~/.bashrc && source ~/.bashrc</info>',
-                    dirname($localTarget)
-                ),
-                '      Replacing ~/.bashrc with your chosen bash config file e.g. ~/.zshrc or ~/.profile etc',
-                sprintf(
-                    '  2. Run <info>%s</info> directly with <info>$ php %s</info>',
-                    $workshop->getName(),
-                    $localTarget
-                )
-            ]);
-        }
-
-        $this->removeWorkshopBin($systemTarget, $force);
-        $this->link($workshop, $systemTarget);
-    }
-
-    /**
-     * @param Workshop $workshop
-     * @param string $target
-     *
-     * @throws \RuntimeException
-     */
-    private function link(Workshop $workshop, $target)
-    {
         try {
-            $this->filesystem->symlink($this->getWorkshopSrcPath($workshop), $target);
-        } catch (IOException $e) {
-            $this->io->write([
-                    ' <error> Unexpected error occurred </error>',
-                    sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $target)
-            ]);
+            $this->removeWorkshopBin($localTarget);
+        } catch (RuntimeException $e) {
             return;
         }
 
         try {
-            $this->filesystem->chmod($target, 0755);
+            $this->filesystem->symlink($this->getWorkshopSrcPath($workshop), $localTarget);
         } catch (IOException $e) {
-            //if we couldn't chmod - remove it
-            $this->filesystem->remove($target);
+            return $this->output->write([
+                ' <error> Unable to create symlink for workshop </error>',
+                sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $localTarget)
+            ]);
+        }
+
+        try {
+            $this->filesystem->chmod($this->getWorkshopSrcPath($workshop), 777);
+        } catch (IOException $e) {
+            return $this->output->write([
+                ' <error> Unable to make workshop executable </error>',
+                ' You may have to run the following with elevated privileges:',
+                sprintf(' <info>$ chmod +x %s</info>', $localTarget)
+            ]);
+        }
+
+        if (!$this->isBinDirInPath()) {
+            $this->output->writeln([
+                ' <error>The PHP School bin directory is not in your PATH variable.</error>',
+                '',
+                sprintf(
+                    ' Add "%s/bin" to your PATH variable before running the workshop',
+                    $this->workshopHomeDirectory
+                ),
+                sprintf(
+                    ' e.g. Run <info>$ echo \'export PATH="$PATH:%s/bin"\' >> ~/.bashrc && source ~/.bashrc</info>',
+                    $this->workshopHomeDirectory
+                ),
+                ' Replacing ~/.bashrc with your chosen bash config file e.g. ~/.zshrc or ~/.profile etc',
+                sprintf(
+                    ' You can validate your PATH variable is configured correctly by running <info>%s validate</info>',
+                    $_SERVER['argv'][0]
+                )
+            ]);
         }
     }
 
     /**
-     * @param Workshop $workshop
-     * @param bool $force
+     * @param InstalledWorkshop $workshop
      *
      * @return bool
      * @throws WorkshopNotInstalledException
      */
-    public function unlink(Workshop $workshop, $force = false)
+    public function unlink(InstalledWorkshop $workshop)
     {
-        if (!$this->installedWorkshops->hasWorkshop($workshop->getName())) {
-            throw new WorkshopNotInstalledException;
+        $localTarget = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
+
+        if (!$this->filesystem->exists($localTarget)) {
+            return;
         }
 
-        $systemTarget = $this->getSystemInstallPath($workshop->getName());
-        $localTarget  = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
+        if (!$this->filesystem->isLink($localTarget)) {
+            return $this->output->write([
+                sprintf(' <error> Unknown file exists at path "%s" </error>', $localTarget),
+                ' <info>Not removing</info>'
+            ]);
+        }
 
-        return $this->removeWorkshopBin($systemTarget, $force) && $this->removeWorkshopBin($localTarget, $force);
+        try {
+            $this->filesystem->remove($localTarget);
+        } catch (IOException $e) {
+            $this->output->write([
+                sprintf(' <error> Failed to remove file at path "%s" </error>', $localTarget),
+                ' <info>You may need to remove a blocking file manually with elevated privileges</info>'
+            ]);
+        }
     }
 
     /**
      * @param string $path
-     * @param bool $force
      *
-     * @return bool
      */
-    private function removeWorkshopBin($path, $force)
+    private function removeWorkshopBin($path)
     {
         if (!$this->filesystem->exists($path)) {
-            return true;
+            return;
         }
 
-        if (!$force && !$this->filesystem->isLink($path)) {
-            $this->io->write([
+        if (!$this->filesystem->isLink($path)) {
+            $this->output->write([
                 sprintf(' <error> File already exists at path "%s" </error>', $path),
-                ' <info>Try again using --force or manually remove the file</info>'
+                ' <info>Try removing the file, then remove the workshop and install it again</info>'
             ]);
 
-            return false;
+            throw new \RuntimeException;
         }
 
         try {
             $this->filesystem->remove($path);
         } catch (IOException $e) {
-            $this->io->write([
-                    sprintf(' <error> Failed to remove file at path "%s" </error>', $path),
-                    ' <info>You may need to remove a blocking file manually with elevated privileges</info>'
+            $msg  = ' <info>You may need to remove a blocking file manually with elevated privileges. Then you can ';
+            $msg .= 'remove and try installing the workshop again</info>';
+
+            $this->output->write([
+                sprintf(' <error> Failed to remove file at path "%s" </error>', $path),
+                $msg
             ]);
 
-            return false;
+            throw new \RuntimeException;
         }
-
-        return true;
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @return string
      */
-    private function getWorkshopSrcPath(Workshop $workshop)
+    private function getWorkshopSrcPath(InstalledWorkshop $workshop)
     {
         return sprintf(
             '%s/workshops/%s/bin/%s',
@@ -210,10 +180,10 @@ final class Linker
     }
 
     /**
-     * @param Workshop $workshop
+     * @param InstalledWorkshop $workshop
      * @return string
      */
-    private function getLocalTargetPath(Workshop $workshop)
+    private function getLocalTargetPath(InstalledWorkshop $workshop)
     {
         // Ensure bin dir exists
         $path = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
@@ -223,21 +193,12 @@ final class Linker
     }
 
     /**
-     * @param string $binary
-     * @return string
-     */
-    private function getSystemInstallPath($binary)
-    {
-        return sprintf('/usr/local/bin/%s', $binary);
-    }
-
-    /**
-     * Use system paths if PHP School dir is not in PATH variable
+     * Check that the PHP School bin dir is in PATH variable
      *
      * @return bool
      */
-    private function useSytemPaths()
+    private function isBinDirInPath()
     {
-        return strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) === false;
+        return strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false;
     }
 }
