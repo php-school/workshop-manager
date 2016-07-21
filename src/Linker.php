@@ -70,7 +70,8 @@ class Linker
         }
 
         try {
-            $this->filesystem->chmod($this->getWorkshopSrcPath($workshop), 777);
+            echo realpath($this->getWorkshopSrcPath($workshop));
+            $this->filesystem->chmod(realpath($this->getWorkshopSrcPath($workshop)), 0777);
         } catch (IOException $e) {
             return $this->output->write([
                 ' <error> Unable to make workshop executable </error>',
