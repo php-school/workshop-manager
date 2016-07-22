@@ -48,6 +48,10 @@
             "phpunit",
             "phpcs --standard=PSR2 src"
         ],
+        "test-travis": [
+            "phpunit --coverage-clover ./build/logs/clover.xml",
+            "phpcs --standard=PSR2 src"
+        ],
         "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",
         "post-update-cmd": "Tooly\\ScriptHandler::installPharTools"
     },

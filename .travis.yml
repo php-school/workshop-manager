@@ -24,7 +24,7 @@ install:
 - composer info -i
 
 script:
-- composer test
+- composer test-travis
 
 after_success:
 - if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
