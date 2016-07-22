@@ -8,11 +8,10 @@
             "email": "mikeymike.mw@gmail.com"
         }
     ],
-    "minimum-stability": "beta",
     "require": {
         "php-di/php-di": "^5.2",
         "knplabs/github-api": "^1.5",
-        "composer/composer": "^1.0@beta",
+        "composer/composer": "^1.1",
         "mnapoli/silly-php-di": "^1.0",
         "tightenco/collect": "^5.2",
         "symfony/filesystem": "^3.1",
