@@ -28,3 +28,6 @@ script:
 
 after_success:
 - if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
+- bash <(curl -s https://codecov.io/bash)
+- wget https://scrutinizer-ci.com/ocular.phar
+- php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml

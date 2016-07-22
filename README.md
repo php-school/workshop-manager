@@ -1,7 +1,7 @@
 <h1 align="center">PHP School Workshop Manager</h1>
 
 <p align="center">
-A tool to manage your PHP School workshops. Search, install, update, remove workshops with ease!
+A tool to manage your PHP School workshops. Search, install, update & remove workshops with ease!
 </p>
 
 <p align="center">
