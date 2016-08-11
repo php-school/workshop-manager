@@ -193,7 +193,7 @@ return [
     RemoteWorkshopRepository::class => \DI\factory(function (ContainerInterface $c) {
         return new RemoteWorkshopRepository(
             new JsonFile(
-                'https://raw.githubusercontent.com/php-school/workshop-manager/master/app/workshops.json',
+                'https://www.phpschool.io/workshops.json',
                 new RemoteFilesystem(new NullIo)
             )
         );
