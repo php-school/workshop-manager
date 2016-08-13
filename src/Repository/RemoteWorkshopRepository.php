@@ -148,12 +148,13 @@ class RemoteWorkshopRepository
             throw new RequiresNetworkAccessException;
         }
 
+        $requiredKeys = collect(['name', 'display_name', 'owner', 'repo', 'description']);
+
         collect($this->remoteJsonFile->read()['workshops'])
             ->filter(
-                function ($workshopData) {
-                    $missingKeyCount = collect($workshopData)
-                        ->keys()
-                        ->diffKeys(['name', 'display_name', 'owner', 'repo', 'description'])
+                function ($workshopData) use ($requiredKeys) {
+                    $missingKeyCount = $requiredKeys
+                        ->diff(array_keys($workshopData))
                         ->count();
 
                     //true if no missing keys
