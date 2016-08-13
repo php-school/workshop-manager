@@ -40,17 +40,20 @@
         "bin/workshop-manager"
     ],
     "scripts": {
+        "cs": [
+            "phpcs --standard=PSR2 src"
+        ],
         "phar": [
             "@composer install --no-dev",
             "box build -vv"
         ],
         "test": [
             "phpunit",
-            "phpcs --standard=PSR2 src"
+            "@cs"
         ],
         "test-travis": [
             "phpunit --coverage-clover ./build/logs/clover.xml",
-            "phpcs --standard=PSR2 src"
+            "@cs"
         ],
         "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",
         "post-update-cmd": "Tooly\\ScriptHandler::installPharTools"
