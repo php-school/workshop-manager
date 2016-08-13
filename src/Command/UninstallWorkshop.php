@@ -29,12 +29,11 @@ class UninstallWorkshop
     /**
      * @param OutputInterface $output
      * @param string $workshopName
-     * @param bool $force
      *
      * @return void
      * @throws \RuntimeException
      */
-    public function __invoke(OutputInterface $output, $workshopName, $force)
+    public function __invoke(OutputInterface $output, $workshopName)
     {
         $output->writeln('');
 

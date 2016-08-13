@@ -99,7 +99,6 @@ class Installer
 
     /**
      * @param string $workshop
-     * @param bool $force
      * @return string $version The version number of the workshop that was downloaded
      *
      * @throws WorkshopAlreadyInstalledException
@@ -107,7 +106,7 @@ class Installer
      * @throws DownloadFailureException
      * @throws FailedToMoveWorkshopException
      */
-    public function installWorkshop($workshop, $force = false)
+    public function installWorkshop($workshop)
     {
         if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
             throw new WorkshopAlreadyInstalledException;
@@ -171,7 +170,7 @@ class Installer
         $this->installedWorkshopRepository->add($installedWorkshop);
         $this->installedWorkshopRepository->save();
 
-        $this->linker->link($installedWorkshop, $force);
+        $this->linker->link($installedWorkshop);
     }
 
     /**
