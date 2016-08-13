@@ -51,10 +51,9 @@ class Updater
 
     /**
      * @param string $workshopName
-     * @param bool $force
      * @return string The updated version.
      */
-    public function updateWorkshop($workshopName, $force = false)
+    public function updateWorkshop($workshopName)
     {
         $workshop = $this->installedWorkshopRepository->getByName($workshopName);
 
@@ -64,8 +63,8 @@ class Updater
             throw new NoUpdateAvailableException;
         }
 
-        $this->uninstaller->uninstallWorkshop($workshopName, $force);
-        $this->installer->installWorkshop($workshopName, $force);
+        $this->uninstaller->uninstallWorkshop($workshopName);
+        $this->installer->installWorkshop($workshopName);
 
         return $latestRelease->getTag();
     }

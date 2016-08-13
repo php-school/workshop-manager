@@ -44,7 +44,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new WorkshopAlreadyInstalledException);
 
         $this->output
@@ -55,7 +55,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <info>\"learnyouphp\" is already installed, you're ready to learn!</info>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenWorkshopDoesNotExistInRegistry()
@@ -63,7 +63,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new WorkshopNotFoundException);
 
         $this->output
@@ -74,7 +74,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <fg=magenta> No workshops found matching \"learnyouphp\", did you spell it correctly? </>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenDownloadFails()
@@ -82,7 +82,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new DownloadFailureException('Some error'));
 
         $this->output
@@ -93,7 +93,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> There was a problem downloading the workshop. Error: \"Some error\"</error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenFailedToMove()
@@ -101,7 +101,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new FailedToMoveWorkshopException('/root/src', '/root/workshops/learnyouphp'));
 
         $this->output
@@ -120,7 +120,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenComposerInstallFails()
@@ -128,7 +128,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new ComposerFailureException('Some error'));
 
         $msg  = " <error> There was a problem installing dependencies for \"learnyouphp\". Try running in verbose mode";
@@ -141,7 +141,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [$msg]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testAnyOtherFailure()
@@ -149,7 +149,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new \Exception('Some error'));
 
         $this->output
@@ -160,7 +160,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> An unknown error occurred: \"Some error\" </error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testExceptionIsThrownIfInVerboseMode()
@@ -168,7 +168,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new \Exception('Some error'));
 
         $this->output
@@ -186,7 +186,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
 
         $this->expectException(\Exception::class);
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testSuccess()
@@ -194,7 +194,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', false);
+            ->with('learnyouphp');
 
         $this->output
             ->expects($this->exactly(2))
@@ -204,6 +204,6 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <info>Successfully installed \"learnyouphp\"</info>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 }

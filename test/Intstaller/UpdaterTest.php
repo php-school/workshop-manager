@@ -94,12 +94,12 @@ class UpdaterTest extends PHPUnit_Framework_TestCase
         $this->uninstaller
             ->expects($this->once())
             ->method('uninstallWorkshop')
-            ->with('learn-you-php', false);
+            ->with('learn-you-php');
 
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learn-you-php', false);
+            ->with('learn-you-php');
 
         $this->updater->updateWorkshop('learn-you-php');
     }

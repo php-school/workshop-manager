@@ -55,12 +55,11 @@ class Uninstaller
 
     /**
      * @param string $workshop
-     * @param bool $force
      *
      * @throws WorkshopNotInstalledException
      * @throws \RuntimeException When filesystem delete fails
      */
-    public function uninstallWorkshop($workshop, $force = false)
+    public function uninstallWorkshop($workshop)
     {
         if (!$this->installedWorkshops->hasWorkshop($workshop)) {
             throw new WorkshopNotInstalledException;
@@ -77,6 +76,6 @@ class Uninstaller
         $this->installedWorkshops->remove($workshop);
         $this->installedWorkshops->save();
 
-        $this->linker->unlink($workshop, $force);
+        $this->linker->unlink($workshop);
     }
 }

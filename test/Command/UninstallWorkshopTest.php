@@ -43,7 +43,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->uninstaller
             ->expects($this->once())
             ->method('uninstallWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new WorkshopNotFoundException);
 
         $this->output
@@ -54,7 +54,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <fg=magenta> It doesn't look like \"learnyouphp\" is installed, did you spell it correctly?</>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenFilesCannotBeCleanedUp()
@@ -62,7 +62,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->uninstaller
             ->expects($this->once())
             ->method('uninstallWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new IOException('Some error'));
 
         $this->output
@@ -73,7 +73,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> Failed to uninstall workshop \"learnyouphp\". Error: \"Some error\" </error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testExceptionIsThrownIfInVerboseMode()
@@ -81,7 +81,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->uninstaller
             ->expects($this->once())
             ->method('uninstallWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new IOException('Some error'));
 
         $this->output
@@ -99,7 +99,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
 
         $this->expectException(IOException::class);
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testSuccess()
@@ -107,7 +107,7 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
         $this->uninstaller
             ->expects($this->once())
             ->method('uninstallWorkshop')
-            ->with('learnyouphp', false);
+            ->with('learnyouphp');
 
         $this->output
             ->expects($this->exactly(2))
@@ -117,6 +117,6 @@ class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <info>Successfully uninstalled \"learnyouphp\"</info>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 }

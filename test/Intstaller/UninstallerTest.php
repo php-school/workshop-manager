@@ -95,12 +95,11 @@ class UninstallerTest extends PHPUnit_Framework_TestCase
         $this->linker
             ->expects($this->once())
             ->method('unlink')
-            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
 
         $this->uninstaller->uninstallWorkshop('learn-you-php');
 
         $this->assertTrue($this->installedWorkshopRepo->isEmpty());
         $this->assertFileNotExists($dir);
     }
-
 }
