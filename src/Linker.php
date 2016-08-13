@@ -70,7 +70,6 @@ class Linker
         }
 
         try {
-            echo realpath($this->getWorkshopSrcPath($workshop));
             $this->filesystem->chmod(realpath($this->getWorkshopSrcPath($workshop)), 0777);
         } catch (IOException $e) {
             return $this->output->write([

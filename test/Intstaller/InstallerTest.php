@@ -250,7 +250,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->linker
             ->expects($this->once())
             ->method('link')
-            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
 
         $this->installer->installWorkshop($workshop->getName());
 
@@ -271,7 +271,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->linker
             ->expects($this->once())
             ->method('link')
-            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
 
         $this->installer->installWorkshop($workshop->getName());
 
@@ -293,7 +293,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->linker
             ->expects($this->once())
             ->method('link')
-            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
 
         $this->installer->installWorkshop($workshop->getName());
 
@@ -316,7 +316,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->linker
             ->expects($this->once())
             ->method('link')
-            ->with($this->isInstanceOf(InstalledWorkshop::class), false);
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
 
         $this->installer->installWorkshop($workshop->getName());
 

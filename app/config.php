@@ -36,12 +36,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
         $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.0.0', $c);
-        $application->command('install workshopName [-f|--force]', InstallWorkshop::class)
+        $application->command('install workshopName', InstallWorkshop::class)
             ->setDescription('Install a PHP School workshop.');
-        $application->command('uninstall workshopName [-f|--force]', UninstallWorkshop::class)
+        $application->command('uninstall workshopName', UninstallWorkshop::class)
             ->setDescription('Uninstall a PHP School workshop.')
             ->setAliases(['remove']);
-        $application->command('update workshopName [-f|--force]', UpdateWorkshop::class)
+        $application->command('update workshopName', UpdateWorkshop::class)
             ->setDescription('update a PHP School workshop.');
         $application->command('search workshopName', SearchWorkshops::class)
             ->setDescription('Search for a PHP School workshop.')

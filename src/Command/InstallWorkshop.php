@@ -32,16 +32,15 @@ class InstallWorkshop
     /**
      * @param OutputInterface $output
      * @param string $workshopName
-     * @param bool $force
      *
      * @return void
      */
-    public function __invoke(OutputInterface $output, $workshopName, $force)
+    public function __invoke(OutputInterface $output, $workshopName)
     {
         $output->writeln('');
 
         try {
-            $this->installer->installWorkshop($workshopName, $force);
+            $this->installer->installWorkshop($workshopName);
         } catch (WorkshopAlreadyInstalledException $e) {
             return $output->writeln(
                 sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)

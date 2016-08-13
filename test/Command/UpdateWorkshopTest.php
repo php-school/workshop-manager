@@ -47,7 +47,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new WorkshopNotFoundException);
 
         $this->output
@@ -58,7 +58,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <fg=magenta> It doesn't look like \"learnyouphp\" is installed, did you spell it correctly?</>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenNoUpdateAvailable()
@@ -66,7 +66,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new NoUpdateAvailableException());
 
         $this->output
@@ -77,7 +77,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <fg=magenta> There are no updates available for workshop \"learnyouphp\".</>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenFilesCannotBeCleanedUp()
@@ -85,7 +85,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new IOException('Some error'));
 
         $this->output
@@ -96,7 +96,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> Failed to uninstall workshop \"learnyouphp\". Error: \"Some error\" </error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenDownloadFails()
@@ -104,7 +104,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new DownloadFailureException('Some error'));
 
         $this->output
@@ -115,7 +115,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> There was a problem downloading the workshop. Error: \"Some error\"</error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenFailedToMove()
@@ -123,7 +123,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new FailedToMoveWorkshopException('/root/src', '/root/workshops/learnyouphp'));
 
         $this->output
@@ -142,7 +142,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testWhenComposerInstallFails()
@@ -150,7 +150,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new ComposerFailureException('Some error'));
 
         $this->output
@@ -161,7 +161,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> There was a problem installing dependencies for \"learnyouphp\" </error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testAnyOtherFailure()
@@ -169,7 +169,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new \Exception('Some error'));
 
         $this->output
@@ -180,7 +180,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <error> An unknown error occurred: \"Some error\" </error>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testExceptionIsThrownIfInVerboseMode()
@@ -188,7 +188,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willThrowException(new \Exception('Some error'));
 
         $this->output
@@ -206,7 +206,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
 
         $this->expectException(\Exception::class);
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 
     public function testSuccess()
@@ -214,7 +214,7 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
         $this->updater
             ->expects($this->once())
             ->method('updateWorkshop')
-            ->with('learnyouphp', false)
+            ->with('learnyouphp')
             ->willReturn('2.0.0');
 
         $this->output
@@ -225,6 +225,6 @@ class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
                 [" <info>Successfully updated learnyouphp to version 2.0.0</info>\n"]
             );
 
-        $this->command->__invoke($this->output, 'learnyouphp', false);
+        $this->command->__invoke($this->output, 'learnyouphp');
     }
 }

@@ -32,14 +32,13 @@ class UpdateWorkshop
     /**
      * @param OutputInterface $output
      * @param string $workshopName
-     * @param bool $force
      */
-    public function __invoke(OutputInterface $output, $workshopName, $force)
+    public function __invoke(OutputInterface $output, $workshopName)
     {
         $output->writeln('');
 
         try {
-            $version = $this->updater->updateWorkshop($workshopName, $force);
+            $version = $this->updater->updateWorkshop($workshopName);
         } catch (WorkshopNotFoundException $e) {
             return $output->writeln(
                 sprintf(
