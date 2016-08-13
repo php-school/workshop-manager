@@ -68,7 +68,8 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             $this->workshopHomeDir,
             $this->composerFactory,
             $this->ghClient,
-            $this->versionChecker
+            $this->versionChecker,
+            '/dev/null/%s/%s'
         );
     }
 
