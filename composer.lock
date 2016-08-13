@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f1f35476a2b8dbc56411367b885ea89a",
-    "content-hash": "f8213a9900a3e77eaf76a7e8e09725b4",
+    "hash": "88294623b027b06998b397ec3a6fa422",
+    "content-hash": "0dced8872862b77ff6961a5ea90f85da",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -517,17 +517,11 @@
         },
         {
             "name": "mnapoli/silly",
-            "version": "1.3.0",
+            "version": "dev-alias-support",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mnapoli/silly.git",
-                "reference": "6b3fbe09e1e628233ad06aa1db6a0ce2991c0ccf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mnapoli/silly/zipball/6b3fbe09e1e628233ad06aa1db6a0ce2991c0ccf",
-                "reference": "6b3fbe09e1e628233ad06aa1db6a0ce2991c0ccf",
-                "shasum": ""
+                "url": "git@github.com:AydinHassan/silly.git",
+                "reference": "f5a5a787c9f75d9ee6a21bf70a1f5820b37755be"
             },
             "require": {
                 "container-interop/container-interop": "~1.0",
@@ -545,7 +539,11 @@
                     "Silly\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Silly\\Test\\": "tests/"
+                }
+            },
             "license": [
                 "MIT"
             ],
@@ -557,25 +555,25 @@
                 "micro-framework",
                 "silly"
             ],
-            "time": "2016-02-27 10:11:44"
+            "time": "2016-08-13 18:18:16"
         },
         {
             "name": "mnapoli/silly-php-di",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mnapoli/silly-php-di.git",
-                "reference": "c63d9a2bd50a8675034f6ea49b78985bf319e30d"
+                "reference": "ffcfd38f20ddf43db09f1fda25faa895116c4d31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mnapoli/silly-php-di/zipball/c63d9a2bd50a8675034f6ea49b78985bf319e30d",
-                "reference": "c63d9a2bd50a8675034f6ea49b78985bf319e30d",
+                "url": "https://api.github.com/repos/mnapoli/silly-php-di/zipball/ffcfd38f20ddf43db09f1fda25faa895116c4d31",
+                "reference": "ffcfd38f20ddf43db09f1fda25faa895116c4d31",
                 "shasum": ""
             },
             "require": {
-                "mnapoli/php-di": "~4.4",
-                "mnapoli/silly": "~1.1"
+                "mnapoli/silly": "~1.1",
+                "php-di/php-di": "~4.4 || ^5.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "~4.5"
@@ -591,7 +589,7 @@
                 "MIT"
             ],
             "description": "Silly framework edition configured with PHP-DI",
-            "time": "2015-04-05 00:22:24"
+            "time": "2016-08-04 15:41:28"
         },
         {
             "name": "padraic/humbug_get_contents",
@@ -881,6 +879,56 @@
             "time": "2012-12-21 11:40:51"
         },
         {
+            "name": "samsonasik/package-versions",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/samsonasik/PackageVersions.git",
+                "reference": "1dab884977464613383afe0e4be571cdef2317fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/samsonasik/PackageVersions/zipball/1dab884977464613383afe0e4be571cdef2317fc",
+                "reference": "1dab884977464613383afe0e4be571cdef2317fc",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0",
+                "php": "^5.6 || ^7.0"
+            },
+            "replace": {
+                "ocramius/package-versions": ">=1.0.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0.0-ALPHA11@ALPHA",
+                "phpunit/phpunit": "^5.2.8"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "PackageVersions\\Installer",
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PackageVersions\\": "src/PackageVersions"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marco Pivetta",
+                    "email": "ocramius@gmail.com"
+                }
+            ],
+            "description": "A backport of ocramius/package-versions that supports php ^5.6. Composer plugin that provides efficient querying for installed package versions (no runtime IO)",
+            "time": "2016-07-21 12:03:58"
+        },
+        {
             "name": "seld/cli-prompt",
             "version": "1.0.2",
             "source": {
@@ -1020,16 +1068,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v3.1.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "f9e638e8149e9e41b570ff092f8007c477ef0ce5"
+                "reference": "f82f4744a58cf6846decbdbe29d3d8a1e6bf5d6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/f9e638e8149e9e41b570ff092f8007c477ef0ce5",
-                "reference": "f9e638e8149e9e41b570ff092f8007c477ef0ce5",
+                "url": "https://api.github.com/repos/symfony/console/zipball/f82f4744a58cf6846decbdbe29d3d8a1e6bf5d6a",
+                "reference": "f82f4744a58cf6846decbdbe29d3d8a1e6bf5d6a",
                 "shasum": ""
             },
             "require": {
@@ -1039,17 +1087,19 @@
             "require-dev": {
                 "psr/log": "~1.0",
                 "symfony/event-dispatcher": "~2.8|~3.0",
+                "symfony/filesystem": "~2.8|~3.0",
                 "symfony/process": "~2.8|~3.0"
             },
             "suggest": {
                 "psr/log": "For using the console logger",
                 "symfony/event-dispatcher": "",
+                "symfony/filesystem": "",
                 "symfony/process": ""
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "3.2-dev"
                 }
             },
             "autoload": {
@@ -1076,7 +1126,7 @@
             ],
             "description": "Symfony Console Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-26 08:04:17"
+            "time": "2016-08-10 07:06:11"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -1346,16 +1396,16 @@
         },
         {
             "name": "tightenco/collect",
-            "version": "v5.2.41",
+            "version": "v5.2.43",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tightenco/collect.git",
-                "reference": "cb6c548aac9c8dd49ab8a36a1e477c739e235927"
+                "reference": "6add72fba3816232c71a3338081ed8cbef41974d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/cb6c548aac9c8dd49ab8a36a1e477c739e235927",
-                "reference": "cb6c548aac9c8dd49ab8a36a1e477c739e235927",
+                "url": "https://api.github.com/repos/tightenco/collect/zipball/6add72fba3816232c71a3338081ed8cbef41974d",
+                "reference": "6add72fba3816232c71a3338081ed8cbef41974d",
                 "shasum": ""
             },
             "require": {
@@ -1389,40 +1439,55 @@
                 "collection",
                 "laravel"
             ],
-            "time": "2016-07-22 18:59:39"
+            "time": "2016-08-10 15:40:20"
         },
         {
             "name": "tm/tooly-composer-script",
-            "version": "1.0.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tommy-muehle/tooly-composer-script.git",
-                "reference": "1e29176f345d09afd328bdcb56805d94c0e3abbe"
+                "reference": "f6d8a6acecccd338c2a586b2bc1a36a5d179b4f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tommy-muehle/tooly-composer-script/zipball/1e29176f345d09afd328bdcb56805d94c0e3abbe",
-                "reference": "1e29176f345d09afd328bdcb56805d94c0e3abbe",
+                "url": "https://api.github.com/repos/tommy-muehle/tooly-composer-script/zipball/f6d8a6acecccd338c2a586b2bc1a36a5d179b4f8",
+                "reference": "f6d8a6acecccd338c2a586b2bc1a36a5d179b4f8",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.0"
+                "php": ">=5.6.0"
             },
             "require-dev": {
                 "codeclimate/php-test-reporter": "dev-master",
                 "composer/composer": "1.*",
-                "mikey179/vfsstream": "1.6.*"
+                "mikey179/vfsstream": "1.6.*",
+                "php-mock/php-mock-phpunit": "1.1.*",
+                "tm/gpg-verifier": "1.*"
+            },
+            "suggest": {
+                "tm/gpg-verifier": "Allows verification over GPG for PHAR tools."
             },
             "type": "library",
             "extra": {
                 "tools": {
                     "phpunit": {
-                        "url": "https://phar.phpunit.de/phpunit-4.8.9.phar",
-                        "only-dev": true
+                        "url": "https://phar.phpunit.de/phpunit-5.5.0.phar"
                     },
                     "phpcpd": {
-                        "url": "https://phar.phpunit.de/phpcpd-2.0.4.phar",
-                        "only-dev": true
+                        "url": "https://phar.phpunit.de/phpcpd-2.0.4.phar"
+                    },
+                    "phpcs": {
+                        "url": "https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar",
+                        "force-replace": true
+                    },
+                    "phpmd": {
+                        "url": "http://static.phpmd.org/php/latest/phpmd.phar",
+                        "force-replace": true
+                    },
+                    "security-checker": {
+                        "url": "http://get.sensiolabs.org/security-checker.phar",
+                        "force-replace": true
                     }
                 }
             },
@@ -1448,9 +1513,12 @@
                 "composer",
                 "composer-phar",
                 "composer-script",
+                "gpg-verification",
+                "phar",
+                "phar-handling",
                 "phar-management"
             ],
-            "time": "2016-07-06 12:47:04"
+            "time": "2016-08-13 11:24:31"
         }
     ],
     "packages-dev": [
@@ -2004,16 +2072,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "5.4.8",
+            "version": "5.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "3132365e1430c091f208e120b8845d39c25f20e6"
+                "reference": "c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3132365e1430c091f208e120b8845d39c25f20e6",
-                "reference": "3132365e1430c091f208e120b8845d39c25f20e6",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b",
+                "reference": "c7b3e1dcc1d183f26d5ba282881fe65c2cbb5b2b",
                 "shasum": ""
             },
             "require": {
@@ -2052,7 +2120,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.4.x-dev"
+                    "dev-master": "5.5.x-dev"
                 }
             },
             "autoload": {
@@ -2078,7 +2146,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2016-07-26 14:48:00"
+            "time": "2016-08-05 04:49:02"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2781,28 +2849,29 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.0.2",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "30eed06dd6bc88410a4ff7f77b6d22f3ce13dbde"
+                "reference": "bb2d123231c095735130cc8f6d31385a44c7b308"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/30eed06dd6bc88410a4ff7f77b6d22f3ce13dbde",
-                "reference": "30eed06dd6bc88410a4ff7f77b6d22f3ce13dbde",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/bb2d123231c095735130cc8f6d31385a44c7b308",
+                "reference": "bb2d123231c095735130cc8f6d31385a44c7b308",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": "^5.3.3|^7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.6"
+                "phpunit/phpunit": "^4.6",
+                "sebastian/version": "^1.0.1"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -2826,14 +2895,26 @@
                 "check",
                 "validate"
             ],
-            "time": "2015-08-24 13:29:44"
+            "time": "2016-08-09 15:02:57"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "1.1",
+            "alias_normalized": "1.1.0.0",
+            "version": "dev-alias-support",
+            "package": "mnapoli/silly"
+        }
+    ],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "symfony/console": 20,
+        "mnapoli/silly": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.6"
+    },
     "platform-dev": []
 }

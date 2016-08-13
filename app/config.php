@@ -36,27 +36,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
         $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.0.0', $c);
-        $application->command('install workshopName', InstallWorkshop::class)
+        $application->command('install workshopName', InstallWorkshop::class, ['add'])
             ->setDescription('Install a PHP School workshop.');
-        $application->command('uninstall workshopName', UninstallWorkshop::class)
-            ->setDescription('Uninstall a PHP School workshop.')
-            ->setAliases(['remove']);
+        $application->command('uninstall workshopName', UninstallWorkshop::class, ['remove', 'delete'])
+            ->setDescription('Uninstall a PHP School workshop.');
         $application->command('update workshopName', UpdateWorkshop::class)
             ->setDescription('update a PHP School workshop.');
-        $application->command('search workshopName', SearchWorkshops::class)
-            ->setDescription('Search for a PHP School workshop.')
-            ->setAliases(['find']);
-        $application->command('installed', ListWorkshops::class)
+        $application->command('search workshopName', SearchWorkshops::class, ['find'])
+            ->setDescription('Search for a PHP School workshop.');
+        $application->command('installed', ListWorkshops::class, ['show'])
             ->setDescription('List installed PHP School workshops.');
         $application->command('self-update', SelfUpdate::class)
             ->setDescription('Update the workshop manager to the latest version.');
         $application->command('rollback', SelfRollback::class)
             ->setDescription('Rollback the workshop manager to the previous version.');
-        $application->command('verify', VerifyInstall::class)
+        $application->command('verify', VerifyInstall::class, ['validate'])
             ->descriptions('Verify your installation is working correctly');
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
+        $application->setVersion(PackageVersions\Versions::getVersion('php-school/workshop-manager'));
 
         return $application;
     }),
