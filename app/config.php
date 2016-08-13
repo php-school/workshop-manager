@@ -55,6 +55,7 @@ return [
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
+        $application->setName('PHP School Workshop Manager');
         $application->setVersion(PackageVersions\Versions::getVersion('php-school/workshop-manager'));
 
         return $application;
