@@ -12,7 +12,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
 {
     public function testGetHelp()
     {
-        $application = new Application();
+        $application = new Application('PHP School Workshop Manager');
 
         $expected = '<fg=magenta>
    ____    __  __  ____        ____            __                    ___
@@ -23,7 +23,7 @@ class ApplicationTest extends PHPUnit_Framework_TestCase
      \ \_\   \ \_\ \_\ \_\       \ `\____\ \____\\ \_\ \_\ \____\ \____/\____\
       \/_/    \/_/\/_/\/_/        \/_____/\/____/ \/_/\/_/\/___/ \/___/\/____/</>
 
-<info>Console Tool</info>';
+PHP School Workshop Manager';
 
         $this->assertSame($expected, $application->getHelp());
     }

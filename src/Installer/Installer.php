@@ -28,6 +28,11 @@ use Symfony\Component\Filesystem\Exception\IOException;
 class Installer
 {
     /**
+     * @var string
+     */
+    private $notifyFormat = "https://www.phpschool.io/downloads/%s/%s";
+
+    /**
      * @var InstalledWorkshopRepository
      */
     private $installedWorkshopRepository;
@@ -76,6 +81,7 @@ class Installer
      * @param ComposerInstallerFactory $composerFactory
      * @param Client $gitHubClient
      * @param VersionChecker $versionChecker
+     * @param string|null $notifyUrlFormat
      */
     public function __construct(
         InstalledWorkshopRepository $installedWorkshops,
@@ -85,7 +91,8 @@ class Installer
         $workshopHomeDirectory,
         ComposerInstallerFactory $composerFactory,
         Client $gitHubClient,
-        VersionChecker $versionChecker
+        VersionChecker $versionChecker,
+        $notifyUrlFormat = null
     ) {
         $this->installedWorkshopRepository  = $installedWorkshops;
         $this->remoteWorkshopRepository     = $remoteWorkshopRepository;
@@ -95,6 +102,7 @@ class Installer
         $this->composerFactory              = $composerFactory;
         $this->gitHubClient                 = $gitHubClient;
         $this->versionChecker               = $versionChecker;
+        $this->notifyFormat                 = $notifyUrlFormat ?: $this->notifyFormat;
     }
 
     /**
@@ -171,6 +179,23 @@ class Installer
         $this->installedWorkshopRepository->save();
 
         $this->linker->link($installedWorkshop);
+
+        $this->notifyInstall($installedWorkshop);
+    }
+
+    private function notifyInstall(InstalledWorkshop $workshop)
+    {
+        $curl = curl_init();
+        curl_setopt_array(
+            $curl,
+            [
+                CURLOPT_URL => sprintf($this->notifyFormat, $workshop->getName(), $workshop->getVersion()),
+                CURLOPT_POST => 1,
+                CURLOPT_RETURNTRANSFER => 1,
+            ]
+        );
+        curl_exec($curl);
+        curl_close($curl);
     }
 
     /**
