@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "88294623b027b06998b397ec3a6fa422",
-    "content-hash": "0dced8872862b77ff6961a5ea90f85da",
+    "hash": "e2161deb567b0d2a623e0eb87ccce6e3",
+    "content-hash": "c60c81e235e99ea6f22ddddbb9398ff8",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -517,11 +517,17 @@
         },
         {
             "name": "mnapoli/silly",
-            "version": "dev-alias-support",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:AydinHassan/silly.git",
-                "reference": "f5a5a787c9f75d9ee6a21bf70a1f5820b37755be"
+                "url": "https://github.com/mnapoli/silly.git",
+                "reference": "2f53397797d992fa2862105992b198b25679d283"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mnapoli/silly/zipball/2f53397797d992fa2862105992b198b25679d283",
+                "reference": "2f53397797d992fa2862105992b198b25679d283",
+                "shasum": ""
             },
             "require": {
                 "container-interop/container-interop": "~1.0",
@@ -539,11 +545,7 @@
                     "Silly\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Silly\\Test\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -555,7 +557,7 @@
                 "micro-framework",
                 "silly"
             ],
-            "time": "2016-08-13 18:18:16"
+            "time": "2016-08-13 18:47:51"
         },
         {
             "name": "mnapoli/silly-php-di",
@@ -2898,18 +2900,10 @@
             "time": "2016-08-09 15:02:57"
         }
     ],
-    "aliases": [
-        {
-            "alias": "1.1",
-            "alias_normalized": "1.1.0.0",
-            "version": "dev-alias-support",
-            "package": "mnapoli/silly"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "symfony/console": 20,
-        "mnapoli/silly": 20
+        "symfony/console": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

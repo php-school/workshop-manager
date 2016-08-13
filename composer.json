@@ -19,19 +19,13 @@
         "composer/composer": "^1.1",
         "mnapoli/silly-php-di": "^1.0",
         "symfony/console": "^3.2@dev",
-        "mnapoli/silly": "dev-alias-support as 1.1",
+        "mnapoli/silly": "^1.4",
         "tightenco/collect": "^5.2",
         "symfony/filesystem": "^3.1",
         "tm/tooly-composer-script": "^1.0",
         "padraic/phar-updater": "^1.0",
         "samsonasik/package-versions": "^1.0"
     },
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git@github.com:AydinHassan/silly.git"
-        }
-    ],
     "require-dev": {
         "phpunit/phpunit": "~5.0",
         "squizlabs/php_codesniffer": "~2.0"
