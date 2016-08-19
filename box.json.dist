@@ -9,7 +9,8 @@
   "files": [
     "vendor/composer/ca-bundle/res/cacert.pem",
     "vendor/guzzle/guzzle/src/Guzzle/Http/Resources/cacert.pem",
-    "vendor/composer/composer/res/composer-schema.json"
+    "vendor/composer/composer/res/composer-schema.json",
+    "vendor/composer/composer/LICENSE"
   ],
   "finder": [
     {
