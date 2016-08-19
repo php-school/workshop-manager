@@ -22,11 +22,15 @@ A tool to manage your PHP School workshops. Search, install, update & remove wor
 
 ## Installation
 
-First head on over to the [download page and grab the latest package](https://php-school.github.io/workshop-manager/)
- 
-Once downloaded follow the [instructions in the docs](https://www.phpschool.io/install)
+```
+curl https://php-school.github.io/workshop-manager/workshop-manager.phar
+mv workshop-manager.phar /usr/local/bin/workshop-manager
+chmod +x /usr/local/bin/workshop-manager
+workshop-manager verify
+```
 
-Run the [verify command](#verify) to make sure your installation is ready to go!
+This snippet downloads the phar package (an executable PHP package) and moves it to a common install directory, makes it executable and then runs the workshop manager's verify command. You should see some green success messages if everything went will.
+
 
 ## Usage / Commands
 
