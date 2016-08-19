@@ -40,14 +40,14 @@ Quickly find available workshops by part of its name and get an instant indicati
  # Result
   *** Matches ***
  
- +----------------+--------------------------------------------------+-------------+------------+
- | Name           | Description                                      | Package     | Installed? |
- +----------------+--------------------------------------------------+-------------+------------+
- | Learn you PHP! | A simple introduction into PHP and the workshop  | learnyouphp |     ✘      |
- |                | format.                                          |             |            |
- | PHP7 way       | A PHP School workshop about some new features in | php7way     |     ✘      |
- |                | PHP7.                                            |             |            |
- +----------------+--------------------------------------------------+-------------+------------+
+ +----------------+--------------------------------------------------+-------------+-----------+------------+
+ | Name           | Description                                      | Code        | Type      | Installed? |
+ +----------------+--------------------------------------------------+-------------+-----------+------------+
+ | Learn you PHP! | A simple introduction into PHP and the workshop  | learnyouphp | Core      |     ✘      |
+ |                | format.                                          |             |           |            |
+ | PHP7 way       | A PHP School workshop about some new features in | php7way     + Community |     ✘      |
+ |                | PHP7.                                            |             |           |            |
+ +----------------+--------------------------------------------------+-------------+-----------+------------+
 ```
 
 ### Install
@@ -90,12 +90,12 @@ It will also let you know if you need to update any workshops that you already h
  # Result
  *** Installed Workshops ***
  
- +----------------+-------------------------------------------------+-------------+---------+------------------------+
- | Name           | Description                                     | Package     | Version | New version available? |
- +----------------+-------------------------------------------------+-------------+---------+------------------------+
- | Learn you PHP! | A simple introduction into PHP and the workshop | learnyouphp | 0.3.1   | Nope!                  |
- |                | format.                                         |             |         |                        |
- +----------------+-------------------------------------------------+-------------+---------+------------------------+
+ +----------------+-------------------------------------------------+-------------+-----------+---------+------------------------+
+ | Name           | Description                                     | Code        | Type      | Version | New version available? |
+ +----------------+-------------------------------------------------+-------------+-----------+---------+------------------------+
+ | Learn you PHP! | A simple introduction into PHP and the workshop | learnyouphp | Community | 0.3.1   | Nope!                  |
+ |                | format.                                         |             |           |         |                        |
+ +----------------+-------------------------------------------------+-------------+-----------+---------+------------------------+
 ```
 
 ### Self-update

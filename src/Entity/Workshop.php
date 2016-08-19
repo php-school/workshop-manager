@@ -11,7 +11,7 @@ class Workshop
     /**
      * @var string
      */
-    protected $name;
+    protected $code;
 
     /**
      * @var string
@@ -21,12 +21,12 @@ class Workshop
     /**
      * @var string
      */
-    protected $owner;
+    protected $gitHubOwner;
 
     /**
      * @var string
      */
-    protected $repo;
+    protected $gitHubRepoName;
 
     /**
      * @var string
@@ -34,19 +34,34 @@ class Workshop
     protected $description;
 
     /**
-     * @param string $name
-     * @param string $displayName
-     * @param string $owner
-     * @param string $repo
-     * @param string $description
+     * @var string
      */
-    public function __construct($name, $displayName, $owner, $repo, $description)
+    protected $type;
+
+    /**
+     * @param string $code
+     * @param string $displayName
+     * @param string $gitHubOwner
+     * @param string $gitHubRepoName
+     * @param string $description
+     * @param string $type
+     */
+    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type)
     {
-        $this->name        = $name;
-        $this->displayName = $displayName;
-        $this->owner       = $owner;
-        $this->repo        = $repo;
-        $this->description = $description;
+        $this->code             = $code;
+        $this->displayName      = $displayName;
+        $this->gitHubOwner      = $gitHubOwner;
+        $this->gitHubRepoName   = $gitHubRepoName;
+        $this->description      = $description;
+        $this->type             = $type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->code;
     }
 
     /**
@@ -57,28 +72,21 @@ class Workshop
         return $this->displayName;
     }
 
+
     /**
      * @return string
      */
-    public function getName()
+    public function getGitHubOwner()
     {
-        return $this->name;
+        return $this->gitHubOwner;
     }
 
     /**
      * @return string
      */
-    public function getOwner()
+    public function getGitHubRepoName()
     {
-        return $this->owner;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRepo()
-    {
-        return $this->repo;
+        return $this->gitHubRepoName;
     }
 
     /**
@@ -87,5 +95,13 @@ class Workshop
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 }

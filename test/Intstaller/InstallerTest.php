@@ -83,7 +83,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
     public function testExceptionIsThrownIfWorkshopWithSameNameAlreadyExists()
     {
         $this->installedWorkshopRepo->add(
-            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', '1.0.0')
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
         $this->expectException(WorkshopAlreadyInstalledException::class);
@@ -123,13 +123,13 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $tags
             ->expects($this->once())
             ->method('all')
-            ->with($workshop->getOwner(), $workshop->getRepo())
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willThrowException(new RuntimeException('Tag Failure'));
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessage('Cannot communicate with GitHub - check your internet connection');
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
     }
 
     public function testExceptionIsThrowIfWorkshopTempDownloadFileExistsAndCannotBeRemoved()
@@ -145,7 +145,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessageRegExp('/Failed to remove file.*/');
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
         unlink($path);
         rmdir(dirname($path));
     }
@@ -173,13 +173,13 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $contents
             ->expects($this->once())
             ->method('archive')
-            ->with($workshop->getOwner(), $workshop->getRepo(), 'zipball', '0123456789')
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
             ->willThrowException(new RuntimeException('Download failure'));
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessage('Download failure');
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
     }
 
     public function testExceptionIsThrownIfWorkshopCannotBeSaved()
@@ -195,7 +195,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessageRegExp('/^Unable to write to the.*/');
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
     }
 
     public function testExceptionIsThrownIfCannotMoveWorkshopToInstallDir()
@@ -217,7 +217,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
     }
 
     public function testExceptionIsThrownIfCannotRunComposerInstall()
@@ -232,7 +232,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->expectException(ComposerFailureException::class);
         $this->expectExceptionMessageRegExp('/^Composer could not find the config.*/');
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
     }
 
     public function testSuccessfulInstall()
@@ -253,7 +253,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->method('link')
             ->with($this->isInstanceOf(InstalledWorkshop::class));
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
 
         $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
@@ -274,7 +274,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->method('link')
             ->with($this->isInstanceOf(InstalledWorkshop::class));
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
 
         $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
@@ -296,7 +296,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->method('link')
             ->with($this->isInstanceOf(InstalledWorkshop::class));
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
 
         $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
@@ -319,7 +319,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->method('link')
             ->with($this->isInstanceOf(InstalledWorkshop::class));
 
-        $this->installer->installWorkshop($workshop->getName());
+        $this->installer->installWorkshop($workshop->getCode());
 
         $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
@@ -333,10 +333,10 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->with('learn-you-php')
             ->willReturn(true);
 
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $this->remoteWorkshopRepo
             ->expects($this->once())
-            ->method('getByName')
+            ->method('getByCode')
             ->with('learn-you-php')
             ->willReturn($workshop);
 
@@ -362,7 +362,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $tags
             ->expects($this->once())
             ->method('all')
-            ->with($workshop->getOwner(), $workshop->getRepo())
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn([
                 [
                     'ref' => 'refs/tags/1.0.0',
@@ -401,7 +401,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $contents
             ->expects($this->once())
             ->method('archive')
-            ->with($workshop->getOwner(), $workshop->getRepo(), 'zipball', '0123456789')
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
             ->willReturn(file_get_contents(sprintf('%s/temp.zip', $this->workshopHomeDir)));
 
         unlink(sprintf('%s/temp.zip', $this->workshopHomeDir));

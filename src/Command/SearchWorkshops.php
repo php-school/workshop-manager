@@ -69,17 +69,18 @@ class SearchWorkshops
             ->setCrossingChar('<phps>+</phps>');
 
         (new Table($this->output))
-            ->setHeaders(['Name', 'Description', 'Package', 'Installed?'])
+            ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Installed?'])
             ->setRows(array_map(function (Workshop $workshop) {
 
-                $installed = $this->installedWorkshopRepository->hasWorkshop($workshop->getName())
+                $installed = $this->installedWorkshopRepository->hasWorkshop($workshop->getCode())
                     ? '<fg=green>    ✔</>'
                     : '<fg=red>    ✘</>';
 
                 return [
                     $workshop->getDisplayName(),
                     wordwrap($workshop->getDescription(), 50),
-                    $workshop->getName(),
+                    $workshop->getCode(),
+                    ucfirst($workshop->getType()),
                     $installed
                 ];
             }, $workshops))
@@ -88,7 +89,7 @@ class SearchWorkshops
 
         $this->output->writeln([
             '',
-            sprintf('  You can install a workshop by typing: %s install workshop-name', $_SERVER['argv'][0]),
+            sprintf('  You can install a workshop by typing: %s install workshop-code', $_SERVER['argv'][0]),
             '',
             sprintf('  Eg: <phps>%s install learnyouphp</phps>', $_SERVER['argv'][0]),
             ''

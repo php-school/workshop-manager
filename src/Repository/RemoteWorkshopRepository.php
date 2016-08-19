@@ -44,33 +44,33 @@ class RemoteWorkshopRepository
      */
     private function addWorkshop(Workshop $workshop)
     {
-        $this->workshops[$workshop->getName()] = $workshop;
+        $this->workshops[$workshop->getCode()] = $workshop;
     }
 
     /**
-     * @param string $name
+     * @param string $code
      *
      * @return Workshop
      * @throws WorkshopNotFoundException
      */
-    public function getByName($name)
+    public function getByCode($code)
     {
         $this->init();
-        if (!$this->hasWorkshop($name)) {
+        if (!$this->hasWorkshop($code)) {
             throw new WorkshopNotFoundException;
         }
 
-        return $this->workshops[$name];
+        return $this->workshops[$code];
     }
 
     /**
-     * @param string $name
+     * @param string $code
      * @return bool
      */
-    public function hasWorkshop($name)
+    public function hasWorkshop($code)
     {
         $this->init();
-        return array_key_exists($name, $this->workshops);
+        return array_key_exists($code, $this->workshops);
     }
 
     /**
@@ -101,7 +101,7 @@ class RemoteWorkshopRepository
      */
     private function matchesWorkshop(Workshop $workshop, $searchTerm)
     {
-        if ($this->matches($workshop->getName(), $searchTerm)) {
+        if ($this->matches($workshop->getCode(), $searchTerm)) {
             return true;
         }
 
@@ -148,30 +148,29 @@ class RemoteWorkshopRepository
             throw new RequiresNetworkAccessException;
         }
 
-        $requiredKeys = collect(['name', 'display_name', 'owner', 'repo', 'description']);
+        $requiredKeys = collect(
+            ['workshop_code', 'display_name', 'github_owner', 'github_repo_name', 'description', 'type']
+        );
 
         collect($this->remoteJsonFile->read()['workshops'])
-            ->filter(
-                function ($workshopData) use ($requiredKeys) {
+            ->filter(function ($workshopData) use ($requiredKeys) {
                     $missingKeyCount = $requiredKeys
                         ->diff(array_keys($workshopData))
                         ->count();
 
                     //true if no missing keys
                     return $missingKeyCount === 0;
-                }
-            )
-            ->map(
-                function ($workshopData) {
+            })
+            ->map(function ($workshopData) {
                     return new Workshop(
-                        $workshopData['name'],
+                        $workshopData['workshop_code'],
                         $workshopData['display_name'],
-                        $workshopData['owner'],
-                        $workshopData['repo'],
-                        $workshopData['description']
+                        $workshopData['github_owner'],
+                        $workshopData['github_repo_name'],
+                        $workshopData['description'],
+                        $workshopData['type']
                     );
-                }
-            )
+            })
             ->each(function (Workshop $workshop) {
                 $this->addWorkshop($workshop);
             });

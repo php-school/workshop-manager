@@ -65,10 +65,10 @@ class Uninstaller
             throw new WorkshopNotInstalledException;
         }
 
-        $workshop = $this->installedWorkshops->getByName($workshop);
+        $workshop = $this->installedWorkshops->getByCode($workshop);
 
         try {
-            $this->filesystem->remove(sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getName()));
+            $this->filesystem->remove(sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getCode()));
         } catch (IOException $e) {
             throw $e;
         }

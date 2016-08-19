@@ -73,7 +73,7 @@ class UninstallerTest extends PHPUnit_Framework_TestCase
         $this->expectExceptionMessageRegExp('/Failed to remove file.*/');
 
         $this->installedWorkshopRepo->add(
-            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', '1.0.0')
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
         $this->uninstaller->uninstallWorkshop('learn-you-php');
@@ -85,7 +85,7 @@ class UninstallerTest extends PHPUnit_Framework_TestCase
         mkdir($dir, 0775, true);
 
         $this->installedWorkshopRepo->add(
-            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', '1.0.0')
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
         $this->localJsonFile

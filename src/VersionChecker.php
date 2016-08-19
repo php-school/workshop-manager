@@ -36,7 +36,10 @@ class VersionChecker
     {
         try {
             /** @noinspection PhpUndefinedMethodInspection */
-            $tags = collect($this->gitHubClient->api('git')->tags()->all($workshop->getOwner(), $workshop->getRepo()));
+            $tags = collect($this->gitHubClient->api('git')->tags()->all(
+                $workshop->getGitHubOwner(),
+                $workshop->getGitHubRepoName()
+            ));
         } catch (ExceptionInterface $e) {
             throw new RequiresNetworkAccessException('Cannot communicate with GitHub - check your internet connection');
         }

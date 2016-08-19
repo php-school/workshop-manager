@@ -124,7 +124,7 @@ class Installer
             throw new WorkshopNotFoundException;
         }
 
-        $workshop = $this->remoteWorkshopRepository->getByName($workshop);
+        $workshop = $this->remoteWorkshopRepository->getByCode($workshop);
 
         try {
             $release = $this->versionChecker->getLatestRelease($workshop);
@@ -139,7 +139,7 @@ class Installer
         $zipArchive->extractTo(dirname($pathToZip));
 
         $sourcePath  = sprintf('%s/.temp/%s', $this->workshopHomeDirectory, $zipArchive->getNameIndex(0));
-        $destinationPath = sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getName());
+        $destinationPath = sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getCode());
 
         $zipArchive->close();
         $this->filesystem->remove($pathToZip);
@@ -189,7 +189,7 @@ class Installer
         curl_setopt_array(
             $curl,
             [
-                CURLOPT_URL => sprintf($this->notifyFormat, $workshop->getName(), $workshop->getVersion()),
+                CURLOPT_URL => sprintf($this->notifyFormat, $workshop->getCode(), $workshop->getVersion()),
                 CURLOPT_POST => 1,
                 CURLOPT_RETURNTRANSFER => 1,
             ]
@@ -205,7 +205,7 @@ class Installer
      */
     private function download(Workshop $workshop, $sha)
     {
-        $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getName());
+        $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getCode());
 
         if ($this->filesystem->exists($path)) {
             try {
@@ -218,8 +218,8 @@ class Installer
         try {
             /** @noinspection PhpUndefinedMethodInspection */
             $data = $this->gitHubClient->api('repo')->contents()->archive(
-                $workshop->getOwner(),
-                $workshop->getRepo(),
+                $workshop->getGitHubOwner(),
+                $workshop->getGitHubRepoName(),
                 'zipball',
                 $sha
             );

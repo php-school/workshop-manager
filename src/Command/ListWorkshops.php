@@ -57,14 +57,15 @@ class ListWorkshops
             ->setCrossingChar('<fg=magenta>+</>');
 
         (new Table($output))
-            ->setHeaders(['Name', 'Description', 'Package', 'Version', 'New version available?'])
+            ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Version', 'New version available?'])
             ->setRows(array_map(function (InstalledWorkshop $workshop) {
                 $latestRelease = $this->versionChecker->getLatestRelease($workshop);
 
                 return [
                     $workshop->getDisplayName(),
                     wordwrap($workshop->getDescription(), 50),
-                    $workshop->getName(),
+                    $workshop->getCode(),
+                    ucfirst($workshop->getType()),
                     $workshop->getVersion(),
                     $latestRelease->getTag() === $workshop->getVersion()
                         ? 'Nope!'

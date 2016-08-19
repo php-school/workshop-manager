@@ -108,7 +108,7 @@ class Linker
      */
     public function unlink(InstalledWorkshop $workshop)
     {
-        $localTarget = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
+        $localTarget = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getCode());
 
         if (!$this->filesystem->exists($localTarget)) {
             return;
@@ -174,8 +174,8 @@ class Linker
         return sprintf(
             '%s/workshops/%s/bin/%s',
             $this->workshopHomeDirectory,
-            $workshop->getName(),
-            $workshop->getName()
+            $workshop->getCode(),
+            $workshop->getCode()
         );
     }
 
@@ -186,7 +186,7 @@ class Linker
     private function getLocalTargetPath(InstalledWorkshop $workshop)
     {
         // Ensure bin dir exists
-        $path = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getName());
+        $path = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getCode());
         $this->filesystem->mkdir(dirname($path));
 
         return $path;

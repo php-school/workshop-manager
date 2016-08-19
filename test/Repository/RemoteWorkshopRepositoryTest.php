@@ -26,7 +26,7 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
 
         $repo = new RemoteWorkshopRepository($json);
         $this->expectException(RequiresNetworkAccessException::class);
-        $repo->getByName('workshop');
+        $repo->getByCode('workshop');
     }
 
     public function testGetByNameThrowsExceptionIfWorkshopNotExist()
@@ -50,7 +50,7 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
 
         $repo = new RemoteWorkshopRepository($json);
         $this->expectException(WorkshopNotFoundException::class);
-        $repo->getByName('nope');
+        $repo->getByCode('nope');
     }
 
     public function testGetByName()
@@ -64,11 +64,12 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                     [
                         'workshops' => [
                             [
-                                'name' => 'workshop',
+                                'workshop_code' => 'workshop',
                                 'display_name' => 'workshop',
-                                'owner' => 'aydin',
-                                'repo' => 'repo',
+                                'github_owner' => 'aydin',
+                                'github_repo_name' => 'repo',
                                 'description' => 'workshop',
+                                'type' => 'core',
                             ]
                         ]
                     ]
@@ -81,12 +82,12 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
             ->willReturn('http://www.google.com');
 
         $repo = new RemoteWorkshopRepository($json);
-        $workshop = $repo->getByName('workshop');
+        $workshop = $repo->getByCode('workshop');
         $this->assertInstanceOf(Workshop::class, $workshop);
-        $this->assertEquals('workshop', $workshop->getName());
+        $this->assertEquals('workshop', $workshop->getCode());
         $this->assertEquals('workshop', $workshop->getDisplayName());
-        $this->assertEquals('aydin', $workshop->getOwner());
-        $this->assertEquals('repo', $workshop->getRepo());
+        $this->assertEquals('aydin', $workshop->getGitHubOwner());
+        $this->assertEquals('repo', $workshop->getGitHubRepoName());
         $this->assertEquals('workshop', $workshop->getDescription());
     }
 
@@ -101,11 +102,12 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                     [
                         'workshops' => [
                             [
-                                'name' => 'workshop',
+                                'workshop_code' => 'workshop',
                                 'display_name' => 'learn-you-php',
-                                'owner' => 'aydin',
-                                'repo' => 'repo',
+                                'github_owner' => 'aydin',
+                                'github_repo_name' => 'repo',
                                 'description' => 'workshop',
+                                'type' => 'core'
                             ]
                         ]
                     ]
@@ -139,18 +141,20 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                     [
                         'workshops' => [
                             [
-                                'name' => 'learnyouphp',
+                                'workshop_code' => 'learnyouphp',
                                 'display_name' => 'Learn you PHP',
-                                'owner' => 'aydin',
-                                'repo' => 'repo',
-                                'description' => 'A workshop'
+                                'github_owner' => 'aydin',
+                                'github_repo_name' => 'repo',
+                                'description' => 'A workshop',
+                                'type' => 'core',
                             ],
                             [
-                                'name' => 'php7',
+                                'workshop_code' => 'php7',
                                 'display_name' => 'Learn PHP7',
-                                'owner' => 'aydin',
-                                'repo' => 'repo',
-                                'description' => 'A workshop'
+                                'github_owner' => 'aydin',
+                                'github_repo_name' => 'repo',
+                                'description' => 'A workshop',
+                                'type' => 'core',
                             ]
                         ]
                     ]

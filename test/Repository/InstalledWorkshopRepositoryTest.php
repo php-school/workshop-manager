@@ -32,18 +32,18 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
 
         $repo = new InstalledWorkshopRepository($json);
         $this->expectException(WorkshopNotFoundException::class);
-        $repo->getByName('nope');
+        $repo->getByCode('nope');
     }
 
-    public function testGetByName()
+    public function testGetByCode()
     {
         $repo = $this->getRepo();
-        $workshop = $repo->getByName('workshop');
+        $workshop = $repo->getByCode('workshop');
         $this->assertInstanceOf(InstalledWorkshop::class, $workshop);
-        $this->assertEquals('workshop', $workshop->getName());
+        $this->assertEquals('workshop', $workshop->getCode());
         $this->assertEquals('workshop', $workshop->getDisplayName());
-        $this->assertEquals('aydin', $workshop->getOwner());
-        $this->assertEquals('repo', $workshop->getRepo());
+        $this->assertEquals('aydin', $workshop->getGitHubOwner());
+        $this->assertEquals('repo', $workshop->getGitHubRepoName());
         $this->assertEquals('workshop', $workshop->getDescription());
         $this->assertEquals('1.0.0', $workshop->getVersion());
     }
@@ -81,7 +81,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
         $repo = $this->getRepo();
         $this->assertFalse($repo->isEmpty());
 
-        $repo->remove($repo->getByName('workshop'));
+        $repo->remove($repo->getByCode('workshop'));
         $this->assertTrue($repo->isEmpty());
     }
 
@@ -90,7 +90,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
         $repo = $this->getRepo();
         $this->expectException(WorkshopNotFoundException::class);
 
-        $workshop = new InstalledWorkshop('remove-me', 'workshop', 'aydin', 'repo', 'workshop', '1.0.0');
+        $workshop = new InstalledWorkshop('remove-me', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
         $repo->remove($workshop);
     }
 
@@ -99,7 +99,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
         $repo = $this->getRepo();
         $this->assertCount(1, $repo->getAll());
 
-        $workshop = $repo->getByName('workshop');
+        $workshop = $repo->getByCode('workshop');
         $repo->remove($workshop);
         $this->assertCount(0, $repo->getAll());
     }
@@ -107,7 +107,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
     public function testAdd()
     {
         $repo = $this->getRepo([]);
-        $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', '1.0.0');
+        $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
 
         $this->assertCount(0, $repo->getAll());
         $repo->add($workshop);
@@ -123,16 +123,17 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue(['workshops' => []]));
 
         $repo = new InstalledWorkshopRepository($json);
-        $repo->add(new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', '1.0.0'));
+        $repo->add(new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0'));
 
         $data = [
             'workshops' => [
                 [
-                    'name' => 'workshop',
+                    'workshop_code' => 'workshop',
                     'display_name' => 'workshop',
-                    'owner' => 'aydin',
-                    'repo' => 'repo',
+                    'github_owner' => 'aydin',
+                    'github_repo_name' => 'repo',
                     'description' => 'workshop',
+                    'type' => 'core',
                     'version' => '1.0.0'
                 ]
             ]
@@ -151,11 +152,12 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
         if (null === $workshops) {
             $workshops = [
                 [
-                    'name' => 'workshop',
+                    'workshop_code' => 'workshop',
                     'display_name' => 'workshop',
-                    'owner' => 'aydin',
-                    'repo' => 'repo',
+                    'github_owner' => 'aydin',
+                    'github_repo_name' => 'repo',
                     'description' => 'workshop',
+                    'type' => 'core',
                     'version' => '1.0.0'
                 ]
             ];

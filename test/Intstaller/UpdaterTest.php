@@ -60,11 +60,11 @@ class UpdaterTest extends PHPUnit_Framework_TestCase
 
     public function testExceptionIsThrownIfNoUpdateAvailable()
     {
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
 
         $this->installedWorkshopRepository
             ->expects($this->once())
-            ->method('getByName')
+            ->method('getByCode')
             ->willReturn($workshop);
 
         $this->versionChecker
@@ -79,11 +79,11 @@ class UpdaterTest extends PHPUnit_Framework_TestCase
 
     public function testUpdateUninstallsAndReinstallsNewVersionReturningTheVersionInstalled()
     {
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
 
         $this->installedWorkshopRepository
             ->expects($this->once())
-            ->method('getByName')
+            ->method('getByCode')
             ->willReturn($workshop);
 
         $this->versionChecker

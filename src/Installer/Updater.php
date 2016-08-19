@@ -55,7 +55,7 @@ class Updater
      */
     public function updateWorkshop($workshopName)
     {
-        $workshop = $this->installedWorkshopRepository->getByName($workshopName);
+        $workshop = $this->installedWorkshopRepository->getByCode($workshopName);
 
         $latestRelease = $this->versionChecker->getLatestRelease($workshop);
 
