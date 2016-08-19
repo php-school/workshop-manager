@@ -19,7 +19,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
 {
     public function testGetLatestReleaseThrowsExceptionIfApiThrowsException()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
 
         $gitData = $this->createMock(GitData::class);
@@ -39,7 +39,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
         $tags
             ->expects($this->once())
             ->method('all')
-            ->with($workshop->getOwner(), $workshop->getRepo())
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willThrowException(new \Github\Exception\RuntimeException);
 
         $this->expectException(RuntimeException::class);
@@ -51,7 +51,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
 
     public function testGetLatestReleaseThrowsExceptionIfNoTags()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
 
         $gitData = $this->createMock(GitData::class);
@@ -71,7 +71,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
         $tags
             ->expects($this->once())
             ->method('all')
-            ->with($workshop->getOwner(), $workshop->getRepo())
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn([]);
 
         $this->expectException(RuntimeException::class);
@@ -83,7 +83,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
 
     public function testGetLatestRelease()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
 
         $gitData = $this->createMock(GitData::class);
@@ -103,7 +103,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
         $tags
             ->expects($this->once())
             ->method('all')
-            ->with($workshop->getOwner(), $workshop->getRepo())
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn(
                 [
                     [

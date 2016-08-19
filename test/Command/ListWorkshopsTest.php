@@ -68,7 +68,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
     public function testNewVersionIsShownIfThereIsOne()
     {
-        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
         $this->localRepo->add($installedWorkshop);
 
@@ -80,12 +80,15 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
         $this->command->__invoke($this->output);
 
         $output = $this->output->fetch();
-        $this->assertRegExp('/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\s+1\.0\.0\s+\|\s+Yes - 2\.0\.0/', $output);
+        $this->assertRegExp(
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Yes - 2\.0\.0/',
+            $output
+        );
     }
 
     public function testOutputWithNoNewVersion()
     {
-        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop');
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
         $this->localRepo->add($installedWorkshop);
 
@@ -98,7 +101,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $output = $this->output->fetch();
         $this->assertRegExp(
-            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\s+1\.0\.0\s+\|\s+Nope!/', $output
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Nope!/', $output
         );
     }
 }

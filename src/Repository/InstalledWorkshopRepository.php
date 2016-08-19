@@ -7,7 +7,6 @@ use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 
 /**
- * @package PhpSchool\WorkshopManager\Repository
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  * @author Michael Woodward <mikeymike.mw@gmail.com>
  */
@@ -29,30 +28,31 @@ class InstalledWorkshopRepository
     public function __construct(JsonFile $file)
     {
         $this->file = $file;
-        collect($file->read()['workshops'])
-            ->filter(
-                function ($workshopData) {
-                    $missingKeyCount = collect($workshopData)
-                        ->keys()
-                        ->diff(['name', 'display_name', 'owner', 'repo', 'description', 'version'])
-                        ->count();
 
-                    //true if no missing keys
-                    return $missingKeyCount === 0;
-                }
-            )
-            ->map(
-                function ($workshopData) {
+        $requiredKeys = collect(
+            ['workshop_code', 'display_name', 'github_owner', 'github_repo_name', 'description', 'type', 'version']
+        );
+
+        collect($file->read()['workshops'])
+            ->filter(function ($workshopData) use ($requiredKeys) {
+                $missingKeyCount = $requiredKeys
+                    ->diff(array_keys($workshopData))
+                    ->count();
+
+                //true if no missing keys
+                return $missingKeyCount === 0;
+            })
+            ->map(function ($workshopData) {
                     return new InstalledWorkshop(
-                        $workshopData['name'],
+                        $workshopData['workshop_code'],
                         $workshopData['display_name'],
-                        $workshopData['owner'],
-                        $workshopData['repo'],
+                        $workshopData['github_owner'],
+                        $workshopData['github_repo_name'],
                         $workshopData['description'],
+                        $workshopData['type'],
                         $workshopData['version']
                     );
-                }
-            )
+            })
             ->each(function (InstalledWorkshop $workshop) {
                 $this->add($workshop);
             });
@@ -63,7 +63,7 @@ class InstalledWorkshopRepository
      */
     public function add(InstalledWorkshop $workshop)
     {
-        $this->workshops[$workshop->getName()] = $workshop;
+        $this->workshops[$workshop->getCode()] = $workshop;
     }
 
     /**
@@ -72,11 +72,11 @@ class InstalledWorkshopRepository
      */
     public function remove(InstalledWorkshop $workshopToRemove)
     {
-        if (!$this->hasWorkshop($workshopToRemove->getName())) {
+        if (!$this->hasWorkshop($workshopToRemove->getCode())) {
             throw new WorkshopNotFoundException;
         }
 
-        unset($this->workshops[$workshopToRemove->getName()]);
+        unset($this->workshops[$workshopToRemove->getCode()]);
     }
 
     /**
@@ -88,30 +88,28 @@ class InstalledWorkshopRepository
     }
 
     /**
-     * @param string $name
+     * @param string $code
      *
      * @return InstalledWorkshop
      * @throws WorkshopNotFoundException
      */
-    public function getByName($name)
+    public function getByCode($code)
     {
-        if (!$this->hasWorkshop($name)) {
+        if (!$this->hasWorkshop($code)) {
             throw new WorkshopNotFoundException;
         }
 
-        return $this->workshops[$name];
+        return $this->workshops[$code];
     }
 
     /**
-     * @param string $name
+     * @param string $code
      * @return bool
      */
-    public function hasWorkshop($name)
+    public function hasWorkshop($code)
     {
-        return array_key_exists($name, $this->workshops);
+        return array_key_exists($code, $this->workshops);
     }
-
-
 
     /**
      * @return bool
@@ -128,11 +126,12 @@ class InstalledWorkshopRepository
     {
         $state['workshops'] = array_map(function (InstalledWorkshop $workshop) {
             return [
-                'name' => $workshop->getName(),
+                'workshop_code' => $workshop->getCode(),
                 'display_name' => $workshop->getDisplayName(),
-                'owner' => $workshop->getOwner(),
-                'repo' => $workshop->getRepo(),
+                'github_owner' => $workshop->getGitHubOwner(),
+                'github_repo_name' => $workshop->getGitHubRepoName(),
                 'description' => $workshop->getDescription(),
+                'type' => $workshop->getType(),
                 'version' => $workshop->getVersion(),
             ];
         }, $this->getAll());

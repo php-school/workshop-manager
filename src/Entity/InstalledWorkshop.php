@@ -14,20 +14,22 @@ final class InstalledWorkshop extends Workshop
     private $version;
 
     /**
-     * @param string $name
+     * @param string $code
      * @param string $displayName
-     * @param string $owner
-     * @param string $repo
+     * @param string $gitHubOwner
+     * @param string $gitHubRepoName
      * @param string $description
+     * @param string $type
      * @param string $version
      */
-    public function __construct($name, $displayName, $owner, $repo, $description, $version)
+    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type, $version)
     {
-        $this->name = $name;
+        $this->code = $code;
         $this->displayName = $displayName;
-        $this->owner = $owner;
-        $this->repo = $repo;
+        $this->gitHubOwner = $gitHubOwner;
+        $this->gitHubRepoName = $gitHubRepoName;
         $this->description = $description;
+        $this->type = $type;
         $this->version = $version;
     }
 
@@ -39,11 +41,12 @@ final class InstalledWorkshop extends Workshop
     public static function fromWorkshop(Workshop $workshop, $version)
     {
         return new static(
-            $workshop->getName(),
+            $workshop->getCode(),
             $workshop->getDisplayName(),
-            $workshop->getOwner(),
-            $workshop->getRepo(),
+            $workshop->getGitHubOwner(),
+            $workshop->getGitHubRepoName(),
             $workshop->getDescription(),
+            $workshop->getType(),
             $version
         );
     }
