@@ -68,5 +68,13 @@ class VerifyInstall
                 ''
             ]);
         }
+        
+        if (version_compare(PHP_VERSION, '5.6')) {
+            $message  = 'Your PHP version is at least 5.6, which is required by this tool. Be aware that some ';
+            $message .= 'workshops may require a higher version of PHP, so you may not be able to install them.';
+            $style->success($message);
+        } else {
+            $style->error('You need a PHP version of at least 5.6 to use PHP School.');
+        }
     }
 }
