@@ -333,7 +333,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ->with('learn-you-php')
             ->willReturn(true);
 
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $this->remoteWorkshopRepo
             ->expects($this->once())
             ->method('getByCode')

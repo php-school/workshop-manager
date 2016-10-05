@@ -70,7 +70,7 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
 
     public function testInstalledWorkshopIsMarkedAsInstalled()
     {
-        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
         $this->localRepo->add($installedWorkshop);
         $this->remoteRepo
@@ -82,12 +82,12 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
         $this->command->__invoke('php');
         $output = $this->output->fetch();
 
-        $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✔/', $output);
+        $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\sBeginner\s+\|\s+✔/', $output);
     }
 
     public function testNotInstalledWorkshopIsMarkedAsNotInstalled()
     {
-        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $this->remoteRepo
             ->expects($this->once())
             ->method('find')
@@ -97,6 +97,6 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
         $this->command->__invoke('php');
         $output = $this->output->fetch();
 
-        $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✘/', $output);
+        $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\sBeginner\s+\|\s+✘/', $output);
     }
 }

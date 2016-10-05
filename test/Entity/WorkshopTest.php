@@ -14,7 +14,7 @@ class WorkshopTest extends PHPUnit_Framework_TestCase
 {
     public function testGetters()
     {
-        $workshop = new Workshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $this->assertEquals('workshop', $workshop->getCode());
         $this->assertEquals('workshop', $workshop->getDisplayName());
         $this->assertEquals('aydin', $workshop->getGitHubOwner());

@@ -39,14 +39,20 @@ class Workshop
     protected $type;
 
     /**
+     * @var string
+     */
+    protected $level;
+
+    /**
      * @param string $code
      * @param string $displayName
      * @param string $gitHubOwner
      * @param string $gitHubRepoName
      * @param string $description
      * @param string $type
+     * @param string $level
      */
-    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type)
+    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type, $level)
     {
         $this->code             = $code;
         $this->displayName      = $displayName;
@@ -54,6 +60,7 @@ class Workshop
         $this->gitHubRepoName   = $gitHubRepoName;
         $this->description      = $description;
         $this->type             = $type;
+        $this->level            = $level;
     }
 
     /**
@@ -103,5 +110,13 @@ class Workshop
     public function getType()
     {
         return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLevel()
+    {
+        return $this->level;
     }
 }

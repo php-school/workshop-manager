@@ -69,7 +69,7 @@ class SearchWorkshops
             ->setCrossingChar('<phps>+</phps>');
 
         (new Table($this->output))
-            ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Installed?'])
+            ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Level', 'Installed?'])
             ->setRows(array_map(function (Workshop $workshop) {
 
                 $installed = $this->installedWorkshopRepository->hasWorkshop($workshop->getCode())
@@ -81,6 +81,7 @@ class SearchWorkshops
                     wordwrap($workshop->getDescription(), 50),
                     $workshop->getCode(),
                     ucfirst($workshop->getType()),
+                    ucfirst($workshop->getLevel()),
                     $installed
                 ];
             }, $workshops))

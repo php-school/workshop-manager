@@ -68,7 +68,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
     public function testNewVersionIsShownIfThereIsOne()
     {
-        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
         $this->localRepo->add($installedWorkshop);
 
@@ -88,7 +88,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
     public function testOutputWithNoNewVersion()
     {
-        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
         $this->localRepo->add($installedWorkshop);
 

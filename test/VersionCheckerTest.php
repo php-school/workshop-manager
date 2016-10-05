@@ -19,7 +19,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
 {
     public function testGetLatestReleaseThrowsExceptionIfApiThrowsException()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $client = $this->createMock(Client::class);
 
         $gitData = $this->createMock(GitData::class);
@@ -51,7 +51,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
 
     public function testGetLatestReleaseThrowsExceptionIfNoTags()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $client = $this->createMock(Client::class);
 
         $gitData = $this->createMock(GitData::class);
@@ -83,7 +83,7 @@ class VersionCheckerTest extends PHPUnit_Framework_TestCase
 
     public function testGetLatestRelease()
     {
-        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $client = $this->createMock(Client::class);
 
         $gitData = $this->createMock(GitData::class);

@@ -168,7 +168,8 @@ class RemoteWorkshopRepository
                         $workshopData['github_owner'],
                         $workshopData['github_repo_name'],
                         $workshopData['description'],
-                        $workshopData['type']
+                        $workshopData['type'],
+                        isset($workshopData['level']) ? $workshopData['level'] : ''
                     );
             })
             ->each(function (Workshop $workshop) {

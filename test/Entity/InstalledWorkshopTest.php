@@ -27,7 +27,7 @@ class InstalledWorkshopTest extends PHPUnit_Framework_TestCase
 
     public function testFromWorkshop()
     {
-        $workshop = new Workshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core');
+        $workshop = new Workshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', 'beginner');
         $installed = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
 
         $this->assertEquals('workshop', $installed->getCode());
