@@ -44,14 +44,14 @@ Quickly find available workshops by part of its name and get an instant indicati
  # Result
   *** Matches ***
  
- +----------------+--------------------------------------------------+-------------+-----------+------------+
- | Name           | Description                                      | Code        | Type      | Installed? |
- +----------------+--------------------------------------------------+-------------+-----------+------------+
- | Learn you PHP! | A simple introduction into PHP and the workshop  | learnyouphp | Core      |     ✘      |
- |                | format.                                          |             |           |            |
- | PHP7 way       | A PHP School workshop about some new features in | php7way     + Community |     ✘      |
- |                | PHP7.                                            |             |           |            |
- +----------------+--------------------------------------------------+-------------+-----------+------------+
+ +----------------+----------------------------------------------------+-------------+-----------+----------+------------+
+ | Name           | Description                                        | Code        | Type      | Level    | Installed? |
+ +----------------+----------------------------------------------------+-------------+-----------+----------+------------+
+ | PHP7 way       | To play with PHP7                                  | php7way     | Community |          |     ✘      |
+ | Learn You PHP! | An introduction to PHP's core features: i/o, http, | learnyouphp | Core      |          |     ✘      |
+ |                | arrays, exceptions and so on.                      |             |           |          |            |
+ +----------------+----------------------------------------------------+-------------+-----------+----------+------------+
+
 ```
 
 ### Install
