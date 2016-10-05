@@ -83,7 +83,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
     public function testExceptionIsThrownIfWorkshopWithSameNameAlreadyExists()
     {
         $this->installedWorkshopRepo->add(
-            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0')
         );
 
         $this->expectException(WorkshopAlreadyInstalledException::class);

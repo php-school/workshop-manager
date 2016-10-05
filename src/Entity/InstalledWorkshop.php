@@ -21,8 +21,9 @@ final class InstalledWorkshop extends Workshop
      * @param string $description
      * @param string $type
      * @param string $version
+     * @param string $level
      */
-    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type, $version)
+    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type, $level, $version)
     {
         $this->code = $code;
         $this->displayName = $displayName;
@@ -30,6 +31,7 @@ final class InstalledWorkshop extends Workshop
         $this->gitHubRepoName = $gitHubRepoName;
         $this->description = $description;
         $this->type = $type;
+        $this->level = $level;
         $this->version = $version;
     }
 
@@ -47,6 +49,7 @@ final class InstalledWorkshop extends Workshop
             $workshop->getGitHubRepoName(),
             $workshop->getDescription(),
             $workshop->getType(),
+            $workshop->getLevel(),
             $version
         );
     }

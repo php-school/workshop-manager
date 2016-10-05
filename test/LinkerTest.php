@@ -64,7 +64,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->link($workshop);
     }
 
@@ -99,7 +99,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->link($workshop);
     }
 
@@ -130,7 +130,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->link($workshop);
     }
 
@@ -148,7 +148,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->link($workshop);
     }
 
@@ -160,7 +160,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
         mkdir(dirname($target), 0775, true);
         touch($target);
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->link($workshop);
 
         $this->assertFileExists(sprintf('%s/bin/learn-you-php', $this->tmpDir));
@@ -195,7 +195,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
         mkdir(dirname($target), 0775, true);
         touch($target);
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->link($workshop);
 
         $this->assertFileExists(sprintf('%s/bin/learn-you-php', $this->tmpDir));
@@ -218,7 +218,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->unlink($workshop);
     }
 
@@ -250,7 +250,7 @@ class LinkerTest extends PHPUnit_Framework_TestCase
                 ]
             );
 
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->linker->unlink($workshop);
     }
 }

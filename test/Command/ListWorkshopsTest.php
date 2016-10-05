@@ -81,7 +81,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $output = $this->output->fetch();
         $this->assertRegExp(
-            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Yes - 2\.0\.0/',
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\sBeginner\s+\|\s+1\.0\.0\s+\|\s+Yes - 2\.0\.0/',
             $output
         );
     }
@@ -101,7 +101,7 @@ class ListWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $output = $this->output->fetch();
         $this->assertRegExp(
-            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Nope!/', $output
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\sBeginner\s+\|\s+1\.0\.0\s+\|\s+Nope!/', $output
         );
     }
 }

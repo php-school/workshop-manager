@@ -90,7 +90,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
         $repo = $this->getRepo();
         $this->expectException(WorkshopNotFoundException::class);
 
-        $workshop = new InstalledWorkshop('remove-me', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('remove-me', 'workshop', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $repo->remove($workshop);
     }
 
@@ -107,7 +107,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
     public function testAdd()
     {
         $repo = $this->getRepo([]);
-        $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
 
         $this->assertCount(0, $repo->getAll());
         $repo->add($workshop);
@@ -123,7 +123,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue(['workshops' => []]));
 
         $repo = new InstalledWorkshopRepository($json);
-        $repo->add(new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0'));
+        $repo->add(new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0'));
 
         $data = [
             'workshops' => [
@@ -134,6 +134,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                     'github_repo_name' => 'repo',
                     'description' => 'workshop',
                     'type' => 'core',
+                    'level' => 'beginner',
                     'version' => '1.0.0'
                 ]
             ]
@@ -158,6 +159,7 @@ class InstalledWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
                     'github_repo_name' => 'repo',
                     'description' => 'workshop',
                     'type' => 'core',
+                    'level' => 'beginner',
                     'version' => '1.0.0'
                 ]
             ];

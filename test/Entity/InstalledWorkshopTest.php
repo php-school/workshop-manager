@@ -15,7 +15,7 @@ class InstalledWorkshopTest extends PHPUnit_Framework_TestCase
 {
     public function testGetters()
     {
-        $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
+        $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', 'beginner', '1.0.0');
         $this->assertEquals('workshop', $workshop->getCode());
         $this->assertEquals('workshop', $workshop->getDisplayName());
         $this->assertEquals('aydin', $workshop->getGitHubOwner());

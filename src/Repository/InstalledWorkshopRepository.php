@@ -50,6 +50,7 @@ class InstalledWorkshopRepository
                         $workshopData['github_repo_name'],
                         $workshopData['description'],
                         $workshopData['type'],
+                        isset($workshopData['level']) ? $workshopData['level'] : '',
                         $workshopData['version']
                     );
             })
@@ -132,6 +133,7 @@ class InstalledWorkshopRepository
                 'github_repo_name' => $workshop->getGitHubRepoName(),
                 'description' => $workshop->getDescription(),
                 'type' => $workshop->getType(),
+                'level' => $workshop->getLevel(),
                 'version' => $workshop->getVersion(),
             ];
         }, $this->getAll());
