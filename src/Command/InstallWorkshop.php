@@ -78,7 +78,7 @@ class InstallWorkshop
             );
         }
 
-        if (isset($e) && $output->isVeryVerbose()) {
+        if (isset($e) && $output->isVerbose()) {
             throw $e;
         } elseif (isset($e)) {
             return;
