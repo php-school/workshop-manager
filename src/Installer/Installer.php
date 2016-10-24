@@ -5,6 +5,7 @@ namespace PhpSchool\WorkshopManager\Installer;
 use Exception;
 use Github\Client;
 use Github\Exception\ExceptionInterface;
+use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
@@ -68,9 +69,9 @@ class Installer
     private $versionChecker;
 
     /**
-     * @var ComposerInstallerFactory
+     * @var ComposerInstaller
      */
-    private $composerFactory;
+    private $composerInstaller;
 
     /**
      * @param InstalledWorkshopRepository $installedWorkshops
@@ -78,7 +79,7 @@ class Installer
      * @param Linker $linker
      * @param Filesystem $filesystem
      * @param string $workshopHomeDirectory
-     * @param ComposerInstallerFactory $composerFactory
+     * @param ComposerInstaller $composerInstaller
      * @param Client $gitHubClient
      * @param VersionChecker $versionChecker
      * @param string|null $notifyUrlFormat
@@ -89,7 +90,7 @@ class Installer
         Linker $linker,
         Filesystem $filesystem,
         $workshopHomeDirectory,
-        ComposerInstallerFactory $composerFactory,
+        ComposerInstaller $composerInstaller,
         Client $gitHubClient,
         VersionChecker $versionChecker,
         $notifyUrlFormat = null
@@ -99,7 +100,7 @@ class Installer
         $this->linker                       = $linker;
         $this->filesystem                   = $filesystem;
         $this->workshopHomeDirectory        = $workshopHomeDirectory;
-        $this->composerFactory              = $composerFactory;
+        $this->composerInstaller            = $composerInstaller;
         $this->gitHubClient                 = $gitHubClient;
         $this->versionChecker               = $versionChecker;
         $this->notifyFormat                 = $notifyUrlFormat ?: $this->notifyFormat;
@@ -163,16 +164,19 @@ class Installer
 
         $this->filesystem->executeInPath($destinationPath, function ($path) {
             try {
-                $res = $this->composerFactory->create($path)->run();
+                $result = $this->composerInstaller->install($path);
             } catch (Exception $e) {
                 throw ComposerFailureException::fromException($e);
             }
 
-            if ($res > 0) {
+            if ($result->getExitCode() > 0) {
+                if ($result->missingExtensions()) {
+                    throw ComposerFailureException::fromMissingExtensions($result->getMissingExtensions());
+                }
+                
                 throw new ComposerFailureException();
             }
         });
-
 
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, $release->getTag());
         $this->installedWorkshopRepository->add($installedWorkshop);
