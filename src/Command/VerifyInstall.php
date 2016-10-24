@@ -51,21 +51,21 @@ class VerifyInstall
             $style->error('The PHP School bin directory is not in your PATH variable.');
 
             $this->output->writeln([
-               sprintf(
-                   ' Add "%s/bin" to your PATH variable before running a workshop',
-                   $this->workshopHomeDirectory
-               ),
-               '',
-               sprintf(
-                   ' Use the command: <info>echo \'export PATH="$PATH:%s/bin"\' >> ~/.bashrc && source' .
-                   ' ~/.bashrc</info>',
-                   $this->workshopHomeDirectory
-               ),
-               ' replacing <info>~/.bashrc</info> with your chosen terminal config file e.g. <info>~/.zshrc</info>' .
-               ' or <info>~/.profile</info> etc',
-               '',
-               ' <phps>Run this command again to confirm the PATH variable has been updated.</phps>',
-               ''
+                sprintf(
+                    ' Add "%s/bin" to your PATH variable before running a workshop',
+                    $this->workshopHomeDirectory
+                ),
+                '',
+                sprintf(
+                    ' Use the command: <info>echo \'export PATH="$PATH:%s/bin"\' >> ~/.bashrc && source' .
+                    ' ~/.bashrc</info>',
+                    $this->workshopHomeDirectory
+                ),
+                ' replacing <info>~/.bashrc</info> with your chosen terminal config file e.g. <info>~/.zshrc</info>' .
+                ' or <info>~/.profile</info> etc',
+                '',
+                ' <phps>Run this command again to confirm the PATH variable has been updated.</phps>',
+                ''
            ]);
         }
 
