@@ -46,7 +46,7 @@ class VerifyInstall
 
 
         if (strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false) {
-            $style->success('Your $PATH environment variable is configured correctly');
+            $style->success('Your $PATH environment variable is configured correctly.');
         } else {
             $style->error('The PHP School bin directory is not in your PATH variable.');
 
@@ -77,24 +77,22 @@ class VerifyInstall
             $style->error('You need a PHP version of at least 5.6 to use PHP School.');
         }
 
+        $requiredExtensions = ['json', 'zip', 'mbstring', 'curl'];
+        $missingExtensions  = array_filter($requiredExtensions, function ($extension) {
+            return !extension_loaded($extension);
+        });
 
-        if (!extension_loaded('json')) {
-            $style->error('The json extension is missing - use your preferred package manager to install it');
-        }
+        array_walk($missingExtensions, function ($missingExtension) use ($style) {
+            $style->error(
+                sprintf(
+                    'The %s extension is missing - use your preferred package manager to install it',
+                    $missingExtension
+                )
+            );
+        });
 
-        if (!extension_loaded('zip')) {
-            $style->error('The zip extension is missing - use your preferred package manager to install it');
-        }
-
-        if (!extension_loaded('mbstring')) {
-            $style->error('The mbstring extension is missing - use your preferred package manager to install it');
-        }
-
-        if (!extension_loaded('curl')) {
-            $style->error('The curl extension is missing - use your preferred package manager to install it');
-        }
-
-
-
+        $message  = 'All required PHP extensions are installed. Please note that some workshops may require ';
+        $message .= 'additional PHP extensions.';
+        $style->success($message);
     }
 }
