@@ -1,6 +1,7 @@
 <?php
 
 namespace PhpSchool\WorkshopManager;
+
 use Illuminate\Support\Collection;
 
 /**
