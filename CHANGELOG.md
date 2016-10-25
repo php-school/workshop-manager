@@ -11,6 +11,15 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ### Removed
 
+## [1.0.1]
+### Fixed
+ - Do not require a dev version of symfony/console (#22)
+ 
+### Changed
+ - Application::getHelp() no longer depends on parent (#21)
+
+### Removed
+
 ## [1.0.0]
 ### Added
  - Ability to install via composer (#20)
