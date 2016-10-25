@@ -12,22 +12,27 @@ matrix:
   - php: 5.6
     env:
     - EXECUTE_DEPLOYMENT=true
-  - php: 7
+  - php: 5.6
+    env: COMPOSER_FLAGS="--prefer-lowest"
+  - php: 7.0
+    env: SYMFONY_VERSION='3.0.*'
+  - php: 7.0
+    env: SYMFONY_VERSION='3.1.*'
 
 before_install:
-- openssl aes-256-cbc -K $encrypted_d3e7229d64cc_key -iv $encrypted_d3e7229d64cc_iv
-   -in .travis/secrets.tar.enc -out .travis/secrets.tar -d
-- composer self-update
+  - openssl aes-256-cbc -K $encrypted_d3e7229d64cc_key -iv $encrypted_d3e7229d64cc_iv -in .travis/secrets.tar.enc -out .travis/secrets.tar -d
+  - composer self-update
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require --dev --no-update symfony/console=$SYMFONY_VERSION; fi
 
 install:
-- travis_retry composer install --no-interaction
-- composer info -i
+  - travis_retry composer update $COMPOSER_FLAG --no-interaction
+  - composer info -i
 
 script:
-- composer test-travis
+  - composer test-travis
 
 after_success:
-- if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
-- bash <(curl -s https://codecov.io/bash)
-- wget https://scrutinizer-ci.com/ocular.phar
-- php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
+  - if [[ $EXECUTE_DEPLOYMENT == 'true' && $TRAVIS_BRANCH == 'master' && $TRAVIS_PULL_REQUEST == 'false' ]]; then ./bin/deploy.sh ; fi
+  - bash <(curl -s https://codecov.io/bash)
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
