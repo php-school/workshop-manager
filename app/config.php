@@ -46,10 +46,14 @@ return [
             ->setDescription('Search for a PHP School workshop.');
         $application->command('installed', ListWorkshops::class, ['show'])
             ->setDescription('List installed PHP School workshops.');
-        $application->command('self-update', SelfUpdate::class)
-            ->setDescription('Update the workshop manager to the latest version.');
-        $application->command('rollback', SelfRollback::class)
-            ->setDescription('Rollback the workshop manager to the previous version.');
+
+        if (extension_loaded('phar') && Phar::running()) {
+            $application->command('self-update', SelfUpdate::class)
+                ->setDescription('Update the workshop manager to the latest version.');
+            $application->command('rollback', SelfRollback::class)
+                ->setDescription('Rollback the workshop manager to the previous version.');
+        }
+
         $application->command('verify', VerifyInstall::class, ['validate'])
             ->descriptions('Verify your installation is working correctly');
 
