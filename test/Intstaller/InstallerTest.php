@@ -11,6 +11,7 @@ use Github\Api\Repo;
 use Github\Api\Repository\Contents;
 use Github\Client;
 use Github\Exception\RuntimeException;
+use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
@@ -21,11 +22,14 @@ use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Installer\Installer;
+use PhpSchool\WorkshopManager\InstallResult;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit_Framework_TestCase;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
@@ -38,7 +42,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
     private $linker;
     private $filesystem;
     private $workshopHomeDir;
-    private $composerFactory;
+    private $composerInstaller;
     private $versionChecker;
     private $ghClient;
     private $installer;
@@ -56,7 +60,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->linker = $this->createMock(Linker::class);
         $this->filesystem = new Filesystem;
         $this->workshopHomeDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
-        $this->composerFactory = new ComposerInstallerFactory(new Factory, new NullIO);
+        $this->composerInstaller = $this->createMock(ComposerInstaller::class);
         @mkdir($this->workshopHomeDir);
         $this->ghClient = $this->createMock(Client::class);
         $this->versionChecker = new VersionChecker($this->ghClient);
@@ -66,7 +70,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             $this->linker,
             $this->filesystem,
             $this->workshopHomeDir,
-            $this->composerFactory,
+            $this->composerInstaller,
             $this->ghClient,
             $this->versionChecker,
             '/dev/null/%s/%s'
@@ -222,15 +226,43 @@ class InstallerTest extends PHPUnit_Framework_TestCase
 
     public function testExceptionIsThrownIfCannotRunComposerInstall()
     {
-        $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop, false);
-
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
 
+        $workshop = $this->configureRemoteRepository();
+        $this->configureTags($workshop);
+        $this->configureDownload($workshop);
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%slearn-you-php', $path))
+            ->will($this->throwException(new \InvalidArgumentException('composer.json not found')));
+
         $this->expectException(ComposerFailureException::class);
-        $this->expectExceptionMessageRegExp('/^Composer could not find the config.*/');
+        $this->expectExceptionMessage('composer.json not found');
+
+        $this->installer->installWorkshop($workshop->getCode());
+    }
+
+    public function testExceptionIsThrownIfCannotRunComposerInstallBecauseMissingExtensions()
+    {
+        $path = sprintf('%s/workshops/', $this->workshopHomeDir);
+        @mkdir($path);
+
+        $workshop = $this->configureRemoteRepository();
+        $this->configureTags($workshop);
+        $this->configureDownload($workshop);
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%slearn-you-php', $path))
+            ->willReturn(new InstallResult(1, "the requested PHP extension mbstring is missing from your system\n"));
+
+        $message  = 'This workshop requires some extra PHP extensions. Please install them';
+        $message .= ' and try again. Required extensions are mbstring.';
+
+        $this->expectException(ComposerFailureException::class);
+        $this->expectExceptionMessage($message);
 
         $this->installer->installWorkshop($workshop->getCode());
     }
@@ -243,6 +275,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
 
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
+
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%slearn-you-php', $path))
+            ->willReturn(new InstallResult(0, ''));
 
         $this->localJsonFile
             ->expects($this->once())
@@ -264,6 +302,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $workshop = $this->configureRemoteRepository();
         $this->configureTags($workshop);
         $this->configureDownload($workshop);
+
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir))
+            ->willReturn(new InstallResult(0, ''));
 
         $this->localJsonFile
             ->expects($this->once())
@@ -287,6 +331,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->configureDownload($workshop);
         mkdir(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775, true);
 
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir))
+            ->willReturn(new InstallResult(0, ''));
+
         $this->localJsonFile
             ->expects($this->once())
             ->method('write');
@@ -309,6 +359,12 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $this->configureDownload($workshop);
         mkdir(sprintf('%s/.temp', $this->workshopHomeDir), 0775, true);
         touch(sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir));
+
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir))
+            ->willReturn(new InstallResult(0, ''));
 
         $this->localJsonFile
             ->expects($this->once())
@@ -371,7 +427,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
             ]);
     }
 
-    private function configureDownload(Workshop $workshop, $correctComposerJson = true)
+    private function configureDownload(Workshop $workshop)
     {
         $repo = $this->createMock(Repo::class);
         $contents = $this->createMock(Contents::class);
@@ -391,10 +447,7 @@ class InstallerTest extends PHPUnit_Framework_TestCase
         $zipArchive->open(sprintf('%s/temp.zip', $this->workshopHomeDir), \ZipArchive::CREATE);
         $zipArchive->addEmptyDir('learnyouphp');
         $zipArchive->addFromString('learnyouphp/file1.txt', 'data');
-
-        if ($correctComposerJson) {
-            $zipArchive->addFromString('learnyouphp/composer.json', '{"name" : "learnyouphp"}');
-        }
+        $zipArchive->addFromString('learnyouphp/composer.json', '{"name" : "learnyouphp"}');
 
         $zipArchive->close();
 

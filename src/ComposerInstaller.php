@@ -74,7 +74,7 @@ class ComposerInstaller
         );
 
         return new InstallResult(
-            (Installer::create($io, $composer))->run(),
+            Installer::create($io, $composer)->run(),
             $wrappedOutput->getOutput()
         );
     }

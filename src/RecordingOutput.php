@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\StreamOutput;
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class RecordingOutput extends StreamOutput
+class RecordingOutput implements OutputInterface
 {
     /**
      * @var OutputInterface
@@ -74,12 +74,13 @@ class RecordingOutput extends StreamOutput
      *
      * @param string|array $messages The message as an array of lines or a single string
      * @param bool         $newline  Whether to add a newline
-     * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
+     * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
+     *                               the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
      */
     public function write($messages, $newline = false, $options = 0)
     {
         $messages = (array) $messages;
-        $this->buffer .= implode($newline ? "\n" : "", $messages);
+        $this->buffer .= sprintf('%s%s', implode($newline ? "\n" : '', $messages), $newline ? "\n" : '');
         return $this->output->write($messages, $newline, $options);
     }
 
@@ -87,7 +88,8 @@ class RecordingOutput extends StreamOutput
      * Writes a message to the output and adds a newline at the end.
      *
      * @param string|array $messages The message as an array of lines of a single string
-     * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
+     * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
+     *                               the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
      */
     public function writeln($messages, $options = 0)
     {

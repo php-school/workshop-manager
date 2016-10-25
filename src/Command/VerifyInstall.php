@@ -12,6 +12,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class VerifyInstall
 {
     /**
+     * @var array
+     */
+    private static $requiredExtensions = ['json', 'zip', 'mbstring', 'curl'];
+
+    /**
      * @var InputInterface
      */
     private $input;
@@ -25,6 +30,7 @@ class VerifyInstall
      * @var string
      */
     private $workshopHomeDirectory;
+
 
     /**
      * @param InputInterface $input
@@ -66,19 +72,19 @@ class VerifyInstall
                 '',
                 ' <phps>Run this command again to confirm the PATH variable has been updated.</phps>',
                 ''
-           ]);
+            ]);
         }
 
         if (version_compare(PHP_VERSION, '5.6')) {
-            $message = 'Your PHP version is at least 5.6, which is required by this tool. Be aware that some ';
-            $message .= 'workshops may require a higher version of PHP, so you may not be able to install them.';
-            $style->success($message);
+            $message  = 'Your PHP version is %s, PHP 5.6 is the minimum supported version for this tool. Please note ';
+            $message .= 'that some workshops may require a higher version of PHP, so you may not be able to install ';
+            $message .= 'them without upgrading PHP.';
+            $style->success(sprintf($message, PHP_VERSION));
         } else {
             $style->error('You need a PHP version of at least 5.6 to use PHP School.');
         }
 
-        $requiredExtensions = ['json', 'zip', 'mbstring', 'curl'];
-        $missingExtensions  = array_filter($requiredExtensions, function ($extension) {
+        $missingExtensions  = array_filter(static::$requiredExtensions, function ($extension) {
             return !extension_loaded($extension);
         });
 
@@ -91,8 +97,10 @@ class VerifyInstall
             );
         });
 
-        $message  = 'All required PHP extensions are installed. Please note that some workshops may require ';
-        $message .= 'additional PHP extensions.';
-        $style->success($message);
+        if (empty($missingExtensions)) {
+            $message  = 'All required PHP extensions are installed. Please note that some workshops may require ';
+            $message .= 'additional PHP extensions.';
+            $style->success($message);
+        }
     }
 }

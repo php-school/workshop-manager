@@ -129,15 +129,18 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('installWorkshop')
             ->with('learnyouphp')
-            ->willThrowException(new ComposerFailureException('Some error'));
+            ->willThrowException(new ComposerFailureException('Some error.'));
 
-        $msg  = " <error> There was a problem installing dependencies for \"learnyouphp\". Try running in verbose mode";
-        $msg .= sprintf(" to see the composer error: %s install -v </error>\n", $_SERVER['argv'][0]);
+        $msg  = " <error> There was a problem installing dependencies for \"learnyouphp\". Some error.";
+        $msg .= sprintf(
+            " Try running in verbose mode to see more details: %s install -v </error>\n",
+            $_SERVER['argv'][0]
+        );
         $this->output
             ->expects($this->exactly(2))
             ->method('writeln')
             ->withConsecutive(
-                [""],
+                [''],
                 [$msg]
             );
 

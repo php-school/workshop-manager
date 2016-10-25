@@ -26,6 +26,6 @@ class ComposerFailureException extends \RuntimeException
         $message  = 'This workshop requires some extra PHP extensions. Please install them';
         $message .= ' and try again. Required extensions are %s.';
 
-        return new self(sprintf($message, implode(", ", $missingExtensions)));
+        return new self(sprintf($message, implode(', ', $missingExtensions)));
     }
 }
