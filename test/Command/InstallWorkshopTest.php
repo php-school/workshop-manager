@@ -181,7 +181,7 @@ class InstallWorkshopTest extends PHPUnit_Framework_TestCase
 
         $this->output
             ->expects($this->once())
-            ->method('isVeryVerbose')
+            ->method('isVerbose')
             ->willReturn(true);
 
         $this->expectException(\Exception::class);
