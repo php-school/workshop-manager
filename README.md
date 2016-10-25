@@ -22,10 +22,26 @@ A tool to manage your PHP School workshops. Search, install, update & remove wor
 
 ## Installation
 
+### Phar
+
+This is the recommended installation method.
+
 ```
 curl https://php-school.github.io/workshop-manager/workshop-manager.phar
 mv workshop-manager.phar /usr/local/bin/workshop-manager
 chmod +x /usr/local/bin/workshop-manager
+workshop-manager verify
+```
+
+### Composer
+
+If you install the workshop-manager via composer you will need to make sure that you don't have conflicting dependencies
+with other globally installed tools. Also you will need to be able to use the self-update and rollback commands.
+
+You will need to make sure that your composer global bin directory is available in your $PATH environment variable.
+
+```
+composer global require php-school/workshop-manager
 workshop-manager verify
 ```
 
