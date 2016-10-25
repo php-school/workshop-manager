@@ -25,6 +25,11 @@ class Application extends PhpDiApp
 
     public function getHelp()
     {
-        return sprintf("<fg=magenta>%s</>\n\n%s", self::$logo, parent::getHelp());
+        return sprintf(
+            "<fg=magenta>%s</>\n\n<comment>%s</comment> <info>%s</info>",
+            self::$logo,
+            $this->getName(),
+            $this->getVersion()
+        );
     }
 }
