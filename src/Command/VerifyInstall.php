@@ -91,7 +91,7 @@ class VerifyInstall
         array_walk($missingExtensions, function ($missingExtension) use ($style) {
             $style->error(
                 sprintf(
-                    'The %s extension is missing - use your preferred package manager to install it',
+                    'The %s extension is missing - use your preferred package manager to install it.',
                     $missingExtension
                 )
             );
