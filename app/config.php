@@ -35,7 +35,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
-        $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.0.0', $c);
+        $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.1.0', $c);
         $application->command('install workshopName', InstallWorkshop::class, ['add'])
             ->setDescription('Install a PHP School workshop.');
         $application->command('uninstall workshopName', UninstallWorkshop::class, ['remove', 'delete'])
@@ -60,7 +60,7 @@ return [
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
         $application->setName('PHP School Workshop Manager');
-        $application->setVersion('1.0.1');
+        $application->setVersion('1.1.0');
 
         return $application;
     }),
