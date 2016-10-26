@@ -52,7 +52,7 @@ class VerifyInstallTest extends PHPUnit_Framework_TestCase
 
         $output = $this->output->fetch();
         $this->assertRegExp(
-            sprintf('/%s/', preg_quote('The PHP School bin directory is not in your PATH variable.')),
+            sprintf('/%s/', preg_quote('[ERROR] The PHP School bin directory is not in your PATH variable.')),
             $output
         );
     }
@@ -65,7 +65,42 @@ class VerifyInstallTest extends PHPUnit_Framework_TestCase
 
         $output = $this->output->fetch();
         $this->assertRegExp(
-            sprintf('/%s/', preg_quote('Your $PATH environment variable is configured correctly')),
+            sprintf('/%s/', preg_quote('[OK] Your $PATH environment variable is configured correctly')),
+            $output
+        );
+    }
+
+    public function testAllRequiredExtensions()
+    {
+        $this->command->__invoke();
+
+        $output = $this->output->fetch();
+        $this->assertRegExp(
+            sprintf('/%s/', preg_quote('[OK] All required PHP extensions are installed.')),
+            $output
+        );
+    }
+
+    public function testMissingExtensions()
+    {
+        $rc = new \ReflectionClass(VerifyInstall::class);
+        $rp = $rc->getProperty('requiredExtensions');
+        $rp->setAccessible(true);
+        $rp->setValue($this->command, ['some-ext']);
+
+        $this->command->__invoke();
+
+        $output = $this->output->fetch();
+        $this->assertRegExp(
+            sprintf(
+                '/%s/',
+                preg_quote('[ERROR] The some-ext extension is missing - use your preferred package manager to install it')
+            ),
+            $output
+        );
+
+        $this->assertNotRegExp(
+            sprintf('/%s/', preg_quote('[OK] All required PHP extensions are installed.')),
             $output
         );
     }

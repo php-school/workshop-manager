@@ -17,13 +17,13 @@ use PhpSchool\WorkshopManager\Command\SelfUpdate;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
 use PhpSchool\WorkshopManager\Command\UpdateWorkshop;
 use PhpSchool\WorkshopManager\Command\VerifyInstall;
+use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Downloader;
 use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Installer\Installer;
 use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use PhpSchool\WorkshopManager\Installer\Updater;
-use PhpSchool\WorkshopManager\IOFactory;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\ManagerState;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
@@ -125,14 +125,13 @@ return [
         );
     }),
     Installer::class => \DI\factory(function (ContainerInterface $c) {
-        $io = $c->get(IOFactory::class)->getNullableIO($c->get(InputInterface::class), $c->get(OutputInterface::class));
         return new Installer(
             $c->get(InstalledWorkshopRepository::class),
             $c->get(RemoteWorkshopRepository::class),
             $c->get(Linker::class),
             $c->get(Filesystem::class),
             $c->get('appDir'),
-            new ComposerInstallerFactory($c->get(Factory::class), $io),
+            $c->get(ComposerInstaller::class),
             $c->get(Client::class),
             $c->get(VersionChecker::class)
         );
@@ -159,14 +158,14 @@ return [
     Client::class => \DI\factory(function (ContainerInterface $c) {
         return new Client;
     }),
-    Factory::class => \DI\object(),
-    IOFactory::class => \DI\object(),
-    IOInterface::class => \DI\factory(function (ContainerInterface $c) {
-        return $c->get(IOFactory::class)->getIO(
+    ComposerInstaller::class => function (ContainerInterface $c) {
+        return new ComposerInstaller(
             $c->get(InputInterface::class),
-            $c->get(OutputInterface::class)
+            $c->get(OutputInterface::class),
+            new Factory
         );
-    }),
+    },
+    Factory::class => \DI\object(),
     InputInterface::class => \Di\factory(function () {
         return new \Symfony\Component\Console\Input\ArgvInput($_SERVER['argv']);
     }),
