@@ -25,7 +25,7 @@ class InstallResult
     private $missingExtensions;
 
     /**
-     * @param string $exitCode
+     * @param int $exitCode
      * @param string $output
      */
     public function __construct($exitCode, $output)
