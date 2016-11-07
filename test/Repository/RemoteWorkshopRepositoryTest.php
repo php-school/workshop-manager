@@ -180,4 +180,45 @@ class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
 
         $this->assertCount(0, $repo->find('not-a-workshop')); //spelt too many characters wrong
     }
+
+    public function testAllReturnsAllWorkshops()
+    {
+        $json = $this->createMock(JsonFile::class);
+        $json
+            ->expects($this->once())
+            ->method('read')
+            ->will(
+                $this->returnValue(
+                    [
+                        'workshops' => [
+                            [
+                                'workshop_code' => 'learnyouphp',
+                                'display_name' => 'Learn you PHP',
+                                'github_owner' => 'aydin',
+                                'github_repo_name' => 'repo',
+                                'description' => 'A workshop',
+                                'type' => 'core',
+                            ],
+                            [
+                                'workshop_code' => 'php7',
+                                'display_name' => 'Learn PHP7',
+                                'github_owner' => 'aydin',
+                                'github_repo_name' => 'repo',
+                                'description' => 'A workshop',
+                                'type' => 'core',
+                            ]
+                        ]
+                    ]
+                )
+            );
+
+        $json
+            ->expects($this->once())
+            ->method('getPath')
+            ->willReturn('http://www.google.com');
+
+        $repo = new RemoteWorkshopRepository($json);
+
+        $this->assertCount(2, $repo->all());
+    }
 }

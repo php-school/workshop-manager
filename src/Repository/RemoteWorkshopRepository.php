@@ -74,6 +74,15 @@ class RemoteWorkshopRepository
     }
 
     /**
+     * @return array
+     */
+    public function all()
+    {
+        $this->init();
+        return $this->workshops;
+    }
+
+    /**
      * @param string $searchName
      *
      * @return Workshop[]
