@@ -11,6 +11,10 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ### Removed
 
+## [1.2.0]
+### Changed
+ - Changed search command search term to optional. Without the term, all available workshops are listed (#23)
+
 ## [1.1.0]
 ### Fixed
  - Removed samsonasik/package-versions  - doesn't work well when globally installed - refs: https://github.com/Ocramius/PackageVersions/issues/38
