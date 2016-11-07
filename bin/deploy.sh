@@ -1,4 +1,8 @@
 #!/bin/bash
+
+#reset changes from composer updates
+git reset --hard
+
 # Unpack secrets; -C ensures they unpack *in* the .travis directory
 tar xvf .travis/secrets.tar -C .travis
 
