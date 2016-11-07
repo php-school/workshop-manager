@@ -42,7 +42,7 @@ return [
             ->setDescription('Uninstall a PHP School workshop.');
         $application->command('update workshopName', UpdateWorkshop::class)
             ->setDescription('update a PHP School workshop.');
-        $application->command('search workshopName', SearchWorkshops::class, ['find'])
+        $application->command('search [workshopName]', SearchWorkshops::class, ['find'])
             ->setDescription('Search for a PHP School workshop.');
         $application->command('installed', ListWorkshops::class, ['show'])
             ->setDescription('List installed PHP School workshops.');

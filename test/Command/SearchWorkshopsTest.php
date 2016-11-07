@@ -99,4 +99,23 @@ class SearchWorkshopsTest extends PHPUnit_Framework_TestCase
 
         $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✘/', $output);
     }
+
+    public function testSearchListsAllRemotesIfNoSearchTerm()
+    {
+        $workshop1 = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $workshop2 = new Workshop('learnyoucouchdb', 'learnyoucouchdb', 'aydin', 'repo', 'workshop', 'core');
+
+        $this->remoteRepo
+            ->expects($this->once())
+            ->method('all')
+            ->willReturn([$workshop1, $workshop2]);
+
+        $this->command->__invoke(null);
+        $output = $this->output->fetch();
+
+
+        $expected  = '/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✘\s+|\s+';
+        $expected  .= 'learnyoucouchdb\s+\|\sworkshop\s+\|\slearnyoucouchdb\s+\|\sCore\s+\|\s+✘\s+|\s+/';
+        $this->assertRegExp($expected, $output);
+    }
 }

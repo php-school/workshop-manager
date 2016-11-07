@@ -54,9 +54,11 @@ class SearchWorkshops
     {
         $this->output->writeln('');
 
-        $workshops = $this->remoteWorkshopRepository->find($workshopName);
+        $workshops = $workshopName
+            ? $this->remoteWorkshopRepository->find($workshopName)
+            : $this->remoteWorkshopRepository->all();
 
-        if (empty($workshops)) {
+        if (empty($workshops) && $workshopName) {
             return $this->output->writeln(sprintf(" <info>No workshops found matching \"%s\"</info>\n", $workshopName));
         }
 
