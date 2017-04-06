@@ -29,6 +29,8 @@ install:
   - composer info -i
 
 script:
+  - stty cols 80
+  - export COLUMNS=80
   - composer test-travis
 
 after_success:
