@@ -68,7 +68,8 @@
     "extra": {
         "tools": {
             "box": {
-                "url": "https://github.com/box-project/box2/releases/download/2.7.2/box-2.7.2.phar"
+                "url": "https://github.com/box-project/box2/releases/download/2.7.2/box-2.7.2.phar",
+                "only-dev": false
             }
         }
     }
