@@ -52,7 +52,7 @@
         ],
         "phar": [
             "@composer install --no-dev -o",
-            "box build -vv"
+            "box.phar build -vv"
         ],
         "test": [
             "phpunit",
