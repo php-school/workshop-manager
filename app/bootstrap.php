@@ -34,13 +34,13 @@ $container = (new \DI\ContainerBuilder())
 $app = $container->get(Application::class);
 
 if (DIRECTORY_SEPARATOR === '\\') {
-    $container->get(\Composer\IO\IOInterface::class)->write([
+    $container->get(OutputInterface::class)->writeln([
         '',
         ' Woops!... It looks like your not running in a Unix environment',
         '',
         ' Currently we only support Unix based systems, if you\'re running Windows please use Cygwin',
         ' See <info>https://phpschool.io/install#windows</info> for more details',
-        ''
+        '',
     ]);
     exit;
 }
