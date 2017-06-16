@@ -18,6 +18,7 @@ A tool to manage your PHP School workshops. Search, install, update & remove wor
     <img src="https://phpschool.herokuapp.com/badge.svg">
 </a>
 </p>
+
 ----
 
 ## Installation
