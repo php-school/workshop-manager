@@ -30,5 +30,8 @@ RUN curl -O https://php-school.github.io/workshop-manager/workshop-manager.phar 
     && chmod +x /usr/local/bin/workshop-manager \
     && workshop-manager verify
 
+RUN echo PS1=\"\\[\\e[35m\\]$ \\e[0m\\]\" >> ~/.bashrc
+RUN echo TERM=xterm >> ~/.bashrc
+
 WORKDIR /phpschool
 CMD ["bash"]
