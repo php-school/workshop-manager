@@ -37,25 +37,79 @@ return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
         $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.1.0', $c);
         $application->command('install workshopName', InstallWorkshop::class, ['add'])
-            ->setDescription('Install a PHP School workshop.');
+            ->setDescription('Install a PHP School workshop.')
+            ->setHelp(<<<'EOF'
+This command requires a <comment>workshopName</comment> code as an argument:
+  <info>workshop-manager %command.name% <comment>workshopName</comment></info>
+Install a workshop with its package field, you can find this by doing a search like:
+  <info>workshop-manager search php</info>
+In this example you would just use <comment>learnyouphp</comment> as workshopName.
+  <info>workshop-manager %command.name% <comment>learnyouphp</comment></info>
+You can then get started on your <comment>workshop</comment> instantly by using its package name.
+EOF
+            );
         $application->command('uninstall workshopName', UninstallWorkshop::class, ['remove', 'delete'])
-            ->setDescription('Uninstall a PHP School workshop.');
+            ->setDescription('Uninstall a PHP School workshop.')
+            ->setHelp(<<<'EOF'
+This command requires a <comment>workshopName</comment> code as an argument:
+  <info>workshop-manager %command.name% <comment>workshopName</comment></info>
+Remove a workshop by its package name (Example using <comment>learnyouphp</comment> as workshopName).
+  <info>workshop-manager %command.name% <comment>learnyouphp</comment></info>
+EOF
+            );
         $application->command('update workshopName', UpdateWorkshop::class)
-            ->setDescription('update a PHP School workshop.');
+            ->setDescription('update a PHP School workshop.')
+            ->setHelp(<<<'EOF'
+This command requires a <comment>workshopName</comment> code as an argument:
+  <info>workshop-manager %command.name% <comment>workshopName</comment></info>
+To update a workshop you already have installed (Example using <comment>learnyouphp</comment> as workshopName).
+  <info>workshop-manager %command.name% <comment>learnyouphp</comment></info>
+EOF
+            );
         $application->command('search [workshopName]', SearchWorkshops::class, ['find'])
-            ->setDescription('Search for a PHP School workshop.');
+            ->setDescription('Search for a PHP School workshop.')
+            ->setHelp(<<<'EOF'
+This command requires part of workshop name as argument:
+  <info>workshop-manager %command.name% <comment>workshopName</comment></info>
+Quickly find available workshops by part of its name and get an instant indication if they're already installed.
+  <info>workshop-manager %command.name% <comment>php</comment></info>
+EOF
+            );
         $application->command('installed', ListWorkshops::class, ['show'])
-            ->setDescription('List installed PHP School workshops.');
+            ->setDescription('List installed PHP School workshops.')
+            ->setHelp(<<<'EOF'
+List the installed workshops, just so you know what you can get working on.
+  <info>workshop-manager <comment>%command.name%</comment></info>
+It will also let you know if you need to update any workshops that you already have installed.
+EOF
+            );
 
         if (extension_loaded('phar') && Phar::running()) {
             $application->command('self-update', SelfUpdate::class)
-                ->setDescription('Update the workshop manager to the latest version.');
+                ->setDescription('Update the workshop manager to the latest version.')
+                ->setHelp(<<<'EOF'
+Keeping the workshop manager up to date is just as important as updated the workshops themselves.
+  <info>workshop-manager <comment>%command.name%</comment></info>
+You can then continue using the workshop manager as you were before.
+EOF
+            );
             $application->command('rollback', SelfRollback::class)
-                ->setDescription('Rollback the workshop manager to the previous version.');
+                ->setDescription('Rollback the workshop manager to the previous version.')
+                ->setHelp(<<<'EOF'
+Something go horribly wrong after that <comment>self-update</comment>? No worries this command got your back.
+  <info>workshop-manager <comment>%command.name%</comment></info>
+You can then continue using the workshop manager as you were before.
+EOF
+            );
         }
 
         $application->command('verify', VerifyInstall::class, ['validate'])
-            ->descriptions('Verify your installation is working correctly');
+            ->descriptions('Verify your installation is working correctly')->setHelp(<<<'EOF'
+This command will help diagnose those issues and point you in the right direction.
+  <info>workshop-manager <comment>%command.name%</comment></info>
+You might need to verify your installation if your running into problems.
+EOF
+            );
 
         $application->setAutoExit(false);
         $application->setCatchExceptions(false);
