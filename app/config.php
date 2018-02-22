@@ -39,19 +39,19 @@ return [
         $application->command('install workshopName', InstallWorkshop::class, ['add'])
             ->setDescription('Install a PHP School workshop.')
             ->setHelp(<<<'EOF'
-This command requires a <comment>workshopName</comment> code as argument:
-  <info>workshop-manager <comment>workshopName</comment></info>
+This command requires a <comment>workshopName</comment> code as an argument:
+  <info>workshop-manager %command.name% <comment>workshopName</comment></info>
 Install a workshop with its package field, you can find this by doing a search like:
   <info>workshop-manager search php</info>
 In this example you would just use <comment>learnyouphp</comment> as workshopName.
-  <info>workshop-manager install <comment>learnyouphp</comment></info>
+  <info>workshop-manager %command.name% <comment>learnyouphp</comment></info>
 You can then get started on your <comment>workshop</comment> instantly by using its package name.
 EOF
             );
         $application->command('uninstall workshopName', UninstallWorkshop::class, ['remove', 'delete'])
             ->setDescription('Uninstall a PHP School workshop.')
             ->setHelp(<<<'EOF'
-This command requires a <comment>workshopName</comment> code as argument:
+This command requires a <comment>workshopName</comment> code as an argument:
   <info>workshop-manager %command.name% <comment>workshopName</comment></info>
 Remove a workshop by its package name (Example using <comment>learnyouphp</comment> as workshopName).
   <info>workshop-manager %command.name% <comment>learnyouphp</comment></info>
@@ -60,7 +60,7 @@ EOF
         $application->command('update workshopName', UpdateWorkshop::class)
             ->setDescription('update a PHP School workshop.')
             ->setHelp(<<<'EOF'
-This command requires a <comment>workshopName</comment> code as argument:
+This command requires a <comment>workshopName</comment> code as an argument:
   <info>workshop-manager %command.name% <comment>workshopName</comment></info>
 To update a workshop you already have installed (Example using <comment>learnyouphp</comment> as workshopName).
   <info>workshop-manager %command.name% <comment>learnyouphp</comment></info>
