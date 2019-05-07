@@ -27,14 +27,14 @@ use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class InstallerTest extends PHPUnit_Framework_TestCase
+class InstallerTest extends TestCase
 {
     private $localJsonFile;
     private $installedWorkshopRepo;

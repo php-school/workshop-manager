@@ -3,7 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest;
 
 use PhpSchool\WorkshopManager\Filesystem;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
@@ -11,7 +11,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
  * @package PhpSchool\WorkshopManagerTest
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class FilesystemTest extends PHPUnit_Framework_TestCase
+class FilesystemTest extends TestCase
 {
     /**
      * @var Filesystem

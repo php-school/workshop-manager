@@ -6,14 +6,14 @@ use Composer\IO\IOInterface;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Linker;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class LinkerTest extends PHPUnit_Framework_TestCase
+class LinkerTest extends TestCase
 {
     /**
      * @var Filesystem

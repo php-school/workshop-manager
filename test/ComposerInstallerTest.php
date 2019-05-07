@@ -5,7 +5,7 @@ namespace PhpSchool\WorkshopManagerTest;
 use Composer\Factory;
 use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\Filesystem;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Seld\JsonLint\ParsingException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class ComposerInstallerTest extends PHPUnit_Framework_TestCase
+class ComposerInstallerTest extends TestCase
 {
     /**
      * @var string

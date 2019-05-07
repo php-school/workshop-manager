@@ -9,13 +9,13 @@ use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer\Installer;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class InstallWorkshopTest extends PHPUnit_Framework_TestCase
+class InstallWorkshopTest extends TestCase
 {
     /**
      * @var Installer

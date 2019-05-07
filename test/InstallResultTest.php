@@ -3,12 +3,12 @@
 namespace PhpSchool\WorkshopManagerTest;
 
 use PhpSchool\WorkshopManager\InstallResult;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class InstallResultTest extends PHPUnit_Framework_TestCase
+class InstallResultTest extends TestCase
 {
     public function testGetters()
     {

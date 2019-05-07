@@ -9,13 +9,13 @@ use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\VersionChecker;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class VersionCheckerTest extends PHPUnit_Framework_TestCase
+class VersionCheckerTest extends TestCase
 {
     public function testGetLatestReleaseThrowsExceptionIfApiThrowsException()
     {

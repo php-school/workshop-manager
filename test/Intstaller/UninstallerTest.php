@@ -9,13 +9,13 @@ use PhpSchool\WorkshopManager\Filesystem;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Installer\Uninstaller;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class UninstallerTest extends PHPUnit_Framework_TestCase
+class UninstallerTest extends TestCase
 {
     private $localJsonFile;
     private $installedWorkshopRepo;

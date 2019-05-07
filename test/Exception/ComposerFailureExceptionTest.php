@@ -4,12 +4,12 @@ namespace PhpSchool\WorkshopManagerTest\Exception;
 
 use Exception;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class ComposerFailureExceptionTest extends PHPUnit_Framework_TestCase
+class ComposerFailureExceptionTest extends TestCase
 {
     public function testFromException()
     {

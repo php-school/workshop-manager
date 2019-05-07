@@ -6,7 +6,7 @@ use Exception;
 use Humbug\SelfUpdate\Updater;
 use PhpSchool\WorkshopManager\Command\ListWorkshops;
 use PhpSchool\WorkshopManager\Command\SelfRollback;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @package PhpSchool\WorkshopManagerTest\Command
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class SelfRollbackTest extends PHPUnit_Framework_TestCase
+class SelfRollbackTest extends TestCase
 {
     /**
      * @var Updater

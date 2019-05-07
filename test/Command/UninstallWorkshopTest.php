@@ -5,7 +5,7 @@ namespace PhpSchool\WorkshopManagerTest\Command;
 use PhpSchool\WorkshopManager\Command\UninstallWorkshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer\Uninstaller;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -14,7 +14,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
  * @package PhpSchool\WorkshopManagerTest\Command
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class UninstallWorkshopTest extends PHPUnit_Framework_TestCase
+class UninstallWorkshopTest extends TestCase
 {
     /**
      * @var Uninstaller
