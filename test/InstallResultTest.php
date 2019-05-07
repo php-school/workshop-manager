@@ -5,9 +5,6 @@ namespace PhpSchool\WorkshopManagerTest;
 use PhpSchool\WorkshopManager\InstallResult;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class InstallResultTest extends TestCase
 {
     public function testGetters()

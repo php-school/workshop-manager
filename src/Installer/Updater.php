@@ -6,9 +6,6 @@ use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class Updater
 {
     /**

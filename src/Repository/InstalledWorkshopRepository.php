@@ -6,10 +6,6 @@ use Composer\Json\JsonFile;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- */
 class InstalledWorkshopRepository
 {
     /**

@@ -8,9 +8,6 @@ use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class RecordingOutputTest extends TestCase
 {
     /**

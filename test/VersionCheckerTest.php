@@ -5,16 +5,11 @@ namespace PhpSchool\WorkshopManagerTest;
 use Github\Api\GitData;
 use Github\Api\GitData\Tags;
 use Github\Client;
-use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
-use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class VersionCheckerTest extends TestCase
 {
     public function testGetLatestReleaseThrowsExceptionIfApiThrowsException()

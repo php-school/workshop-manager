@@ -5,9 +5,6 @@ namespace PhpSchool\WorkshopManagerTest\Entity;
 use PhpSchool\WorkshopManager\Entity\Release;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class ReleaseTest extends TestCase
 {
     public function testGetters()

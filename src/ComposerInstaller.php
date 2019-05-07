@@ -7,14 +7,9 @@ use Composer\Installer;
 use Composer\IO\ConsoleIO;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class ComposerInstaller
 {
     /**

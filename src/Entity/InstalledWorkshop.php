@@ -2,10 +2,6 @@
 
 namespace PhpSchool\WorkshopManager\Entity;
 
-/**
- * @package PhpSchool\WorkshopManager\Entity
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 final class InstalledWorkshop extends Workshop
 {
     /**

@@ -9,10 +9,6 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class ListWorkshops
 {
     /**

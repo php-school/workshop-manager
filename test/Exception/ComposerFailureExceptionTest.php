@@ -6,9 +6,6 @@ use Exception;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class ComposerFailureExceptionTest extends TestCase
 {
     public function testFromException()

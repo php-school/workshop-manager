@@ -22,10 +22,6 @@ use PhpSchool\WorkshopManager\VersionChecker;
 use RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class Installer
 {
     /**

@@ -14,9 +14,6 @@ use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class UpdaterTest extends TestCase
 {
     /**

@@ -12,10 +12,6 @@ use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-/**
- * @package PhpSchool\WorkshopManagerTest\Command
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class ListWorkshopsTest extends TestCase
 {
     private $localJsonFile;

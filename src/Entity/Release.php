@@ -2,9 +2,6 @@
 
 namespace PhpSchool\WorkshopManager\Entity;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class Release
 {
     /**

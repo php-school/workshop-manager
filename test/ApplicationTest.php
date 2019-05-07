@@ -5,9 +5,6 @@ namespace PhpSchool\WorkshopManagerTest;
 use PhpSchool\WorkshopManager\Application;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class ApplicationTest extends TestCase
 {
     public function testGetHelp()

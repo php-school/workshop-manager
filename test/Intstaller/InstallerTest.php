@@ -2,8 +2,6 @@
 
 namespace PhpSchool\WorkshopManagerTest\Installer;
 
-use Composer\Factory;
-use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Github\Api\GitData;
 use Github\Api\GitData\Tags;
@@ -28,12 +26,7 @@ use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class InstallerTest extends TestCase
 {
     private $localJsonFile;

@@ -11,13 +11,8 @@ use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @package PhpSchool\WorkshopManagerTest\Command
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class SearchWorkshopsTest extends TestCase
 {
     private $localJsonFile;

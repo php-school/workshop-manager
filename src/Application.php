@@ -4,10 +4,6 @@ namespace PhpSchool\WorkshopManager;
 
 use Silly\Edition\PhpDi\Application as PhpDiApp;
 
-/**
- * @package PhpSchool\WorkshopManager
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class Application extends PhpDiApp
 {
     /**

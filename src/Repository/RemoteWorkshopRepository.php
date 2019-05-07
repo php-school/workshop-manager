@@ -7,11 +7,6 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 
-/**
- * @package PhpSchool\WorkshopManager\Repository
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- */
 class RemoteWorkshopRepository
 {
     /**

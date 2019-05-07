@@ -5,10 +5,6 @@ namespace PhpSchool\WorkshopManager;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem as SymfonyFilesystem;
 
-/**
- * @package PhpSchool\WorkshopManager
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class Filesystem extends SymfonyFilesystem
 {
     /**

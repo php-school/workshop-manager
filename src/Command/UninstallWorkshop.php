@@ -7,10 +7,6 @@ use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * Class UninstallWorkshop
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- */
 class UninstallWorkshop
 {
     /**
