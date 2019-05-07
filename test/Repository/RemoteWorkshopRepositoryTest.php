@@ -7,14 +7,14 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class RemoteWorkshopRepositoryTest
  * @package PhpSchool\WorkshopManagerTest\Repository
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class RemoteWorkshopRepositoryTest extends PHPUnit_Framework_TestCase
+class RemoteWorkshopRepositoryTest extends TestCase
 {
     public function testExceptionIsThrownIfNoConnection()
     {

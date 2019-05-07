@@ -3,7 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest\Command;
 
 use PhpSchool\WorkshopManager\Command\VerifyInstall;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class VerifyInstallTest extends PHPUnit_Framework_TestCase
+class VerifyInstallTest extends TestCase
 {
 
     /**

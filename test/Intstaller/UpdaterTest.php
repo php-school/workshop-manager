@@ -12,12 +12,12 @@ use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use PhpSchool\WorkshopManager\Installer\Updater;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class UpdaterTest extends PHPUnit_Framework_TestCase
+class UpdaterTest extends TestCase
 {
     /**
      * @var Installer|PHPUnit_Framework_MockObject_MockObject

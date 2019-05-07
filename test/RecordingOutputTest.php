@@ -3,7 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest;
 
 use PhpSchool\WorkshopManager\RecordingOutput;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class RecordingOutputTest extends PHPUnit_Framework_TestCase
+class RecordingOutputTest extends TestCase
 {
     /**
      * @var RecordingOutput

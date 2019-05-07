@@ -11,14 +11,14 @@ use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer\Updater;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class UpdateWorkshopTest extends PHPUnit_Framework_TestCase
+class UpdateWorkshopTest extends TestCase
 {
     /**
      * @var Updater

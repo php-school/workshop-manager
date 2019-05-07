@@ -4,14 +4,14 @@ namespace PhpSchool\WorkshopManagerTest\Entity;
 
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class InstalledWorkshopTest
  * @package PhpSchool\WorkshopManagerTest\Entity
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class InstalledWorkshopTest extends PHPUnit_Framework_TestCase
+class InstalledWorkshopTest extends TestCase
 {
     public function testGetters()
     {

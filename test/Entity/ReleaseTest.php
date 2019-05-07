@@ -3,12 +3,12 @@
 namespace PhpSchool\WorkshopManagerTest\Entity;
 
 use PhpSchool\WorkshopManager\Entity\Release;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class ReleaseTest extends PHPUnit_Framework_TestCase
+class ReleaseTest extends TestCase
 {
     public function testGetters()
     {

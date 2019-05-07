@@ -9,16 +9,14 @@ use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @package PhpSchool\WorkshopManagerTest\Command
  * @author Aydin Hassan <aydin@hotmail.co.uk>
  */
-class ListWorkshopsTest extends PHPUnit_Framework_TestCase
+class ListWorkshopsTest extends TestCase
 {
     private $localJsonFile;
 
