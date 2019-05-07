@@ -2,16 +2,12 @@
 
 namespace PhpSchool\WorkshopManager;
 
-use Composer\IO\IOInterface;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotInstalledException;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- */
 class Linker
 {
     /**

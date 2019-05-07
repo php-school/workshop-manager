@@ -4,9 +4,6 @@ namespace PhpSchool\WorkshopManager;
 
 use Illuminate\Support\Collection;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class InstallResult
 {
     /**

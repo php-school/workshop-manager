@@ -6,11 +6,6 @@ use PhpSchool\WorkshopManager\Filesystem;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * Class FilesystemTest
- * @package PhpSchool\WorkshopManagerTest
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class FilesystemTest extends TestCase
 {
     /**

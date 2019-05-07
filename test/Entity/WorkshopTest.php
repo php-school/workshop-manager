@@ -5,11 +5,6 @@ namespace PhpSchool\WorkshopManagerTest\Entity;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class WorkshopTest
- * @package PhpSchool\WorkshopManagerTest\Entity
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class WorkshopTest extends TestCase
 {
     public function testGetters()

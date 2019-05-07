@@ -4,11 +4,7 @@ namespace PhpSchool\WorkshopManager;
 
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class RecordingOutput implements OutputInterface
 {
     /**

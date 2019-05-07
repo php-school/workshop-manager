@@ -12,9 +12,6 @@ use PhpSchool\WorkshopManager\Installer\Installer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class InstallWorkshopTest extends TestCase
 {
     /**

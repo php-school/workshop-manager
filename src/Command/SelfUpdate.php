@@ -5,10 +5,6 @@ namespace PhpSchool\WorkshopManager\Command;
 use Humbug\SelfUpdate\Updater;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @package PhpSchool\WorkshopManager\Command
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class SelfUpdate
 {
     /**

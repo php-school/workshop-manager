@@ -10,10 +10,6 @@ use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer\Installer;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * Class InstallWorkshop
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- */
 class InstallWorkshop
 {
     /**

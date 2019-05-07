@@ -10,9 +10,6 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class LinkerTest extends TestCase
 {
     /**

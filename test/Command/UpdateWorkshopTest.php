@@ -2,22 +2,17 @@
 
 namespace PhpSchool\WorkshopManagerTest\Command;
 
-use PhpSchool\WorkshopManager\Command\InstallWorkshop;
 use PhpSchool\WorkshopManager\Command\UpdateWorkshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\NoUpdateAvailableException;
-use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Installer\Updater;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class UpdateWorkshopTest extends TestCase
 {
     /**

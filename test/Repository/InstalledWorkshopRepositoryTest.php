@@ -4,16 +4,11 @@ namespace PhpSchool\WorkshopManagerTest\Repository;
 
 use Composer\Json\JsonFile;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
-use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\WorkshopRepository;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class WorkshopRepositoryTest
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class InstalledWorkshopRepositoryTest extends TestCase
 {
     public function testGetByNameThrowsExceptionIfWorkshopNotExist()

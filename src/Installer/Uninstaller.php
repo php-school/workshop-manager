@@ -8,10 +8,6 @@ use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use Symfony\Component\Filesystem\Exception\IOException;
 
-/**
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class Uninstaller
 {
     /**

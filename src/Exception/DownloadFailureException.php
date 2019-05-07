@@ -2,10 +2,6 @@
 
 namespace PhpSchool\WorkshopManager\Exception;
 
-/**
- * Class DownloadFailureException
- * @author Michael Woodward <mikeymike.mw@gmail.com>
- */
 final class DownloadFailureException extends \RuntimeException
 {
     /**

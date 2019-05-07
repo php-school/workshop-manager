@@ -9,11 +9,6 @@ use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Class RemoteWorkshopRepositoryTest
- * @package PhpSchool\WorkshopManagerTest\Repository
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class RemoteWorkshopRepositoryTest extends TestCase
 {
     public function testExceptionIsThrownIfNoConnection()

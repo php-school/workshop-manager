@@ -9,9 +9,6 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use RuntimeException;
 
-/**
- * @author Aydin Hassan <aydin@hotmail.co.uk>
- */
 class VersionChecker
 {
     /**
