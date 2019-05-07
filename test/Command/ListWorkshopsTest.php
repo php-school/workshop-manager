@@ -99,7 +99,8 @@ class ListWorkshopsTest extends TestCase
 
         $output = $this->output->fetch();
         $this->assertRegExp(
-            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Nope!/', $output
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Nope!/',
+            $output
         );
     }
 }

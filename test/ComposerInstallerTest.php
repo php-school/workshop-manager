@@ -45,7 +45,10 @@ class ComposerInstallerTest extends TestCase
         $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
         $installer = new ComposerInstaller($input, $output, new Factory);
-        file_put_contents(sprintf('%s/composer.json', $this->tempDir), '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}');
+        file_put_contents(
+            sprintf('%s/composer.json', $this->tempDir),
+            '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}'
+        );
         $res = $installer->install($this->tempDir);
 
         $this->assertFileExists(sprintf('%s/vendor', $this->tempDir));
@@ -71,7 +74,10 @@ class ComposerInstallerTest extends TestCase
         $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
         $installer = new ComposerInstaller($input, $output, new Factory);
-        file_put_contents(sprintf('%s/composer.json', $this->tempDir), '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}');
+        file_put_contents(
+            sprintf('%s/composer.json', $this->tempDir),
+            '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}'
+        );
         $res = $installer->install($this->tempDir);
 
         $this->assertFileExists(sprintf('%s/vendor', $this->tempDir));

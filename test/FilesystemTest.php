@@ -36,7 +36,6 @@ class FilesystemTest extends TestCase
         $this->expectException(IOException::class);
         $this->expectExceptionMessage(sprintf('Path: "%s" does not exist.', $this->tmpDir));
         $this->filesystem->executeInPath($this->tmpDir, function () {
-
         });
     }
 
