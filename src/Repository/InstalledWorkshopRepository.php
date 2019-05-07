@@ -30,7 +30,7 @@ class InstalledWorkshopRepository
         );
 
         collect($file->read()['workshops'])
-            ->filter(function ($workshopData) use ($requiredKeys) {
+            ->filter(function($workshopData) use ($requiredKeys) {
                 $missingKeyCount = $requiredKeys
                     ->diff(array_keys($workshopData))
                     ->count();
@@ -38,7 +38,7 @@ class InstalledWorkshopRepository
                 //true if no missing keys
                 return $missingKeyCount === 0;
             })
-            ->map(function ($workshopData) {
+            ->map(function($workshopData) {
                     return new InstalledWorkshop(
                         $workshopData['workshop_code'],
                         $workshopData['display_name'],
@@ -49,7 +49,7 @@ class InstalledWorkshopRepository
                         $workshopData['version']
                     );
             })
-            ->each(function (InstalledWorkshop $workshop) {
+            ->each(function(InstalledWorkshop $workshop) {
                 $this->add($workshop);
             });
     }
@@ -120,7 +120,7 @@ class InstalledWorkshopRepository
      */
     public function save()
     {
-        $state['workshops'] = array_map(function (InstalledWorkshop $workshop) {
+        $state['workshops'] = array_map(function(InstalledWorkshop $workshop) {
             return [
                 'workshop_code' => $workshop->getCode(),
                 'display_name' => $workshop->getDisplayName(),

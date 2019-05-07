@@ -81,11 +81,11 @@ class VerifyInstall
             $style->error('You need a PHP version of at least 5.6 to use PHP School.');
         }
 
-        $missingExtensions  = array_filter(static::$requiredExtensions, function ($extension) {
+        $missingExtensions = array_filter(static::$requiredExtensions, function($extension) {
             return !extension_loaded($extension);
         });
 
-        array_walk($missingExtensions, function ($missingExtension) use ($style) {
+        array_walk($missingExtensions, function($missingExtension) use ($style) {
             $style->error(
                 sprintf(
                     'The %s extension is missing - use your preferred package manager to install it.',

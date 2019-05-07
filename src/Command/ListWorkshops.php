@@ -54,7 +54,7 @@ class ListWorkshops
 
         (new Table($output))
             ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Version', 'New version available?'])
-            ->setRows(array_map(function (InstalledWorkshop $workshop) {
+            ->setRows(array_map(function(InstalledWorkshop $workshop) {
                 $latestRelease = $this->versionChecker->getLatestRelease($workshop);
 
                 return [

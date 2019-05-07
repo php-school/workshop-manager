@@ -6,7 +6,6 @@ use Exception;
 use Github\Client;
 use Github\Exception\ExceptionInterface;
 use PhpSchool\WorkshopManager\ComposerInstaller;
-use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
@@ -135,7 +134,7 @@ class Installer
         $zipArchive->open($pathToZip);
         $zipArchive->extractTo(dirname($pathToZip));
 
-        $sourcePath  = sprintf('%s/.temp/%s', $this->workshopHomeDirectory, $zipArchive->getNameIndex(0));
+        $sourcePath = sprintf('%s/.temp/%s', $this->workshopHomeDirectory, $zipArchive->getNameIndex(0));
         $destinationPath = sprintf('%s/workshops/%s', $this->workshopHomeDirectory, $workshop->getCode());
 
         $zipArchive->close();
@@ -158,7 +157,7 @@ class Installer
             throw new FailedToMoveWorkshopException($sourcePath, $destinationPath);
         }
 
-        $this->filesystem->executeInPath($destinationPath, function ($path) {
+        $this->filesystem->executeInPath($destinationPath, function($path) {
             try {
                 $result = $this->composerInstaller->install($path);
             } catch (Exception $e) {

@@ -90,7 +90,7 @@ class RemoteWorkshopRepository
 
         return array_filter(
             $this->workshops,
-            function (Workshop $workshop) use ($searchName) {
+            function(Workshop $workshop) use ($searchName) {
                 return $this->matchesWorkshop($workshop, $searchName);
             }
         );
@@ -157,7 +157,7 @@ class RemoteWorkshopRepository
         );
 
         collect($this->remoteJsonFile->read()['workshops'])
-            ->filter(function ($workshopData) use ($requiredKeys) {
+            ->filter(function($workshopData) use ($requiredKeys) {
                     $missingKeyCount = $requiredKeys
                         ->diff(array_keys($workshopData))
                         ->count();
@@ -165,7 +165,7 @@ class RemoteWorkshopRepository
                     //true if no missing keys
                     return $missingKeyCount === 0;
             })
-            ->map(function ($workshopData) {
+            ->map(function($workshopData) {
                     return new Workshop(
                         $workshopData['workshop_code'],
                         $workshopData['display_name'],
@@ -175,7 +175,7 @@ class RemoteWorkshopRepository
                         $workshopData['type']
                     );
             })
-            ->each(function (Workshop $workshop) {
+            ->each(function(Workshop $workshop) {
                 $this->addWorkshop($workshop);
             });
 

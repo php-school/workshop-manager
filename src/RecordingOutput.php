@@ -158,14 +158,14 @@ class RecordingOutput implements OutputInterface
     public function getOutput()
     {
         //see \Composer\IO\BufferIO
-        return preg_replace_callback("{(?<=^|\n|\x08)(.+?)(\x08+)}", function ($matches) {
+        return preg_replace_callback("{(?<=^|\n|\x08)(.+?)(\x08+)}", function($matches) {
             $pre = strip_tags($matches[1]);
 
             if (strlen($pre) === strlen($matches[2])) {
                 return '';
             }
 
-            return rtrim($matches[1])."\n";
+            return rtrim($matches[1]) . "\n";
         }, $this->buffer);
     }
 }

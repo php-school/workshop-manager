@@ -36,13 +36,13 @@ class InstallResult
     private function checkForMissingExtensions()
     {
         $this->missingExtensions = collect(explode(PHP_EOL, $this->output))
-            ->filter(function ($line) {
+            ->filter(function($line) {
                 return preg_match(
                     '/the requested PHP extension [a-z-A-Z-_]+ is missing from your system/',
                     $line
                 );
             })
-            ->map(function ($extError) {
+            ->map(function($extError) {
                 preg_match(
                     '/the requested PHP extension ([a-z-A-Z-_]+) is missing from your system/',
                     $extError,

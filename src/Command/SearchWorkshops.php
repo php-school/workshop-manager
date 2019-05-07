@@ -68,7 +68,7 @@ class SearchWorkshops
 
         (new Table($this->output))
             ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Installed?'])
-            ->setRows(array_map(function (Workshop $workshop) {
+            ->setRows(array_map(function(Workshop $workshop) {
 
                 $installed = $this->installedWorkshopRepository->hasWorkshop($workshop->getCode())
                     ? '<fg=green>    ✔</>'
