@@ -1,13 +1,12 @@
 <?php
 
 use Composer\Factory;
-use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Util\RemoteFilesystem;
 use Github\Client;
 use Humbug\SelfUpdate\Updater as PharUpdater;
-use Interop\Container\ContainerInterface;
+use Psr\Container\ContainerInterface;
 use PhpSchool\WorkshopManager\Application;
 use PhpSchool\WorkshopManager\Command\InstallWorkshop;
 use PhpSchool\WorkshopManager\Command\ListWorkshops;
@@ -219,7 +218,7 @@ EOF
             new Factory
         );
     },
-    Factory::class => \DI\object(),
+    Factory::class => \DI\create(),
     InputInterface::class => \Di\factory(function () {
         return new \Symfony\Component\Console\Input\ArgvInput($_SERVER['argv']);
     }),
