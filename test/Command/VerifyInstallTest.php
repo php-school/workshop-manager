@@ -94,7 +94,9 @@ class VerifyInstallTest extends TestCase
         $this->assertRegExp(
             sprintf(
                 '/%s/',
-                preg_quote('[ERROR] The some-ext extension is missing - use your preferred package manager to install it')
+                preg_quote(
+                    '[ERROR] The some-ext extension is missing - use your preferred package manager to install it'
+                )
             ),
             $output
         );
