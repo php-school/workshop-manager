@@ -15,7 +15,8 @@
     "require": {
         "php": ">=7.1",
         "php-di/php-di": "^5.2",
-        "knplabs/github-api": "^1.5",
+        "knplabs/github-api": "^2.11",
+        "php-http/guzzle6-adapter": "^1.1",
         "composer/composer": "^1.1",
         "mnapoli/silly-php-di": "^1.0",
         "symfony/console": "^3.0 | ^4.0",
