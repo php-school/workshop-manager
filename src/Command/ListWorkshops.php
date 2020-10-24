@@ -48,9 +48,9 @@ class ListWorkshops
         $output->writeln("");
 
         $style = (new TableStyle())
-            ->setHorizontalBorderChar('<fg=magenta>-</>')
-            ->setVerticalBorderChar('<fg=magenta>|</>')
-            ->setCrossingChar('<fg=magenta>+</>');
+            ->setHorizontalBorderChars('<fg=magenta>-</>')
+            ->setVerticalBorderChars('<fg=magenta>|</>')
+            ->setDefaultCrossingChar('<fg=magenta>+</>');
 
         (new Table($output))
             ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Version', 'New version available?'])
