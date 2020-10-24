@@ -31,7 +31,6 @@ jobs:
       - name: Run phpunit tests
         run: |
           mkdir -p build/logs
-          stty cols 200
           export COLUMNS=200
           vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
 
