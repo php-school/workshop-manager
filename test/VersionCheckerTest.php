@@ -12,7 +12,7 @@ use RuntimeException;
 
 class VersionCheckerTest extends TestCase
 {
-    public function testGetLatestReleaseThrowsExceptionIfApiThrowsException()
+    public function testGetLatestReleaseThrowsExceptionIfApiThrowsException(): void
     {
         $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
@@ -21,13 +21,11 @@ class VersionCheckerTest extends TestCase
         $tags = $this->createMock(Tags::class);
 
         $client
-            ->expects($this->any())
             ->method('api')
             ->with('git')
             ->willReturn($gitData);
 
         $gitData
-            ->expects($this->any())
             ->method('tags')
             ->willReturn($tags);
 
@@ -44,7 +42,7 @@ class VersionCheckerTest extends TestCase
         $versionChecker->getLatestRelease($workshop);
     }
 
-    public function testGetLatestReleaseThrowsExceptionIfNoTags()
+    public function testGetLatestReleaseThrowsExceptionIfNoTags(): void
     {
         $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
@@ -53,13 +51,11 @@ class VersionCheckerTest extends TestCase
         $tags = $this->createMock(Tags::class);
 
         $client
-            ->expects($this->any())
             ->method('api')
             ->with('git')
             ->willReturn($gitData);
 
         $gitData
-            ->expects($this->any())
             ->method('tags')
             ->willReturn($tags);
 
@@ -76,7 +72,7 @@ class VersionCheckerTest extends TestCase
         $versionChecker->getLatestRelease($workshop);
     }
 
-    public function testGetLatestRelease()
+    public function testGetLatestRelease(): void
     {
         $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
@@ -85,13 +81,11 @@ class VersionCheckerTest extends TestCase
         $tags = $this->createMock(Tags::class);
 
         $client
-            ->expects($this->any())
             ->method('api')
             ->with('git')
             ->willReturn($gitData);
 
         $gitData
-            ->expects($this->any())
             ->method('tags')
             ->willReturn($tags);
 

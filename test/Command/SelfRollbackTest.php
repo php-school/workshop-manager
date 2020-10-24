@@ -26,14 +26,14 @@ class SelfRollbackTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->updater = $this->createMock(Updater::class);
         $this->command = new SelfRollback($this->updater);
         $this->output = new BufferedOutput;
     }
 
-    public function testUnknownError()
+    public function testUnknownError(): void
     {
         $this->updater
             ->expects($this->once())
@@ -44,10 +44,10 @@ class SelfRollbackTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertContains('Unknown error rolling back workshop-manager', $output);
+        $this->assertStringContainsString('Unknown error rolling back workshop-manager', $output);
     }
 
-    public function testExceptionThrown()
+    public function testExceptionThrown(): void
     {
         $this->updater
             ->expects($this->once())
@@ -58,10 +58,10 @@ class SelfRollbackTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertContains('Error rolling back workshop-manager: Some error', $output);
+        $this->assertStringContainsString('Error rolling back workshop-manager: Some error', $output);
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $this->updater
             ->expects($this->once())
@@ -72,6 +72,6 @@ class SelfRollbackTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertContains('Successfully rolled back to previous version of workshop-manage', $output);
+        $this->assertStringContainsString('Successfully rolled back to previous version of workshop-manage', $output);
     }
 }

@@ -25,7 +25,7 @@ class UninstallerTest extends TestCase
      */
     private $uninstaller;
 
-    public function setup()
+    public function setup(): void
     {
         $this->localJsonFile = $this->createMock(JsonFile::class);
         $this->localJsonFile
@@ -46,19 +46,19 @@ class UninstallerTest extends TestCase
         );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         @chmod(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775);
         $this->filesystem->remove($this->workshopHomeDir);
     }
 
-    public function testExceptionIsThrownIfWorkshopIsNotInstalled()
+    public function testExceptionIsThrownIfWorkshopIsNotInstalled(): void
     {
         $this->expectException(WorkshopNotInstalledException::class);
         $this->uninstaller->uninstallWorkshop('learn-you-php');
     }
 
-    public function testExceptionIsThrownIfFilesCannotBeRemoved()
+    public function testExceptionIsThrownIfFilesCannotBeRemoved(): void
     {
         $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
         mkdir($dir, 0775, true);
@@ -67,7 +67,7 @@ class UninstallerTest extends TestCase
         chmod($dir, 0555);
 
         $this->expectException(IOException::class);
-        $this->expectExceptionMessageRegExp('/Failed to remove file.*/');
+        $this->expectExceptionMessageMatches('/Failed to remove file.*/');
 
         $this->installedWorkshopRepo->add(
             new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
@@ -76,7 +76,7 @@ class UninstallerTest extends TestCase
         $this->uninstaller->uninstallWorkshop('learn-you-php');
     }
 
-    public function testRemove()
+    public function testRemove(): void
     {
         $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
         mkdir($dir, 0775, true);
@@ -97,6 +97,6 @@ class UninstallerTest extends TestCase
         $this->uninstaller->uninstallWorkshop('learn-you-php');
 
         $this->assertTrue($this->installedWorkshopRepo->isEmpty());
-        $this->assertFileNotExists($dir);
+        $this->assertFileDoesNotExist($dir);
     }
 }

@@ -23,19 +23,19 @@ class ComposerInstallerTest extends TestCase
      */
     private $filesystem;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filesystem = new Filesystem;
         $this->tempDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         @mkdir($this->tempDir, 0777, true);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->filesystem->remove($this->tempDir);
     }
 
-    public function testComposerOutputIsWrittenIfInVerboseMode()
+    public function testComposerOutputIsWrittenIfInVerboseMode(): void
     {
         $input  = new ArrayInput([]);
         $output = new BufferedOutput();
@@ -59,12 +59,12 @@ class ComposerInstallerTest extends TestCase
         $expectedOutput .= "Nothing to install or update\n";
         $expectedOutput .= "Writing lock file\n";
         $expectedOutput .= "Generating autoload files\n/";
-        $this->assertRegExp($expectedOutput, $output->fetch());
-        $this->assertRegExp($expectedOutput, strip_tags($res->getOutput()));
+        $this->assertMatchesRegularExpression($expectedOutput, $output->fetch());
+        $this->assertMatchesRegularExpression($expectedOutput, strip_tags($res->getOutput()));
         $this->assertEquals(0, $res->getExitCode());
     }
 
-    public function testComposerOutputIsNotWrittenIfNotInVerboseMode()
+    public function testComposerOutputIsNotWrittenIfNotInVerboseMode(): void
     {
         $input  = new ArrayInput([]);
         $output = new BufferedOutput;
@@ -89,11 +89,11 @@ class ComposerInstallerTest extends TestCase
         $expectedOutput .= "Writing lock file\n";
         $expectedOutput .= "Generating autoload files\n/";
         $this->assertEquals('', $output->fetch());
-        $this->assertRegExp($expectedOutput, strip_tags($res->getOutput()));
+        $this->assertMatchesRegularExpression($expectedOutput, strip_tags($res->getOutput()));
         $this->assertEquals(0, $res->getExitCode());
     }
 
-    public function testExceptionIsThrownIfNoComposerJson()
+    public function testExceptionIsThrownIfNoComposerJson(): void
     {
         $input  = new ArrayInput([]);
         $output = new BufferedOutput;
@@ -105,7 +105,7 @@ class ComposerInstallerTest extends TestCase
         $installer->install($this->tempDir);
     }
 
-    public function testExceptionIsThrownIfInvalidComposerJson()
+    public function testExceptionIsThrownIfInvalidComposerJson(): void
     {
         $input  = new ArrayInput([]);
         $output = new BufferedOutput;

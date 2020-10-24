@@ -26,14 +26,14 @@ class UninstallWorkshopTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->uninstaller = $this->createMock(Uninstaller::class);
         $this->command = new UninstallWorkshop($this->uninstaller);
         $this->output = $this->createMock(OutputInterface::class);
     }
 
-    public function testWhenWorkshopIsNotInstalled()
+    public function testWhenWorkshopIsNotInstalled(): void
     {
         $this->uninstaller
             ->expects($this->once())
@@ -52,7 +52,7 @@ class UninstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenFilesCannotBeCleanedUp()
+    public function testWhenFilesCannotBeCleanedUp(): void
     {
         $this->uninstaller
             ->expects($this->once())
@@ -71,7 +71,7 @@ class UninstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testExceptionIsThrownIfInVerboseMode()
+    public function testExceptionIsThrownIfInVerboseMode(): void
     {
         $this->uninstaller
             ->expects($this->once())
@@ -97,7 +97,7 @@ class UninstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $this->uninstaller
             ->expects($this->once())

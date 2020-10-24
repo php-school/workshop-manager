@@ -29,14 +29,14 @@ class InstallWorkshopTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->installer = $this->createMock(Installer::class);
         $this->command = new InstallWorkshop($this->installer);
         $this->output = $this->createMock(OutputInterface::class);
     }
 
-    public function testWhenWorkshopIsAlreadyInstalled()
+    public function testWhenWorkshopIsAlreadyInstalled(): void
     {
         $this->installer
             ->expects($this->once())
@@ -55,7 +55,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenWorkshopDoesNotExistInRegistry()
+    public function testWhenWorkshopDoesNotExistInRegistry(): void
     {
         $this->installer
             ->expects($this->once())
@@ -74,7 +74,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenDownloadFails()
+    public function testWhenDownloadFails(): void
     {
         $this->installer
             ->expects($this->once())
@@ -93,7 +93,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenFailedToMove()
+    public function testWhenFailedToMove(): void
     {
         $this->installer
             ->expects($this->once())
@@ -120,7 +120,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenComposerInstallFails()
+    public function testWhenComposerInstallFails(): void
     {
         $this->installer
             ->expects($this->once())
@@ -144,7 +144,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testAnyOtherFailure()
+    public function testAnyOtherFailure(): void
     {
         $this->installer
             ->expects($this->once())
@@ -163,7 +163,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testExceptionIsThrownIfInVerboseMode()
+    public function testExceptionIsThrownIfInVerboseMode(): void
     {
         $this->installer
             ->expects($this->once())
@@ -189,7 +189,7 @@ class InstallWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $this->installer
             ->expects($this->once())

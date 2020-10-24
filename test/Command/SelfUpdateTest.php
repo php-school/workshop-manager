@@ -26,14 +26,14 @@ class SelfUpdateTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->updater = $this->createMock(Updater::class);
         $this->command = new SelfUpdate($this->updater);
         $this->output = new BufferedOutput;
     }
 
-    public function testNoUpdateNeeded()
+    public function testNoUpdateNeeded(): void
     {
         $this->updater
             ->expects($this->once())
@@ -44,10 +44,10 @@ class SelfUpdateTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertContains('No update necessary!', $output);
+        $this->assertStringContainsString('No update necessary!', $output);
     }
 
-    public function testExceptionThrown()
+    public function testExceptionThrown(): void
     {
         $this->updater
             ->expects($this->once())
@@ -58,10 +58,10 @@ class SelfUpdateTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertContains('Error updating workshop-manager: Some error', $output);
+        $this->assertStringContainsString('Error updating workshop-manager: Some error', $output);
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $this->updater
             ->expects($this->once())
@@ -82,6 +82,9 @@ class SelfUpdateTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertContains('Successfully updated workshop-manager from version 1.0.0 to 2.0.0', $output);
+        $this->assertStringContainsString(
+            'Successfully updated workshop-manager from version 1.0.0 to 2.0.0',
+            $output
+        );
     }
 }

@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class WorkshopTest extends TestCase
 {
-    public function testGetters()
+    public function testGetters(): void
     {
         $workshop = new Workshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core');
         $this->assertEquals('workshop', $workshop->getCode());

@@ -30,14 +30,14 @@ class UpdateWorkshopTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->updater = $this->createMock(Updater::class);
         $this->command = new UpdateWorkshop($this->updater);
         $this->output = $this->createMock(OutputInterface::class);
     }
 
-    public function testWhenWorkshopIsNotInstalled()
+    public function testWhenWorkshopIsNotInstalled(): void
     {
         $this->updater
             ->expects($this->once())
@@ -56,7 +56,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenNoUpdateAvailable()
+    public function testWhenNoUpdateAvailable(): void
     {
         $this->updater
             ->expects($this->once())
@@ -75,7 +75,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenFilesCannotBeCleanedUp()
+    public function testWhenFilesCannotBeCleanedUp(): void
     {
         $this->updater
             ->expects($this->once())
@@ -94,7 +94,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenDownloadFails()
+    public function testWhenDownloadFails(): void
     {
         $this->updater
             ->expects($this->once())
@@ -113,7 +113,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenFailedToMove()
+    public function testWhenFailedToMove(): void
     {
         $this->updater
             ->expects($this->once())
@@ -140,7 +140,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testWhenComposerInstallFails()
+    public function testWhenComposerInstallFails(): void
     {
         $this->updater
             ->expects($this->once())
@@ -159,7 +159,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testAnyOtherFailure()
+    public function testAnyOtherFailure(): void
     {
         $this->updater
             ->expects($this->once())
@@ -178,7 +178,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testExceptionIsThrownIfInVerboseMode()
+    public function testExceptionIsThrownIfInVerboseMode(): void
     {
         $this->updater
             ->expects($this->once())
@@ -204,7 +204,7 @@ class UpdateWorkshopTest extends TestCase
         $this->command->__invoke($this->output, 'learnyouphp');
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $this->updater
             ->expects($this->once())

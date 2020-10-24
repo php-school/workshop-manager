@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class InstallResultTest extends TestCase
 {
-    public function testGetters()
+    public function testGetters(): void
     {
         $result = new InstallResult(0, '');
 
@@ -17,7 +17,7 @@ class InstallResultTest extends TestCase
         $this->assertEmpty($result->getMissingExtensions());
     }
 
-    public function testMissingExtensionsAreParsed()
+    public function testMissingExtensionsAreParsed(): void
     {
         $output  = "the requested PHP extension mbstring is missing from your system\n";
         $output .= "the requested PHP extension zip is missing from your system\n";
@@ -30,7 +30,7 @@ class InstallResultTest extends TestCase
         $this->assertSame(['mbstring', 'zip'], $result->getMissingExtensions());
     }
 
-    public function testMissingExtensionsDupesAreRemoved()
+    public function testMissingExtensionsDupesAreRemoved(): void
     {
         $output  = "the requested PHP extension mbstring is missing from your system\n";
         $output .= "the requested PHP extension mbstring is missing from your system\n";

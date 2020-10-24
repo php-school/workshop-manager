@@ -5,3 +5,4 @@
 /.travis/secrets.tar
 /workshop-manager.phar
 /workshop-manager.phar.version
+.phpunit.result.cache

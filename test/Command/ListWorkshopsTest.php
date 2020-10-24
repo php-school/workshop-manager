@@ -36,7 +36,7 @@ class ListWorkshopsTest extends TestCase
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->localJsonFile = $this->createMock(JsonFile::class);
         $this->localJsonFile
@@ -50,17 +50,17 @@ class ListWorkshopsTest extends TestCase
         $this->output = new BufferedOutput;
     }
 
-    public function testMessageIsPrintedIfNoWorkshopsInstalled()
+    public function testMessageIsPrintedIfNoWorkshopsInstalled(): void
     {
         $this->command->__invoke($this->output);
 
         $output = $this->output->fetch();
 
-        $this->assertRegExp('/There are currently no workshops installed/', $output);
+        $this->assertMatchesRegularExpression('/There are currently no workshops installed/', $output);
     }
 
 
-    public function testNewVersionIsShownIfThereIsOne()
+    public function testNewVersionIsShownIfThereIsOne(): void
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
@@ -74,13 +74,13 @@ class ListWorkshopsTest extends TestCase
         $this->command->__invoke($this->output);
 
         $output = $this->output->fetch();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Yes - 2\.0\.0/',
             $output
         );
     }
 
-    public function testOutputWithNoNewVersion()
+    public function testOutputWithNoNewVersion(): void
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
@@ -94,7 +94,7 @@ class ListWorkshopsTest extends TestCase
         $this->command->__invoke($this->output);
 
         $output = $this->output->fetch();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|\s+1\.0\.0\s+\|\s+Nope!/',
             $output
         );

@@ -17,22 +17,22 @@ use PHPUnit\Framework\TestCase;
 class UpdaterTest extends TestCase
 {
     /**
-     * @var Installer|PHPUnit_Framework_MockObject_MockObject
+     * @var Installer
      */
     private $installer;
 
     /**
-     * @var Uninstaller|PHPUnit_Framework_MockObject_MockObject
+     * @var Uninstaller
      */
     private $uninstaller;
 
     /**
-     * @var InstalledArrayRepository|PHPUnit_Framework_MockObject_MockObject
+     * @var InstalledArrayRepository
      */
     private $installedWorkshopRepository;
 
     /**
-     * @var VersionChecker|PHPUnit_Framework_MockObject_MockObject
+     * @var VersionChecker
      */
     private $versionChecker;
 
@@ -41,7 +41,7 @@ class UpdaterTest extends TestCase
      */
     private $updater;
 
-    public function setup()
+    public function setup(): void
     {
         $this->installer = $this->createMock(Installer::class);
         $this->uninstaller = $this->createMock(Uninstaller::class);
@@ -55,7 +55,7 @@ class UpdaterTest extends TestCase
         );
     }
 
-    public function testExceptionIsThrownIfNoUpdateAvailable()
+    public function testExceptionIsThrownIfNoUpdateAvailable(): void
     {
         $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
 
@@ -74,7 +74,7 @@ class UpdaterTest extends TestCase
         $this->updater->updateWorkshop('learn-you-php');
     }
 
-    public function testUpdateUninstallsAndReinstallsNewVersionReturningTheVersionInstalled()
+    public function testUpdateUninstallsAndReinstallsNewVersionReturningTheVersionInstalled(): void
     {
         $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
 

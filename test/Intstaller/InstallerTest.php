@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest\Installer;
 
 use Composer\Json\JsonFile;
+use Composer\Package\Archiver\ZipArchiver;
 use Github\Api\GitData;
 use Github\Api\GitData\Tags;
 use Github\Api\Repo;
@@ -25,7 +26,9 @@ use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ZipArchive;
 
 class InstallerTest extends TestCase
 {
@@ -40,7 +43,7 @@ class InstallerTest extends TestCase
     private $ghClient;
     private $installer;
 
-    public function setup()
+    public function setup(): void
     {
         $this->localJsonFile = $this->createMock(JsonFile::class);
         $this->localJsonFile
@@ -70,14 +73,14 @@ class InstallerTest extends TestCase
         );
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         @chmod(sprintf('%s/.temp', $this->workshopHomeDir), 0775);
         @chmod(sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir), 0775);
         $this->filesystem->remove($this->workshopHomeDir);
     }
 
-    public function testExceptionIsThrownIfWorkshopWithSameNameAlreadyExists()
+    public function testExceptionIsThrownIfWorkshopWithSameNameAlreadyExists(): void
     {
         $this->installedWorkshopRepo->add(
             new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
@@ -87,7 +90,7 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop('learn-you-php');
     }
 
-    public function testExceptionIsThrowIfWorkshopDoesNotExistInRegistry()
+    public function testExceptionIsThrowIfWorkshopDoesNotExistInRegistry(): void
     {
         $this->remoteWorkshopRepo
             ->expects($this->once())
@@ -99,7 +102,7 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop('learn-you-php');
     }
 
-    public function testExceptionIsWrappedIfGetLatestReleaseThrowsException()
+    public function testExceptionIsWrappedIfGetLatestReleaseThrowsException(): void
     {
         $workshop = $this->configureRemoteRepository();
 
@@ -129,10 +132,10 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop($workshop->getCode());
     }
 
-    public function testExceptionIsThrowIfWorkshopTempDownloadFileExistsAndCannotBeRemoved()
+    public function testExceptionIsThrowIfWorkshopTempDownloadFileExistsAndCannotBeRemoved(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
+        $this->configureGitHubApi($workshop, false);
 
         $path = sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir);
         @mkdir(dirname($path));
@@ -141,37 +144,47 @@ class InstallerTest extends TestCase
         chmod(dirname($path), 0555);
 
         $this->expectException(DownloadFailureException::class);
-        $this->expectExceptionMessageRegExp('/Failed to remove file.*/');
+        $this->expectExceptionMessageMatches('/Failed to remove file.*/');
         $this->installer->installWorkshop($workshop->getCode());
         unlink($path);
         rmdir(dirname($path));
     }
 
-    public function testExceptionIsThrownIfWorkshopCannotBeDownloaded()
+    public function testExceptionIsThrownIfWorkshopCannotBeDownloaded(): void
     {
         $workshop = $this->configureRemoteRepository();
 
-        $this->configureTags($workshop);
+        $gitData = $this->createMock(GitData::class);
+        $tags = $this->createMock(Tags::class);
 
-        $repo = $this->createMock(Repo::class);
         $contents = $this->createMock(Contents::class);
-
-        $this->ghClient
-            ->expects($this->at(1))
-            ->method('api')
-            ->with('repo')
-            ->willReturn($repo);
-
-        $repo
-            ->expects($this->any())
-            ->method('contents')
-            ->willReturn($contents);
-
         $contents
             ->expects($this->once())
             ->method('archive')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
             ->willThrowException(new RuntimeException('Download failure'));
+
+        $repo = $this->createMock(Repo::class);
+        $repo->method('contents')->willReturn($contents);
+
+        $this->ghClient
+            ->expects($this->exactly(2))
+            ->method('api')
+            ->withConsecutive(['git'], ['repo'])
+            ->willReturnOnConsecutiveCalls($gitData, $repo);
+
+        $gitData->method('tags')->willReturn($tags);
+
+        $tags
+            ->expects($this->once())
+            ->method('all')
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
+            ->willReturn([
+                [
+                    'ref' => 'refs/tags/1.0.0',
+                    'object' => ['sha' => '0123456789']
+                ]
+            ]);
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessage('Download failure');
@@ -179,27 +192,25 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop($workshop->getCode());
     }
 
-    public function testExceptionIsThrownIfWorkshopCannotBeSaved()
+    public function testExceptionIsThrownIfWorkshopCannotBeSaved(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
 
         $path = sprintf('%s/.temp/', $this->workshopHomeDir);
         @mkdir($path);
         chmod($path, 0555);
 
         $this->expectException(DownloadFailureException::class);
-        $this->expectExceptionMessageRegExp('/^Unable to write to the.*/');
+        $this->expectExceptionMessageMatches('/^Unable to write to the.*/');
 
         $this->installer->installWorkshop($workshop->getCode());
     }
 
-    public function testExceptionIsThrownIfCannotMoveWorkshopToInstallDir()
+    public function testExceptionIsThrownIfCannotMoveWorkshopToInstallDir(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
 
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
@@ -217,14 +228,14 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop($workshop->getCode());
     }
 
-    public function testExceptionIsThrownIfCannotRunComposerInstall()
+    public function testExceptionIsThrownIfCannotRunComposerInstall(): void
     {
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
 
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
+
         $this->composerInstaller
             ->expects($this->once())
             ->method('install')
@@ -237,14 +248,14 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop($workshop->getCode());
     }
 
-    public function testExceptionIsThrownIfCannotRunComposerInstallBecauseMissingExtensions()
+    public function testExceptionIsThrownIfCannotRunComposerInstallBecauseMissingExtensions(): void
     {
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
 
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
+
         $this->composerInstaller
             ->expects($this->once())
             ->method('install')
@@ -260,11 +271,10 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop($workshop->getCode());
     }
 
-    public function testSuccessfulInstall()
+    public function testSuccessfulInstall(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
 
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
@@ -290,11 +300,10 @@ class InstallerTest extends TestCase
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 
-    public function testWorkshopDirIsCreatedIfNotExists()
+    public function testWorkshopDirIsCreatedIfNotExists(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
 
         $this->composerInstaller
             ->expects($this->once())
@@ -317,11 +326,11 @@ class InstallerTest extends TestCase
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 
-    public function testWorkshopNameFolderIsRemovedIfExists()
+    public function testWorkshopNameFolderIsRemovedIfExists(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
+
         mkdir(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775, true);
 
         $this->composerInstaller
@@ -345,11 +354,11 @@ class InstallerTest extends TestCase
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 
-    public function testWorkshopTempDownloadIsRemovedIfExists()
+    public function testWorkshopTempDownloadIsRemovedIfExists(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureTags($workshop);
-        $this->configureDownload($workshop);
+        $this->configureGitHubApi($workshop, true);
+
         mkdir(sprintf('%s/.temp', $this->workshopHomeDir), 0775, true);
         touch(sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir));
 
@@ -374,7 +383,7 @@ class InstallerTest extends TestCase
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 
-    private function configureRemoteRepository()
+    private function configureRemoteRepository(): Workshop
     {
         $this->remoteWorkshopRepo
             ->expects($this->once())
@@ -392,19 +401,31 @@ class InstallerTest extends TestCase
         return $workshop;
     }
 
-    private function configureTags(Workshop $workshop)
+    private function configureGitHubApi(Workshop $workshop, bool $configureDownload): void
     {
         $gitData = $this->createMock(GitData::class);
         $tags = $this->createMock(Tags::class);
 
-        $this->ghClient
-            ->expects($this->at(0))
-            ->method('api')
-            ->with('git')
-            ->willReturn($gitData);
+        if ($configureDownload) {
+            $repo = $this->createMock(Repo::class);
+            $repo
+                ->method('contents')
+                ->willReturn($this->getContentsStub($workshop));
+
+            $this->ghClient
+                ->expects($this->exactly(2))
+                ->method('api')
+                ->withConsecutive(['git'], ['repo'])
+                ->willReturnOnConsecutiveCalls($gitData, $repo);
+        } else {
+            $this->ghClient
+                ->expects($this->once())
+                ->method('api')
+                ->with('git')
+                ->willReturn($gitData);
+        }
 
         $gitData
-            ->expects($this->any())
             ->method('tags')
             ->willReturn($tags);
 
@@ -420,30 +441,21 @@ class InstallerTest extends TestCase
             ]);
     }
 
-    private function configureDownload(Workshop $workshop)
+    private function createZipArchive(): void
     {
-        $repo = $this->createMock(Repo::class);
-        $contents = $this->createMock(Contents::class);
-
-        $this->ghClient
-            ->expects($this->at(1))
-            ->method('api')
-            ->with('repo')
-            ->willReturn($repo);
-
-        $repo
-            ->expects($this->any())
-            ->method('contents')
-            ->willReturn($contents);
-
-        $zipArchive = new \ZipArchive;
-        $zipArchive->open(sprintf('%s/temp.zip', $this->workshopHomeDir), \ZipArchive::CREATE);
+        $zipArchive = new ZipArchive;
+        $zipArchive->open(sprintf('%s/temp.zip', $this->workshopHomeDir), ZipArchive::CREATE);
         $zipArchive->addEmptyDir('learnyouphp');
         $zipArchive->addFromString('learnyouphp/file1.txt', 'data');
         $zipArchive->addFromString('learnyouphp/composer.json', '{"name" : "learnyouphp"}');
-
         $zipArchive->close();
+    }
 
+    private function getContentsStub(Workshop $workshop): MockObject
+    {
+        $this->createZipArchive();
+
+        $contents = $this->createMock(Contents::class);
         $contents
             ->expects($this->once())
             ->method('archive')
@@ -451,5 +463,7 @@ class InstallerTest extends TestCase
             ->willReturn(file_get_contents(sprintf('%s/temp.zip', $this->workshopHomeDir)));
 
         unlink(sprintf('%s/temp.zip', $this->workshopHomeDir));
+
+        return $contents;
     }
 }

@@ -29,11 +29,11 @@ class SearchWorkshopsTest extends TestCase
     private $command;
 
     /**
-     * @var OutputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OutputInterface
      */
     private $output;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->localJsonFile = $this->createMock(JsonFile::class);
         $this->localJsonFile
@@ -48,7 +48,7 @@ class SearchWorkshopsTest extends TestCase
         $this->command = new SearchWorkshops($this->remoteRepo, $this->localRepo, $this->output);
     }
 
-    public function testMessageIsPrintedIfNoResults()
+    public function testMessageIsPrintedIfNoResults(): void
     {
         $this->remoteRepo
             ->expects($this->once())
@@ -60,10 +60,13 @@ class SearchWorkshopsTest extends TestCase
 
         $output = $this->output->fetch();
 
-        $this->assertRegExp(sprintf('/%s/', preg_quote('No workshops found matching "php"')), $output);
+        $this->assertMatchesRegularExpression(
+            sprintf('/%s/', preg_quote('No workshops found matching "php"')),
+            $output
+        );
     }
 
-    public function testInstalledWorkshopIsMarkedAsInstalled()
+    public function testInstalledWorkshopIsMarkedAsInstalled(): void
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');
@@ -77,10 +80,13 @@ class SearchWorkshopsTest extends TestCase
         $this->command->__invoke('php');
         $output = $this->output->fetch();
 
-        $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✔/', $output);
+        $this->assertMatchesRegularExpression(
+            '/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✔/',
+            $output
+        );
     }
 
-    public function testNotInstalledWorkshopIsMarkedAsNotInstalled()
+    public function testNotInstalledWorkshopIsMarkedAsNotInstalled(): void
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $this->remoteRepo
@@ -92,10 +98,13 @@ class SearchWorkshopsTest extends TestCase
         $this->command->__invoke('php');
         $output = $this->output->fetch();
 
-        $this->assertRegExp('/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✘/', $output);
+        $this->assertMatchesRegularExpression(
+            '/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✘/',
+            $output
+        );
     }
 
-    public function testSearchListsAllRemotesIfNoSearchTerm()
+    public function testSearchListsAllRemotesIfNoSearchTerm(): void
     {
         $workshop1 = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $workshop2 = new Workshop('learnyoucouchdb', 'learnyoucouchdb', 'aydin', 'repo', 'workshop', 'core');
@@ -111,6 +120,6 @@ class SearchWorkshopsTest extends TestCase
 
         $expected  = '/learnyouphp\s+\|\sworkshop\s+\|\slearnyouphp\s+\|\sCore\s+\|\s+✘\s+|\s+';
         $expected  .= 'learnyoucouchdb\s+\|\sworkshop\s+\|\slearnyoucouchdb\s+\|\sCore\s+\|\s+✘\s+|\s+/';
-        $this->assertRegExp($expected, $output);
+        $this->assertMatchesRegularExpression($expected, $output);
     }
 }
