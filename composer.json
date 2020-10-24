@@ -28,7 +28,7 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-zip": "*",
-        "illuminate/collections": "^8.11"
+        "tightenco/collect": "^8.0.4"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.4",
