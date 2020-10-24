@@ -10,11 +10,8 @@ class Filesystem extends SymfonyFilesystem
     /**
      * Execute a callback in a directory, callback is passed the
      * absolute path.
-     *
-     * @param string $path
-     * @param callable $callback
      */
-    public function executeInPath($path, callable $callback)
+    public function executeInPath(string $path, callable $callback): void
     {
         $currentPath = getcwd();
 
@@ -27,20 +24,12 @@ class Filesystem extends SymfonyFilesystem
         chdir($currentPath);
     }
 
-    /**
-     * @param string $path
-     * @return bool
-     */
-    public function isLink($path)
+    public function isLink(string $path): bool
     {
         return is_link($path);
     }
 
-    /**
-     * @param string $path
-     * @return bool
-     */
-    public function isWritable($path)
+    public function isWritable(string $path): bool
     {
         return is_writable($path);
     }

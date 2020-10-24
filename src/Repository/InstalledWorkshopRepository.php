@@ -18,9 +18,6 @@ class InstalledWorkshopRepository
      */
     private $file;
 
-    /**
-     * @param JsonFile $file
-     */
     public function __construct(JsonFile $file)
     {
         $this->file = $file;
@@ -54,19 +51,12 @@ class InstalledWorkshopRepository
             });
     }
 
-    /**
-     * @param InstalledWorkshop $workshop
-     */
-    public function add(InstalledWorkshop $workshop)
+    public function add(InstalledWorkshop $workshop): void
     {
         $this->workshops[$workshop->getCode()] = $workshop;
     }
 
-    /**
-     * @param InstalledWorkshop $workshopToRemove
-     * @throws WorkshopNotFoundException
-     */
-    public function remove(InstalledWorkshop $workshopToRemove)
+    public function remove(InstalledWorkshop $workshopToRemove): void
     {
         if (!$this->hasWorkshop($workshopToRemove->getCode())) {
             throw new WorkshopNotFoundException();
@@ -76,20 +66,14 @@ class InstalledWorkshopRepository
     }
 
     /**
-     * @return InstalledWorkshop[]
+     * @return array<InstalledWorkshop>
      */
-    public function getAll()
+    public function getAll(): array
     {
         return array_values($this->workshops);
     }
 
-    /**
-     * @param string $code
-     *
-     * @return InstalledWorkshop
-     * @throws WorkshopNotFoundException
-     */
-    public function getByCode($code)
+    public function getByCode(string $code): InstalledWorkshop
     {
         if (!$this->hasWorkshop($code)) {
             throw new WorkshopNotFoundException();
@@ -98,27 +82,17 @@ class InstalledWorkshopRepository
         return $this->workshops[$code];
     }
 
-    /**
-     * @param string $code
-     * @return bool
-     */
-    public function hasWorkshop($code)
+    public function hasWorkshop(string $code): bool
     {
         return array_key_exists($code, $this->workshops);
     }
 
-    /**
-     * @return bool
-     */
-    public function isEmpty()
+    public function isEmpty() : bool
     {
         return count($this->workshops) === 0;
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function save()
+    public function save(): void
     {
         $state['workshops'] = array_map(function (InstalledWorkshop $workshop) {
             return [

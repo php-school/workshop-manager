@@ -28,12 +28,6 @@ class Updater
      */
     private $versionChecker;
 
-    /**
-     * @param Installer $installer
-     * @param Uninstaller $uninstaller
-     * @param InstalledWorkshopRepository $installedWorkshopRepository
-     * @param VersionChecker $versionChecker
-     */
     public function __construct(
         Installer $installer,
         Uninstaller $uninstaller,
@@ -50,7 +44,7 @@ class Updater
      * @param string $workshopName
      * @return string The updated version.
      */
-    public function updateWorkshop($workshopName)
+    public function updateWorkshop(string $workshopName): string
     {
         $workshop = $this->installedWorkshopRepository->getByCode($workshopName);
 

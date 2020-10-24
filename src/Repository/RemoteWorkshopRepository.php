@@ -26,29 +26,17 @@ class RemoteWorkshopRepository
      */
     private $workshops = [];
 
-    /**
-     * @param JsonFile $remoteJsonFile
-     */
     public function __construct(JsonFile $remoteJsonFile)
     {
         $this->remoteJsonFile = $remoteJsonFile;
     }
 
-    /**
-     * @param Workshop $workshop
-     */
-    private function addWorkshop(Workshop $workshop)
+    private function addWorkshop(Workshop $workshop): void
     {
         $this->workshops[$workshop->getCode()] = $workshop;
     }
 
-    /**
-     * @param string $code
-     *
-     * @return Workshop
-     * @throws WorkshopNotFoundException
-     */
-    public function getByCode($code)
+    public function getByCode(string $code): Workshop
     {
         $this->init();
         if (!$this->hasWorkshop($code)) {
@@ -58,32 +46,22 @@ class RemoteWorkshopRepository
         return $this->workshops[$code];
     }
 
-    /**
-     * @param string $code
-     * @return bool
-     */
-    public function hasWorkshop($code)
+    public function hasWorkshop(string $code): bool
     {
         $this->init();
         return array_key_exists($code, $this->workshops);
     }
 
-    /**
-     * @return array
-     */
-    public function all()
+    public function all(): array
     {
         $this->init();
         return $this->workshops;
     }
 
     /**
-     * @param string $searchName
-     *
-     * @return Workshop[]
-     * @throws WorkshopNotFoundException
+     * @return array<Workshop>
      */
-    public function find($searchName)
+    public function find(string $searchName): array
     {
         $this->init();
         $searchName = strtolower($searchName);
@@ -98,12 +76,8 @@ class RemoteWorkshopRepository
 
     /**
      * Check if a workshop matches a search term.
-     *
-     * @param Workshop $workshop
-     * @param string $searchTerm
-     * @return bool
      */
-    private function matchesWorkshop(Workshop $workshop, $searchTerm)
+    private function matchesWorkshop(Workshop $workshop, string $searchTerm): bool
     {
         if ($this->matches($workshop->getCode(), $searchTerm)) {
             return true;
@@ -118,12 +92,8 @@ class RemoteWorkshopRepository
 
     /**
      * Check if a string matches a search term.
-     *
-     * @param string $string
-     * @param string $searchTerm
-     * @return bool
      */
-    private function matches($string, $searchTerm)
+    private function matches(string $string, string $searchTerm): bool
     {
         $string = strtolower($string);
         if (false !== strpos($string, $searchTerm)) {
@@ -142,7 +112,7 @@ class RemoteWorkshopRepository
      *
      * @throws RequiresNetworkAccessException
      */
-    private function init()
+    private function init(): void
     {
         if ($this->initialised) {
             return;

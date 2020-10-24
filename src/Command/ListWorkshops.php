@@ -21,22 +21,13 @@ class ListWorkshops
      */
     private $versionChecker;
 
-    /**
-     * @param InstalledWorkshopRepository $installedWorkshops
-     * @param VersionChecker $versionChecker
-     */
     public function __construct(InstalledWorkshopRepository $installedWorkshops, VersionChecker $versionChecker)
     {
         $this->installedWorkshops = $installedWorkshops;
         $this->versionChecker = $versionChecker;
     }
 
-    /**
-     * @param OutputInterface $output
-     *
-     * @return void
-     */
-    public function __invoke(OutputInterface $output)
+    public function __invoke(OutputInterface $output): void
     {
         if ($this->installedWorkshops->isEmpty()) {
             $output->writeln("\n <fg=green>There are currently no workshops installed</>\n");

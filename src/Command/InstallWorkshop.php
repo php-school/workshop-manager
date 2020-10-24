@@ -25,29 +25,25 @@ class InstallWorkshop
         $this->installer = $installer;
     }
 
-    /**
-     * @param OutputInterface $output
-     * @param string $workshopName
-     *
-     * @return void
-     */
-    public function __invoke(OutputInterface $output, $workshopName)
+    public function __invoke(OutputInterface $output, string $workshopName): void
     {
         $output->writeln('');
 
         try {
             $this->installer->installWorkshop($workshopName);
         } catch (WorkshopAlreadyInstalledException $e) {
-            return $output->writeln(
+            $output->writeln(
                 sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
             );
+            return;
         } catch (WorkshopNotFoundException $e) {
-            return $output->writeln(
+            $output->writeln(
                 sprintf(
                     " <fg=magenta> No workshops found matching \"%s\", did you spell it correctly? </>\n",
                     $workshopName
                 )
             );
+            return;
         } catch (DownloadFailureException $e) {
             $output->writeln(
                 sprintf(
@@ -90,7 +86,7 @@ class InstallWorkshop
         $output->writeln(sprintf(" <info>Successfully installed \"%s\"</info>\n", $workshopName));
     }
 
-    private function getCommand()
+    private function getCommand(): string
     {
         return sprintf('%s install -v', $_SERVER['argv'][0]);
     }

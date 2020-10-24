@@ -27,11 +27,6 @@ class ComposerInstaller
      */
     private $composerFactory;
 
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param Factory $composerFactory
-     */
     public function __construct(InputInterface $input, OutputInterface $output, Factory $composerFactory)
     {
         $this->input = $input;
@@ -39,11 +34,7 @@ class ComposerInstaller
         $this->composerFactory = $composerFactory;
     }
 
-    /**
-     * @param string $pathToComposerProject
-     * @return InstallResult
-     */
-    public function install($pathToComposerProject)
+    public function install(string $pathToComposerProject): InstallResult
     {
         if ($this->output->isVerbose()) {
             $output = $this->output;

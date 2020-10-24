@@ -15,12 +15,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SearchWorkshopsTest extends TestCase
 {
+    /**
+     * @var JsonFile
+     */
     private $localJsonFile;
 
     /**
      * @var InstalledWorkshopRepository
      */
     private $localRepo;
+
+    /**
+     * @var RemoteWorkshopRepository
+     */
     private $remoteRepo;
 
     /**

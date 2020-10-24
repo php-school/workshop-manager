@@ -14,28 +14,18 @@ class Release
      */
     private $sha;
 
-    /**
-     * @param string $tag
-     * @param string $sha
-     */
-    public function __construct($tag, $sha)
+    public function __construct(string $tag, string $sha)
     {
         $this->tag = $tag;
         $this->sha = $sha;
     }
 
-    /**
-     * @return string
-     */
-    public function getTag()
+    public function getTag(): string
     {
         return $this->tag;
     }
 
-    /**
-     * @return string
-     */
-    public function getSha()
+    public function getSha(): string
     {
         return $this->sha;
     }

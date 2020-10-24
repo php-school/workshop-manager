@@ -28,20 +28,14 @@ class VerifyInstall
      */
     private $workshopHomeDirectory;
 
-
-    /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param string $workshopHomeDirectory
-     */
-    public function __construct(InputInterface $input, OutputInterface $output, $workshopHomeDirectory)
+    public function __construct(InputInterface $input, OutputInterface $output, string $workshopHomeDirectory)
     {
         $this->input = $input;
         $this->output = $output;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
     }
 
-    public function __invoke()
+    public function __invoke(): void
     {
         $style = new SymfonyStyle($this->input, $this->output);
 

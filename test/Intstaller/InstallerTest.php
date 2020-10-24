@@ -3,7 +3,6 @@
 namespace PhpSchool\WorkshopManagerTest\Installer;
 
 use Composer\Json\JsonFile;
-use Composer\Package\Archiver\ZipArchiver;
 use Github\Api\GitData;
 use Github\Api\GitData\Tags;
 use Github\Api\Repo;

@@ -16,20 +16,12 @@ class VersionChecker
      */
     private $gitHubClient;
 
-    /**
-     * @param Client $gitHubClient
-     */
     public function __construct(Client $gitHubClient)
     {
         $this->gitHubClient = $gitHubClient;
     }
 
-    /**
-     * @param Workshop $workshop
-     * @return Release
-     * @throws RuntimeException
-     */
-    public function getLatestRelease(Workshop $workshop)
+    public function getLatestRelease(Workshop $workshop): Release
     {
         try {
             /** @noinspection PhpUndefinedMethodInspection */

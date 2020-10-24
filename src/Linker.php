@@ -25,28 +25,17 @@ class Linker
      */
     private $workshopHomeDirectory;
 
-    /**
-     * @param Filesystem $filesystem
-     * @param $workshopHomeDirectory
-     * @param OutputInterface $output
-     */
     public function __construct(
         Filesystem $filesystem,
-        $workshopHomeDirectory,
+        string $workshopHomeDirectory,
         OutputInterface $output
     ) {
-        $this->filesystem            = $filesystem;
+        $this->filesystem = $filesystem;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
-        $this->output                = $output;
+        $this->output = $output;
     }
 
-    /**
-     * @param InstalledWorkshop $workshop
-     *
-     * @return bool
-     * @throws RuntimeException
-     */
-    public function link(InstalledWorkshop $workshop)
+    public function link(InstalledWorkshop $workshop): void
     {
         $localTarget = $this->getLocalTargetPath($workshop);
 
@@ -59,20 +48,22 @@ class Linker
         try {
             $this->filesystem->symlink($this->getWorkshopSrcPath($workshop), $localTarget);
         } catch (IOException $e) {
-            return $this->output->write([
+            $this->output->write([
                 ' <error> Unable to create symlink for workshop </error>',
                 sprintf(' <error> Failed symlinking workshop bin to path "%s" </error>', $localTarget)
             ]);
+            return;
         }
 
         try {
             $this->filesystem->chmod(realpath($this->getWorkshopSrcPath($workshop)), 0777);
         } catch (IOException $e) {
-            return $this->output->write([
+            $this->output->write([
                 ' <error> Unable to make workshop executable </error>',
                 ' You may have to run the following with elevated privileges:',
                 sprintf(' <info>$ chmod +x %s</info>', $localTarget)
             ]);
+            return;
         }
 
         if (!$this->isBinDirInPath()) {
@@ -96,13 +87,7 @@ class Linker
         }
     }
 
-    /**
-     * @param InstalledWorkshop $workshop
-     *
-     * @return bool
-     * @throws WorkshopNotInstalledException
-     */
-    public function unlink(InstalledWorkshop $workshop)
+    public function unlink(InstalledWorkshop $workshop): void
     {
         $localTarget = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getCode());
 
@@ -111,10 +96,11 @@ class Linker
         }
 
         if (!$this->filesystem->isLink($localTarget)) {
-            return $this->output->write([
+            $this->output->write([
                 sprintf(' <error> Unknown file exists at path "%s" </error>', $localTarget),
                 ' <info>Not removing</info>'
             ]);
+            return;
         }
 
         try {
@@ -127,11 +113,7 @@ class Linker
         }
     }
 
-    /**
-     * @param string $path
-     *
-     */
-    private function removeWorkshopBin($path)
+    private function removeWorkshopBin(string $path): void
     {
         if (!$this->filesystem->exists($path)) {
             return;
@@ -161,11 +143,7 @@ class Linker
         }
     }
 
-    /**
-     * @param InstalledWorkshop $workshop
-     * @return string
-     */
-    private function getWorkshopSrcPath(InstalledWorkshop $workshop)
+    private function getWorkshopSrcPath(InstalledWorkshop $workshop): string
     {
         return sprintf(
             '%s/workshops/%s/bin/%s',
@@ -175,11 +153,7 @@ class Linker
         );
     }
 
-    /**
-     * @param InstalledWorkshop $workshop
-     * @return string
-     */
-    private function getLocalTargetPath(InstalledWorkshop $workshop)
+    private function getLocalTargetPath(InstalledWorkshop $workshop): string
     {
         // Ensure bin dir exists
         $path = sprintf('%s/bin/%s', $this->workshopHomeDirectory, $workshop->getCode());
@@ -193,7 +167,7 @@ class Linker
      *
      * @return bool
      */
-    private function isBinDirInPath()
+    private function isBinDirInPath(): bool
     {
         return strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false;
     }

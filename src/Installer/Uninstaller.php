@@ -24,26 +24,18 @@ class Uninstaller
      * @var Filesystem
      */
     private $filesystem;
-
-
     /**
      * @var string
      */
     private $workshopHomeDirectory;
 
-    /**
-     * @param InstalledWorkshopRepository $installedWorkshops
-     * @param Linker $linker
-     * @param Filesystem $filesystem
-     * @param $workshopHomeDirectory
-     */
     public function __construct(
         InstalledWorkshopRepository $installedWorkshops,
         Linker $linker,
         Filesystem $filesystem,
-        $workshopHomeDirectory
+        string $workshopHomeDirectory
     ) {
-        $this->filesystem         = $filesystem;
+        $this->filesystem = $filesystem;
         $this->installedWorkshops = $installedWorkshops;
         $this->workshopHomeDirectory = $workshopHomeDirectory;
         $this->linker = $linker;
@@ -51,11 +43,8 @@ class Uninstaller
 
     /**
      * @param string $workshop
-     *
-     * @throws WorkshopNotInstalledException
-     * @throws \RuntimeException When filesystem delete fails
      */
-    public function uninstallWorkshop($workshop)
+    public function uninstallWorkshop(string $workshop): void
     {
         if (!$this->installedWorkshops->hasWorkshop($workshop)) {
             throw new WorkshopNotInstalledException();

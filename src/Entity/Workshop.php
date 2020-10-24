@@ -34,69 +34,48 @@ class Workshop
      */
     protected $type;
 
-    /**
-     * @param string $code
-     * @param string $displayName
-     * @param string $gitHubOwner
-     * @param string $gitHubRepoName
-     * @param string $description
-     * @param string $type
-     */
-    public function __construct($code, $displayName, $gitHubOwner, $gitHubRepoName, $description, $type)
-    {
-        $this->code             = $code;
-        $this->displayName      = $displayName;
-        $this->gitHubOwner      = $gitHubOwner;
-        $this->gitHubRepoName   = $gitHubRepoName;
-        $this->description      = $description;
-        $this->type             = $type;
+    public function __construct(
+        string $code,
+        string $displayName,
+        string $gitHubOwner,
+        string $gitHubRepoName,
+        string $description,
+        string $type
+    ) {
+        $this->code = $code;
+        $this->displayName = $displayName;
+        $this->gitHubOwner = $gitHubOwner;
+        $this->gitHubRepoName = $gitHubRepoName;
+        $this->description = $description;
+        $this->type = $type;
     }
 
-    /**
-     * @return string
-     */
-    public function getCode()
+    public function getCode(): string
     {
         return $this->code;
     }
 
-    /**
-     * @return string
-     */
-    public function getDisplayName()
+    public function getDisplayName(): string
     {
         return $this->displayName;
     }
 
-
-    /**
-     * @return string
-     */
-    public function getGitHubOwner()
+    public function getGitHubOwner(): string
     {
         return $this->gitHubOwner;
     }
 
-    /**
-     * @return string
-     */
-    public function getGitHubRepoName()
+    public function getGitHubRepoName(): string
     {
         return $this->gitHubRepoName;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @return string
-     */
-    public function getType()
+    public function getType(): string
     {
         return $this->type;
     }

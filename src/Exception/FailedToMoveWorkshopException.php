@@ -14,30 +14,20 @@ final class FailedToMoveWorkshopException extends \RuntimeException
      */
     private $destPath;
 
-    /**
-     * @param string $srcPath
-     * @param string $destPath
-     */
-    public function __construct($srcPath, $destPath)
+    public function __construct(string $srcPath, string $destPath)
     {
-        $this->srcPath  = $srcPath;
+        $this->srcPath = $srcPath;
         $this->destPath = $destPath;
 
         parent::__construct(sprintf('Failed to move workshop files from "%s" to "%s"', $srcPath, $destPath));
     }
 
-    /**
-     * @return string
-     */
-    public function getDestPath()
+    public function getDestPath(): string
     {
         return $this->destPath;
     }
 
-    /**
-     * @return string
-     */
-    public function getSrcPath()
+    public function getSrcPath(): string
     {
         return $this->srcPath;
     }
