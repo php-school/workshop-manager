@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class InstalledWorkshopTest extends TestCase
 {
-    public function testGetters()
+    public function testGetters(): void
     {
         $workshop = new InstalledWorkshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core', '1.0.0');
         $this->assertEquals('workshop', $workshop->getCode());
@@ -20,7 +20,7 @@ class InstalledWorkshopTest extends TestCase
         $this->assertEquals('1.0.0', $workshop->getVersion());
     }
 
-    public function testFromWorkshop()
+    public function testFromWorkshop(): void
     {
         $workshop = new Workshop('workshop', 'workshop', 'aydin', 'repo', 'workshop', 'core');
         $installed = InstalledWorkshop::fromWorkshop($workshop, '1.0.0');

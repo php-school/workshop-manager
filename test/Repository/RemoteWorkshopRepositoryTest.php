@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 class RemoteWorkshopRepositoryTest extends TestCase
 {
-    public function testExceptionIsThrownIfNoConnection()
+    public function testExceptionIsThrownIfNoConnection(): void
     {
         $json = $this->createMock(JsonFile::class);
         $json
@@ -24,18 +24,16 @@ class RemoteWorkshopRepositoryTest extends TestCase
         $repo->getByCode('workshop');
     }
 
-    public function testGetByNameThrowsExceptionIfWorkshopNotExist()
+    public function testGetByNameThrowsExceptionIfWorkshopNotExist(): void
     {
         $json = $this->createMock(JsonFile::class);
         $json
             ->expects($this->once())
             ->method('read')
-            ->will(
-                $this->returnValue(
-                    [
-                        'workshops' => []
-                    ]
-                )
+            ->willReturn(
+                [
+                    'workshops' => []
+                ]
             );
 
         $json
@@ -48,27 +46,25 @@ class RemoteWorkshopRepositoryTest extends TestCase
         $repo->getByCode('nope');
     }
 
-    public function testGetByName()
+    public function testGetByName(): void
     {
         $json = $this->createMock(JsonFile::class);
         $json
             ->expects($this->once())
             ->method('read')
-            ->will(
-                $this->returnValue(
-                    [
-                        'workshops' => [
-                            [
-                                'workshop_code' => 'workshop',
-                                'display_name' => 'workshop',
-                                'github_owner' => 'aydin',
-                                'github_repo_name' => 'repo',
-                                'description' => 'workshop',
-                                'type' => 'core',
-                            ]
+            ->willReturn(
+                [
+                    'workshops' => [
+                        [
+                            'workshop_code'    => 'workshop',
+                            'display_name'     => 'workshop',
+                            'github_owner'     => 'aydin',
+                            'github_repo_name' => 'repo',
+                            'description'      => 'workshop',
+                            'type'             => 'core',
                         ]
                     ]
-                )
+                ]
             );
 
         $json
@@ -86,27 +82,25 @@ class RemoteWorkshopRepositoryTest extends TestCase
         $this->assertEquals('workshop', $workshop->getDescription());
     }
 
-    public function testFind()
+    public function testFind(): void
     {
         $json = $this->createMock(JsonFile::class);
         $json
             ->expects($this->once())
             ->method('read')
-            ->will(
-                $this->returnValue(
-                    [
-                        'workshops' => [
-                            [
-                                'workshop_code' => 'workshop',
-                                'display_name' => 'learn-you-php',
-                                'github_owner' => 'aydin',
-                                'github_repo_name' => 'repo',
-                                'description' => 'workshop',
-                                'type' => 'core'
-                            ]
+            ->willReturn(
+                [
+                    'workshops' => [
+                        [
+                            'workshop_code'    => 'workshop',
+                            'display_name'     => 'learn-you-php',
+                            'github_owner'     => 'aydin',
+                            'github_repo_name' => 'repo',
+                            'description'      => 'workshop',
+                            'type'             => 'core'
                         ]
                     ]
-                )
+                ]
             );
 
         $json
@@ -125,35 +119,33 @@ class RemoteWorkshopRepositoryTest extends TestCase
         $this->assertCount(0, $repo->find('not-a-workshop')); //spelt too many characters wrong
     }
 
-    public function testFindWithMultipleWorkshops()
+    public function testFindWithMultipleWorkshops(): void
     {
         $json = $this->createMock(JsonFile::class);
         $json
             ->expects($this->once())
             ->method('read')
-            ->will(
-                $this->returnValue(
-                    [
-                        'workshops' => [
-                            [
-                                'workshop_code' => 'learnyouphp',
-                                'display_name' => 'Learn you PHP',
-                                'github_owner' => 'aydin',
-                                'github_repo_name' => 'repo',
-                                'description' => 'A workshop',
-                                'type' => 'core',
-                            ],
-                            [
-                                'workshop_code' => 'php7',
-                                'display_name' => 'Learn PHP7',
-                                'github_owner' => 'aydin',
-                                'github_repo_name' => 'repo',
-                                'description' => 'A workshop',
-                                'type' => 'core',
-                            ]
+            ->willReturn(
+                [
+                    'workshops' => [
+                        [
+                            'workshop_code'    => 'learnyouphp',
+                            'display_name'     => 'Learn you PHP',
+                            'github_owner'     => 'aydin',
+                            'github_repo_name' => 'repo',
+                            'description'      => 'A workshop',
+                            'type'             => 'core',
+                        ],
+                        [
+                            'workshop_code'    => 'php7',
+                            'display_name'     => 'Learn PHP7',
+                            'github_owner'     => 'aydin',
+                            'github_repo_name' => 'repo',
+                            'description'      => 'A workshop',
+                            'type'             => 'core',
                         ]
                     ]
-                )
+                ]
             );
 
         $json
@@ -176,35 +168,33 @@ class RemoteWorkshopRepositoryTest extends TestCase
         $this->assertCount(0, $repo->find('not-a-workshop')); //spelt too many characters wrong
     }
 
-    public function testAllReturnsAllWorkshops()
+    public function testAllReturnsAllWorkshops(): void
     {
         $json = $this->createMock(JsonFile::class);
         $json
             ->expects($this->once())
             ->method('read')
-            ->will(
-                $this->returnValue(
-                    [
-                        'workshops' => [
-                            [
-                                'workshop_code' => 'learnyouphp',
-                                'display_name' => 'Learn you PHP',
-                                'github_owner' => 'aydin',
-                                'github_repo_name' => 'repo',
-                                'description' => 'A workshop',
-                                'type' => 'core',
-                            ],
-                            [
-                                'workshop_code' => 'php7',
-                                'display_name' => 'Learn PHP7',
-                                'github_owner' => 'aydin',
-                                'github_repo_name' => 'repo',
-                                'description' => 'A workshop',
-                                'type' => 'core',
-                            ]
+            ->willReturn(
+                [
+                    'workshops' => [
+                        [
+                            'workshop_code'    => 'learnyouphp',
+                            'display_name'     => 'Learn you PHP',
+                            'github_owner'     => 'aydin',
+                            'github_repo_name' => 'repo',
+                            'description'      => 'A workshop',
+                            'type'             => 'core',
+                        ],
+                        [
+                            'workshop_code'    => 'php7',
+                            'display_name'     => 'Learn PHP7',
+                            'github_owner'     => 'aydin',
+                            'github_repo_name' => 'repo',
+                            'description'      => 'A workshop',
+                            'type'             => 'core',
                         ]
                     ]
-                )
+                ]
             );
 
         $json

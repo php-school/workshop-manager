@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 
 class ComposerFailureExceptionTest extends TestCase
 {
-    public function testFromException()
+    public function testFromException(): void
     {
         $e = new Exception('Some Error');
 
@@ -16,7 +16,7 @@ class ComposerFailureExceptionTest extends TestCase
         $this->assertEquals('Some Error', $composerException->getMessage());
     }
 
-    public function testFromMissingExtensions()
+    public function testFromMissingExtensions(): void
     {
         $message  = 'This workshop requires some extra PHP extensions. Please install them';
         $message .= ' and try again. Required extensions are mbstring, zip.';

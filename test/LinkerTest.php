@@ -32,7 +32,7 @@ class LinkerTest extends TestCase
      */
     private $linker;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filesystem = new Filesystem;
         $this->io = $this->createMock(OutputInterface::class);
@@ -40,12 +40,12 @@ class LinkerTest extends TestCase
         $this->linker = new Linker($this->filesystem, $this->tmpDir, $this->io);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->filesystem->remove($this->tmpDir);
     }
 
-    public function testErrorIsPrintedIsFileExistsAtTarget()
+    public function testErrorIsPrintedIsFileExistsAtTarget(): void
     {
         $path = sprintf('%s/bin/learn-you-php', $this->tmpDir);
         mkdir(dirname($path), 0775, true);
@@ -65,7 +65,7 @@ class LinkerTest extends TestCase
         $this->linker->link($workshop);
     }
 
-    public function testErrorIsPrintedIfFileCannotBeRemoved()
+    public function testErrorIsPrintedIfFileCannotBeRemoved(): void
     {
         $fs = $this->getMockBuilder(Filesystem::class)
             ->setMethods(['remove'])
@@ -100,7 +100,7 @@ class LinkerTest extends TestCase
         $this->linker->link($workshop);
     }
 
-    public function testErrorIsPrintedIfCannotSymlink()
+    public function testErrorIsPrintedIfCannotSymlink(): void
     {
         $fs = $this->getMockBuilder(Filesystem::class)
             ->setMethods(['symlink'])
@@ -131,7 +131,7 @@ class LinkerTest extends TestCase
         $this->linker->link($workshop);
     }
 
-    public function testErrorIsPrintedIfCannotChmod()
+    public function testErrorIsPrintedIfCannotChmod(): void
     {
         //chmod will fail if the symlink target does not exist
         $this->io
@@ -149,7 +149,7 @@ class LinkerTest extends TestCase
         $this->linker->link($workshop);
     }
 
-    public function testSuccess()
+    public function testSuccess(): void
     {
         putenv(sprintf('PATH=%s/bin', $this->tmpDir));
 
@@ -164,7 +164,7 @@ class LinkerTest extends TestCase
         $this->assertSame($target, readlink(sprintf('%s/bin/learn-you-php', $this->tmpDir)));
     }
 
-    public function testSuccessButBinDirNotInPath()
+    public function testSuccessButBinDirNotInPath(): void
     {
         putenv('PATH=/not-a-dir');
         $this->io->expects($this->once())
@@ -199,7 +199,7 @@ class LinkerTest extends TestCase
         $this->assertSame($target, readlink(sprintf('%s/bin/learn-you-php', $this->tmpDir)));
     }
 
-    public function testUnlinkErrorIsPrintedIfNonSymlinkExistsAtTarget()
+    public function testUnlinkErrorIsPrintedIfNonSymlinkExistsAtTarget(): void
     {
         $path = sprintf('%s/bin/learn-you-php', $this->tmpDir);
         mkdir(dirname($path), 0775, true);
@@ -219,7 +219,7 @@ class LinkerTest extends TestCase
         $this->linker->unlink($workshop);
     }
 
-    public function testUnlinkErrorIsPrintedIfFileCannotBeRemoved()
+    public function testUnlinkErrorIsPrintedIfFileCannotBeRemoved(): void
     {
         $fs = $this->getMockBuilder(Filesystem::class)
             ->setMethods(['remove'])

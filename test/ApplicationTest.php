@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 
 class ApplicationTest extends TestCase
 {
-    public function testGetHelp()
+    public function testGetHelp(): void
     {
         $application = new Application('PHP School Workshop Manager', '1.0.0');
 

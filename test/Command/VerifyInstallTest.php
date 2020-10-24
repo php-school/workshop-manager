@@ -13,12 +13,12 @@ class VerifyInstallTest extends TestCase
 {
 
     /**
-     * @var OutputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var OutputInterface
      */
     private $output;
 
     /**
-     * @var InputInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var InputInterface
      */
     private $input;
 
@@ -32,7 +32,7 @@ class VerifyInstallTest extends TestCase
      */
     private $command;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->output = new BufferedOutput;
         $this->output->getFormatter()->setStyle('phps', new OutputFormatterStyle('magenta'));
@@ -41,44 +41,44 @@ class VerifyInstallTest extends TestCase
         $this->command = new VerifyInstall($this->input, $this->output, $this->tmpDir);
     }
 
-    public function testErrorIsPrintedIfWorkshopDirNotInPath()
+    public function testErrorIsPrintedIfWorkshopDirNotInPath(): void
     {
         putenv('PATH=/not-a-dir');
 
         $this->command->__invoke();
 
         $output = $this->output->fetch();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             sprintf('/%s/', preg_quote('[ERROR] The PHP School bin directory is not in your PATH variable.')),
             $output
         );
     }
 
-    public function testSuccessIsPrintedIfWorkshopDirInPath()
+    public function testSuccessIsPrintedIfWorkshopDirInPath(): void
     {
         putenv(sprintf('PATH=%s/bin', $this->tmpDir));
 
         $this->command->__invoke();
 
         $output = $this->output->fetch();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             sprintf('/%s/', preg_quote('[OK] Your $PATH environment variable is configured correctly')),
             $output
         );
     }
 
-    public function testAllRequiredExtensions()
+    public function testAllRequiredExtensions(): void
     {
         $this->command->__invoke();
 
         $output = $this->output->fetch();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             sprintf('/%s/', preg_quote('[OK] All required PHP extensions are installed.')),
             $output
         );
     }
 
-    public function testMissingExtensions()
+    public function testMissingExtensions(): void
     {
         $rc = new \ReflectionClass(VerifyInstall::class);
         $rp = $rc->getProperty('requiredExtensions');
@@ -88,7 +88,7 @@ class VerifyInstallTest extends TestCase
         $this->command->__invoke();
 
         $output = $this->output->fetch();
-        $this->assertRegExp(
+        $this->assertMatchesRegularExpression(
             sprintf(
                 '/%s/',
                 preg_quote(
@@ -98,7 +98,7 @@ class VerifyInstallTest extends TestCase
             $output
         );
 
-        $this->assertNotRegExp(
+        $this->assertDoesNotMatchRegularExpression(
             sprintf('/%s/', preg_quote('[OK] All required PHP extensions are installed.')),
             $output
         );

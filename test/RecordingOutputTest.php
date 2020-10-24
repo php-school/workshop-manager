@@ -20,13 +20,13 @@ class RecordingOutputTest extends TestCase
      */
     private $wrappedOutput;
 
-    public function setup()
+    public function setup(): void
     {
         $this->wrappedOutput = new BufferedOutput;
         $this->output = new RecordingOutput($this->wrappedOutput);
     }
 
-    public function testMethodsDelegateToWrapped()
+    public function testMethodsDelegateToWrapped(): void
     {
         $this->assertSame($this->wrappedOutput->isDebug(), $this->output->isDebug());
         $this->assertSame($this->wrappedOutput->isVerbose(), $this->output->isVerbose());
@@ -37,7 +37,7 @@ class RecordingOutputTest extends TestCase
         $this->assertSame($this->wrappedOutput->isQuiet(), $this->output->isQuiet());
     }
 
-    public function testSettersDelegateToWrapped()
+    public function testSettersDelegateToWrapped(): void
     {
         $formatter = new OutputFormatter;
         $this->assertNotSame($formatter, $this->wrappedOutput->getFormatter());
@@ -54,7 +54,7 @@ class RecordingOutputTest extends TestCase
         $this->assertEquals(OutputInterface::VERBOSITY_VERBOSE, $this->wrappedOutput->getVerbosity());
     }
 
-    public function testWriteWithRecordsAndDelegates()
+    public function testWriteWithRecordsAndDelegates(): void
     {
         $this->output->write('Hello', false);
 
@@ -62,7 +62,7 @@ class RecordingOutputTest extends TestCase
         $this->assertEquals('Hello', $this->wrappedOutput->fetch());
     }
 
-    public function testWriteWithArrayAndRecordsAndDelegates()
+    public function testWriteWithArrayAndRecordsAndDelegates(): void
     {
         $this->output->write(['Hello', 'Aydin'], false);
 
@@ -70,7 +70,7 @@ class RecordingOutputTest extends TestCase
         $this->assertEquals('HelloAydin', $this->wrappedOutput->fetch());
     }
 
-    public function testWriteWithNewLineRecordsAndDelegates()
+    public function testWriteWithNewLineRecordsAndDelegates(): void
     {
         $this->output->write('Hello', true);
 
@@ -78,7 +78,7 @@ class RecordingOutputTest extends TestCase
         $this->assertEquals("Hello\n", $this->wrappedOutput->fetch());
     }
 
-    public function testWriteWithArrayAndNewLineRecordsAndDelegates()
+    public function testWriteWithArrayAndNewLineRecordsAndDelegates(): void
     {
         $this->output->write(['Hello', 'Aydin'], true);
 
@@ -86,7 +86,7 @@ class RecordingOutputTest extends TestCase
         $this->assertEquals("Hello\nAydin\n", $this->wrappedOutput->fetch());
     }
 
-    public function testWriteLineRecordsAndDelegates()
+    public function testWriteLineRecordsAndDelegates(): void
     {
         $this->output->writeln('Hello');
 
@@ -94,7 +94,7 @@ class RecordingOutputTest extends TestCase
         $this->assertEquals("Hello\n", $this->wrappedOutput->fetch());
     }
 
-    public function testWriteLineWithArrayRecordsAndDelegates()
+    public function testWriteLineWithArrayRecordsAndDelegates(): void
     {
         $this->output->writeln(['Hello', 'Aydin']);
 

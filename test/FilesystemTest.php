@@ -18,14 +18,14 @@ class FilesystemTest extends TestCase
      */
     private $tmpDir;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filesystem = new Filesystem;
         $this->tmpDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         @mkdir($this->tmpDir);
     }
 
-    public function testExecuteInPathThrowsExceptionIfPathNotExists()
+    public function testExecuteInPathThrowsExceptionIfPathNotExists(): void
     {
         rmdir($this->tmpDir);
         $this->expectException(IOException::class);
@@ -34,7 +34,7 @@ class FilesystemTest extends TestCase
         });
     }
 
-    public function testExecuteInPath()
+    public function testExecuteInPath(): void
     {
         $currentDir = getcwd();
 
@@ -46,7 +46,7 @@ class FilesystemTest extends TestCase
         $this->assertSame($currentDir, getcwd());
     }
 
-    public function testIsLink()
+    public function testIsLink(): void
     {
         $path = sprintf('%s/test', $this->tmpDir);
         touch($path);
@@ -61,7 +61,7 @@ class FilesystemTest extends TestCase
         unlink($path);
     }
 
-    public function testIsWritable()
+    public function testIsWritable(): void
     {
         $path = sprintf('%s/test', $this->tmpDir);
         touch($path);
@@ -71,7 +71,7 @@ class FilesystemTest extends TestCase
         unlink($path);
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         @rmdir($this->tmpDir);
     }
