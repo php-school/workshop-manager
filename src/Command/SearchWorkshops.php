@@ -62,9 +62,9 @@ class SearchWorkshops
         $this->output->writeln('');
 
         $style = (new TableStyle())
-            ->setHorizontalBorderChar('<phps>-</phps>')
-            ->setVerticalBorderChar('<phps>|</phps>')
-            ->setCrossingChar('<phps>+</phps>');
+            ->setHorizontalBorderChars('<phps>-</phps>')
+            ->setVerticalBorderChars('<phps>|</phps>')
+            ->setDefaultCrossingChar('<phps>+</phps>');
 
         (new Table($this->output))
             ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Installed?'])
