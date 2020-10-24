@@ -1,0 +1,46 @@
+name: WorkshopManager
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [7.1, 7.2, 7.3, 7.4]
+
+    name: PHP ${{ matrix.php }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer:v1
+
+      - name: Install Dependencies
+        run: composer update
+
+      - name: Run phpunit tests
+        run: |
+          mkdir -p build/logs
+          export COLUMNS=200
+          vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
+
+      - name: Run phpcs
+        run: composer cs
+
+#      - name: Run phpstan
+#        run: composer static
+
+      - name: Coverage upload
+        if: matrix.php == '7.4'
+        run: bash <(curl -s https://codecov.io/bash)
+
