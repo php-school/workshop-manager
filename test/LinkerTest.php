@@ -68,7 +68,7 @@ class LinkerTest extends TestCase
     public function testErrorIsPrintedIfFileCannotBeRemoved(): void
     {
         $fs = $this->getMockBuilder(Filesystem::class)
-            ->onlyMethods(['remove'])
+            ->setMethods(['remove'])
             ->getMock();
 
         $this->linker = new Linker($fs, $this->tmpDir, $this->io);
@@ -103,7 +103,7 @@ class LinkerTest extends TestCase
     public function testErrorIsPrintedIfCannotSymlink(): void
     {
         $fs = $this->getMockBuilder(Filesystem::class)
-            ->onlyMethods(['symlink'])
+            ->setMethods(['symlink'])
             ->getMock();
 
         $this->linker = new Linker($fs, $this->tmpDir, $this->io);
@@ -222,7 +222,7 @@ class LinkerTest extends TestCase
     public function testUnlinkErrorIsPrintedIfFileCannotBeRemoved(): void
     {
         $fs = $this->getMockBuilder(Filesystem::class)
-            ->onlyMethods(['remove'])
+            ->setMethods(['remove'])
             ->getMock();
 
         $this->linker = new Linker($fs, $this->tmpDir, $this->io);
