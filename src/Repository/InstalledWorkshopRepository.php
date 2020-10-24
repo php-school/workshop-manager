@@ -87,7 +87,7 @@ class InstalledWorkshopRepository
         return array_key_exists($code, $this->workshops);
     }
 
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return count($this->workshops) === 0;
     }
