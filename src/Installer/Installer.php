@@ -196,7 +196,6 @@ class Installer
         }
 
         try {
-            /** @noinspection PhpUndefinedMethodInspection */
             $data = $this->gitHubClient->api('repo')->contents()->archive(
                 $workshop->getGitHubOwner(),
                 $workshop->getGitHubRepoName(),

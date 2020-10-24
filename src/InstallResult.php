@@ -17,7 +17,7 @@ class InstallResult
     private $output;
 
     /**
-     * @var Collection
+     * @var Collection<string>
      */
     private $missingExtensions;
 

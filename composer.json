@@ -32,7 +32,8 @@
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.4",
-        "symfony/phpunit-bridge": "^5.1"
+        "symfony/phpunit-bridge": "^5.1",
+        "phpstan/phpstan": "^0.12.50"
     },
     "autoload" : {
         "psr-4" : {
@@ -61,9 +62,11 @@
             "box.phar build -vv"
         ],
         "test": [
-            "phpunit",
+            "simple-phpunit",
+            "@static",
             "@cs"
         ],
+        "static": "phpstan --ansi analyse --level max src",
         "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",
         "post-update-cmd": "Tooly\\ScriptHandler::installPharTools"
     },

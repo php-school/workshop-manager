@@ -41,8 +41,14 @@ class ComposerInstaller
         } else {
             //write all output in verbose mode to a temp stream
             //so we don't write it out when not in verbose mode
+            $resource = fopen('php://memory', 'w');
+
+            if (!$resource) {
+                throw new \RuntimeException('Could not open memory stream');
+            }
+
             $output = new StreamOutput(
-                fopen('php://memory', 'w'),
+                $resource,
                 OutputInterface::VERBOSITY_VERY_VERBOSE,
                 $this->output->isDecorated(),
                 $this->output->getFormatter()
