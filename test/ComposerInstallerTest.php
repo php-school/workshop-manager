@@ -51,7 +51,8 @@ class ComposerInstallerTest extends TestCase
         $this->assertFileExists(sprintf('%s/vendor', $this->tempDir));
         $this->assertFileExists(sprintf('%s/composer.lock', $this->tempDir));
 
-        $expectedOutput  = "/No lock file found. Updating dependencies instead of installing from lock file. Use composer update over composer install if you do not have a lock file.\n";
+        $expectedOutput  = "/No lock file found. Updating dependencies instead of installing from lock file. ";
+        $expectedOutput .= "Use composer update over composer install if you do not have a lock file.\n";
         $expectedOutput .= "Loading composer repositories with package information\n";
         $expectedOutput .= "Updating dependencies\n";
         $expectedOutput .= "Dependency resolution completed in \\d+\\.\\d+ seconds\n";
@@ -83,7 +84,8 @@ class ComposerInstallerTest extends TestCase
         $this->assertFileExists(sprintf('%s/vendor', $this->tempDir));
         $this->assertFileExists(sprintf('%s/composer.lock', $this->tempDir));
 
-        $expectedOutput  = "/No lock file found. Updating dependencies instead of installing from lock file. Use composer update over composer install if you do not have a lock file.\n";
+        $expectedOutput  = "/No lock file found. Updating dependencies instead of installing from lock file. ";
+        $expectedOutput .= "Use composer update over composer install if you do not have a lock file.\n";
         $expectedOutput .= "Loading composer repositories with package information\n";
         $expectedOutput .= "Updating dependencies\n";
         $expectedOutput .= "Dependency resolution completed in \\d+\\.\\d+ seconds\n";
