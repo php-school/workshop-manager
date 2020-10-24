@@ -44,22 +44,25 @@ class ComposerInstallerTest extends TestCase
         $installer = new ComposerInstaller($input, $output, new Factory());
         file_put_contents(
             sprintf('%s/composer.json', $this->tempDir),
-            '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}'
+            '{"name" : "phpschool/learnyouphp", "require" : { "php": ">=5.6"}}'
         );
         $res = $installer->install($this->tempDir);
 
         $this->assertFileExists(sprintf('%s/vendor', $this->tempDir));
         $this->assertFileExists(sprintf('%s/composer.lock', $this->tempDir));
 
-        $expectedOutput  = "/Loading composer repositories with package information\n";
+        $expectedOutput  = "/No lock file found. Updating dependencies instead of installing from lock file. Use composer update over composer install if you do not have a lock file.\n";
+        $expectedOutput .= "Loading composer repositories with package information\n";
         $expectedOutput .= "Updating dependencies\n";
         $expectedOutput .= "Dependency resolution completed in \\d+\\.\\d+ seconds\n";
         $expectedOutput .= "Analyzed \\d+ packages to resolve dependencies\n";
         $expectedOutput .= "Analyzed \\d+ rules to resolve dependencies\n";
-        $expectedOutput .= "Nothing to install or update\n";
+        $expectedOutput .= "Nothing to modify in lock file\n";
         $expectedOutput .= "Writing lock file\n";
+        $expectedOutput .= "Installing dependencies from lock file\n";
+        $expectedOutput .= "Nothing to install, update or remove\n";
         $expectedOutput .= "Generating autoload files\n/";
-        $this->assertMatchesRegularExpression($expectedOutput, $output->fetch());
+        $this->assertMatchesRegularExpression($expectedOutput, strip_tags($output->fetch()));
         $this->assertMatchesRegularExpression($expectedOutput, strip_tags($res->getOutput()));
         $this->assertEquals(0, $res->getExitCode());
     }
@@ -73,20 +76,23 @@ class ComposerInstallerTest extends TestCase
         $installer = new ComposerInstaller($input, $output, new Factory());
         file_put_contents(
             sprintf('%s/composer.json', $this->tempDir),
-            '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}'
+            '{"name" : "phpschool/learnyouphp", "require" : { "php": ">=5.6"}}'
         );
         $res = $installer->install($this->tempDir);
 
         $this->assertFileExists(sprintf('%s/vendor', $this->tempDir));
         $this->assertFileExists(sprintf('%s/composer.lock', $this->tempDir));
 
-        $expectedOutput  = "/Loading composer repositories with package information\n";
+        $expectedOutput  = "/No lock file found. Updating dependencies instead of installing from lock file. Use composer update over composer install if you do not have a lock file.\n";
+        $expectedOutput .= "Loading composer repositories with package information\n";
         $expectedOutput .= "Updating dependencies\n";
         $expectedOutput .= "Dependency resolution completed in \\d+\\.\\d+ seconds\n";
         $expectedOutput .= "Analyzed \\d+ packages to resolve dependencies\n";
         $expectedOutput .= "Analyzed \\d+ rules to resolve dependencies\n";
-        $expectedOutput .= "Nothing to install or update\n";
+        $expectedOutput .= "Nothing to modify in lock file\n";
         $expectedOutput .= "Writing lock file\n";
+        $expectedOutput .= "Installing dependencies from lock file\n";
+        $expectedOutput .= "Nothing to install, update or remove\n";
         $expectedOutput .= "Generating autoload files\n/";
         $this->assertEquals('', $output->fetch());
         $this->assertMatchesRegularExpression($expectedOutput, strip_tags($res->getOutput()));
