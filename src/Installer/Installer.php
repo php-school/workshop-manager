@@ -114,11 +114,11 @@ class Installer
     public function installWorkshop($workshop)
     {
         if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
-            throw new WorkshopAlreadyInstalledException;
+            throw new WorkshopAlreadyInstalledException();
         }
 
         if (!$this->remoteWorkshopRepository->hasWorkshop($workshop)) {
-            throw new WorkshopNotFoundException;
+            throw new WorkshopNotFoundException();
         }
 
         $workshop = $this->remoteWorkshopRepository->getByCode($workshop);
@@ -169,7 +169,7 @@ class Installer
                 if ($result->missingExtensions()) {
                     throw ComposerFailureException::fromMissingExtensions($result->getMissingExtensions());
                 }
-                
+
                 throw new ComposerFailureException();
             }
         });

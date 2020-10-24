@@ -143,7 +143,7 @@ class Linker
                 ' <info>Try removing the file, then remove the workshop and install it again</info>'
             ]);
 
-            throw new \RuntimeException;
+            throw new \RuntimeException();
         }
 
         try {
@@ -157,7 +157,7 @@ class Linker
                 $msg
             ]);
 
-            throw new \RuntimeException;
+            throw new \RuntimeException();
         }
     }
 

@@ -22,7 +22,7 @@ class RecordingOutputTest extends TestCase
 
     public function setup(): void
     {
-        $this->wrappedOutput = new BufferedOutput;
+        $this->wrappedOutput = new BufferedOutput();
         $this->output = new RecordingOutput($this->wrappedOutput);
     }
 
@@ -39,7 +39,7 @@ class RecordingOutputTest extends TestCase
 
     public function testSettersDelegateToWrapped(): void
     {
-        $formatter = new OutputFormatter;
+        $formatter = new OutputFormatter();
         $this->assertNotSame($formatter, $this->wrappedOutput->getFormatter());
         $this->assertFalse($this->wrappedOutput->isDecorated());
         $this->assertEquals(OutputInterface::VERBOSITY_NORMAL, $this->wrappedOutput->getVerbosity());

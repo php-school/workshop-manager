@@ -43,7 +43,7 @@ class SearchWorkshopsTest extends TestCase
 
         $this->localRepo = new InstalledWorkshopRepository($this->localJsonFile);
         $this->remoteRepo = $this->createMock(RemoteWorkshopRepository::class);
-        $this->output = new BufferedOutput;
+        $this->output = new BufferedOutput();
         $this->output->getFormatter()->setStyle('phps', new OutputFormatterStyle('magenta'));
         $this->command = new SearchWorkshops($this->remoteRepo, $this->localRepo, $this->output);
     }

@@ -25,7 +25,7 @@ class ComposerInstallerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
         $this->tempDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         @mkdir($this->tempDir, 0777, true);
     }
@@ -41,7 +41,7 @@ class ComposerInstallerTest extends TestCase
         $output = new BufferedOutput();
         $output->setVerbosity(OutputInterface::VERBOSITY_VERBOSE);
 
-        $installer = new ComposerInstaller($input, $output, new Factory);
+        $installer = new ComposerInstaller($input, $output, new Factory());
         file_put_contents(
             sprintf('%s/composer.json', $this->tempDir),
             '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}'
@@ -67,10 +67,10 @@ class ComposerInstallerTest extends TestCase
     public function testComposerOutputIsNotWrittenIfNotInVerboseMode(): void
     {
         $input  = new ArrayInput([]);
-        $output = new BufferedOutput;
+        $output = new BufferedOutput();
         $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
-        $installer = new ComposerInstaller($input, $output, new Factory);
+        $installer = new ComposerInstaller($input, $output, new Factory());
         file_put_contents(
             sprintf('%s/composer.json', $this->tempDir),
             '{"name" : "learnyouphp", "require" : { "php": ">=5.6"}}'
@@ -96,24 +96,24 @@ class ComposerInstallerTest extends TestCase
     public function testExceptionIsThrownIfNoComposerJson(): void
     {
         $input  = new ArrayInput([]);
-        $output = new BufferedOutput;
+        $output = new BufferedOutput();
         $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $installer = new ComposerInstaller($input, $output, new Factory);
+        $installer = new ComposerInstaller($input, $output, new Factory());
         $installer->install($this->tempDir);
     }
 
     public function testExceptionIsThrownIfInvalidComposerJson(): void
     {
         $input  = new ArrayInput([]);
-        $output = new BufferedOutput;
+        $output = new BufferedOutput();
         $output->setVerbosity(OutputInterface::VERBOSITY_QUIET);
 
         $this->expectException(ParsingException::class);
 
-        $installer = new ComposerInstaller($input, $output, new Factory);
+        $installer = new ComposerInstaller($input, $output, new Factory());
         file_put_contents(sprintf('%s/composer.json', $this->tempDir), '{"name" : "learnyouphp"');
         $installer->install($this->tempDir);
     }

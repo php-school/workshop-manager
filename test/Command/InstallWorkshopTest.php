@@ -42,7 +42,7 @@ class InstallWorkshopTest extends TestCase
             ->expects($this->once())
             ->method('installWorkshop')
             ->with('learnyouphp')
-            ->willThrowException(new WorkshopAlreadyInstalledException);
+            ->willThrowException(new WorkshopAlreadyInstalledException());
 
         $this->output
             ->expects($this->exactly(2))
@@ -61,7 +61,7 @@ class InstallWorkshopTest extends TestCase
             ->expects($this->once())
             ->method('installWorkshop')
             ->with('learnyouphp')
-            ->willThrowException(new WorkshopNotFoundException);
+            ->willThrowException(new WorkshopNotFoundException());
 
         $this->output
             ->expects($this->exactly(2))

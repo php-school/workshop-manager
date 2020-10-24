@@ -57,7 +57,7 @@ class Updater
         $latestRelease = $this->versionChecker->getLatestRelease($workshop);
 
         if ($latestRelease->getTag() === $workshop->getVersion()) {
-            throw new NoUpdateAvailableException;
+            throw new NoUpdateAvailableException();
         }
 
         $this->uninstaller->uninstallWorkshop($workshopName);

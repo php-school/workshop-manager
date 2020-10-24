@@ -47,7 +47,7 @@ class ListWorkshopsTest extends TestCase
         $this->localRepo = new InstalledWorkshopRepository($this->localJsonFile);
         $this->versionChecker = $this->createMock(VersionChecker::class);
         $this->command = new ListWorkshops($this->localRepo, $this->versionChecker);
-        $this->output = new BufferedOutput;
+        $this->output = new BufferedOutput();
     }
 
     public function testMessageIsPrintedIfNoWorkshopsInstalled(): void

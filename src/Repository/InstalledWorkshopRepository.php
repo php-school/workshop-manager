@@ -69,7 +69,7 @@ class InstalledWorkshopRepository
     public function remove(InstalledWorkshop $workshopToRemove)
     {
         if (!$this->hasWorkshop($workshopToRemove->getCode())) {
-            throw new WorkshopNotFoundException;
+            throw new WorkshopNotFoundException();
         }
 
         unset($this->workshops[$workshopToRemove->getCode()]);
@@ -92,7 +92,7 @@ class InstalledWorkshopRepository
     public function getByCode($code)
     {
         if (!$this->hasWorkshop($code)) {
-            throw new WorkshopNotFoundException;
+            throw new WorkshopNotFoundException();
         }
 
         return $this->workshops[$code];

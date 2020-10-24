@@ -34,7 +34,7 @@ class LinkerTest extends TestCase
 
     public function setUp(): void
     {
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
         $this->io = $this->createMock(OutputInterface::class);
         $this->tmpDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         $this->linker = new Linker($this->filesystem, $this->tmpDir, $this->io);

@@ -43,7 +43,7 @@ class UpdateWorkshopTest extends TestCase
             ->expects($this->once())
             ->method('updateWorkshop')
             ->with('learnyouphp')
-            ->willThrowException(new WorkshopNotFoundException);
+            ->willThrowException(new WorkshopNotFoundException());
 
         $this->output
             ->expects($this->exactly(2))

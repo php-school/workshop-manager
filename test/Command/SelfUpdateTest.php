@@ -30,7 +30,7 @@ class SelfUpdateTest extends TestCase
     {
         $this->updater = $this->createMock(Updater::class);
         $this->command = new SelfUpdate($this->updater);
-        $this->output = new BufferedOutput;
+        $this->output = new BufferedOutput();
     }
 
     public function testNoUpdateNeeded(): void

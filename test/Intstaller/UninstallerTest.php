@@ -35,7 +35,7 @@ class UninstallerTest extends TestCase
 
         $this->installedWorkshopRepo = new InstalledWorkshopRepository($this->localJsonFile);
         $this->linker = $this->createMock(Linker::class);
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
         $this->workshopHomeDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         @mkdir($this->workshopHomeDir);
         $this->uninstaller = new Uninstaller(

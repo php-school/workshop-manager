@@ -165,7 +165,7 @@ class RecordingOutput implements OutputInterface
                 return '';
             }
 
-            return rtrim($matches[1])."\n";
+            return rtrim($matches[1]) . "\n";
         }, $this->buffer);
     }
 }
