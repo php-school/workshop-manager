@@ -45,7 +45,7 @@ class RecordingOutput implements OutputInterface
     /**
      * @param string|array $messages The message as an array of lines or a single string
      */
-    public function write($messages, bool $newline = false, int $options = 0)
+    public function write($messages, $newline = false, $options = 0)
     {
         $messages = (array) $messages;
         $this->buffer .= sprintf('%s%s', implode($newline ? "\n" : '', $messages), $newline ? "\n" : '');
@@ -55,12 +55,12 @@ class RecordingOutput implements OutputInterface
     /**
      * @param string|array $messages The message as an array of lines of a single string
      */
-    public function writeln($messages, int $options = 0)
+    public function writeln($messages, $options = 0)
     {
         return $this->write($messages, true, $options);
     }
 
-    public function setVerbosity(int $level): void
+    public function setVerbosity($level): void
     {
         $this->output->setVerbosity($level);
     }
@@ -70,7 +70,7 @@ class RecordingOutput implements OutputInterface
         return $this->output->getVerbosity();
     }
 
-    public function setDecorated(bool $decorated): void
+    public function setDecorated($decorated): void
     {
         $this->output->setDecorated($decorated);
     }
