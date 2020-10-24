@@ -9,7 +9,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class VerifyInstall
 {
     /**
-     * @var array
+     * @var array<string>
      */
     private static $requiredExtensions = ['json', 'zip', 'mbstring', 'curl'];
 
@@ -42,7 +42,7 @@ class VerifyInstall
         $style->title("Verifying your installation");
 
 
-        if (strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false) {
+        if (strpos((string) getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false) {
             $style->success('Your $PATH environment variable is configured correctly.');
         } else {
             $style->error('The PHP School bin directory is not in your PATH variable.');

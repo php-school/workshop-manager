@@ -22,7 +22,7 @@ class RemoteWorkshopRepository
     private $remoteJsonFile;
 
     /**
-     * @var array
+     * @var array<Workshop>
      */
     private $workshops = [];
 
@@ -52,6 +52,9 @@ class RemoteWorkshopRepository
         return array_key_exists($code, $this->workshops);
     }
 
+    /**
+     * @return array<Workshop>
+     */
     public function all(): array
     {
         $this->init();
@@ -118,7 +121,7 @@ class RemoteWorkshopRepository
             return;
         }
 
-        if (!checkdnsrr(parse_url($this->remoteJsonFile->getPath(), PHP_URL_HOST), 'A')) {
+        if (!checkdnsrr((string) parse_url($this->remoteJsonFile->getPath(), PHP_URL_HOST), 'A')) {
             throw new RequiresNetworkAccessException();
         }
 

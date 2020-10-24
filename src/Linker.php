@@ -56,7 +56,7 @@ class Linker
         }
 
         try {
-            $this->filesystem->chmod(realpath($this->getWorkshopSrcPath($workshop)), 0777);
+            $this->filesystem->chmod((string) realpath($this->getWorkshopSrcPath($workshop)), 0777);
         } catch (IOException $e) {
             $this->output->write([
                 ' <error> Unable to make workshop executable </error>',
@@ -169,6 +169,6 @@ class Linker
      */
     private function isBinDirInPath(): bool
     {
-        return strpos(getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false;
+        return strpos((string) getenv('PATH'), sprintf('%s/bin', $this->workshopHomeDirectory)) !== false;
     }
 }

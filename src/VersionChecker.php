@@ -24,7 +24,6 @@ class VersionChecker
     public function getLatestRelease(Workshop $workshop): Release
     {
         try {
-            /** @noinspection PhpUndefinedMethodInspection */
             $tags = collect($this->gitHubClient->api('git')->tags()->all(
                 $workshop->getGitHubOwner(),
                 $workshop->getGitHubRepoName()

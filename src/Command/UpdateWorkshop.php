@@ -28,7 +28,13 @@ class UpdateWorkshop
         $output->writeln('');
 
         try {
-            $version = $this->updater->updateWorkshop($workshopName);
+            $output->writeln(
+                sprintf(
+                    " <info>Successfully updated %s to version %s</info>\n",
+                    $workshopName,
+                    $this->updater->updateWorkshop($workshopName)
+                )
+            );
         } catch (WorkshopNotFoundException $e) {
             $output->writeln(
                 sprintf(
@@ -80,10 +86,5 @@ class UpdateWorkshop
         } elseif (isset($e)) {
             return;
         }
-
-        /** @noinspection PhpUndefinedVariableInspection */
-        $output->writeln(
-            sprintf(" <info>Successfully updated %s to version %s</info>\n", $workshopName, $version)
-        );
     }
 }

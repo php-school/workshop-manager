@@ -13,7 +13,7 @@ class Filesystem extends SymfonyFilesystem
      */
     public function executeInPath(string $path, callable $callback): void
     {
-        $currentPath = getcwd();
+        $currentPath = (string) getcwd();
 
         if (!$this->exists($path)) {
             throw new IOException(sprintf('Path: "%s" does not exist.', $path));

@@ -43,23 +43,29 @@ class RecordingOutput implements OutputInterface
     }
 
     /**
-     * @param string|array $messages The message as an array of lines or a single string
+     * @param string|array<string> $messages The message as an array of lines or a single string
+     * @param bool $newline
+     * @param int $options
      */
-    public function write($messages, $newline = false, $options = 0)
+    public function write($messages, $newline = false, $options = 0): void
     {
         $messages = (array) $messages;
         $this->buffer .= sprintf('%s%s', implode($newline ? "\n" : '', $messages), $newline ? "\n" : '');
-        return $this->output->write($messages, $newline, $options);
+        $this->output->write($messages, $newline, $options);
     }
 
     /**
-     * @param string|array $messages The message as an array of lines of a single string
+     * @param string|array<string> $messages The message as an array of lines of a single string
+     * @param int $options
      */
-    public function writeln($messages, $options = 0)
+    public function writeln($messages, $options = 0): void
     {
-        return $this->write($messages, true, $options);
+        $this->write($messages, true, $options);
     }
 
+    /**
+     * @param int $level
+     */
     public function setVerbosity($level): void
     {
         $this->output->setVerbosity($level);
@@ -70,6 +76,9 @@ class RecordingOutput implements OutputInterface
         return $this->output->getVerbosity();
     }
 
+    /**
+     * @param bool $decorated
+     */
     public function setDecorated($decorated): void
     {
         $this->output->setDecorated($decorated);
@@ -93,7 +102,7 @@ class RecordingOutput implements OutputInterface
     public function getOutput(): string
     {
         //see \Composer\IO\BufferIO
-        return preg_replace_callback("{(?<=^|\n|\x08)(.+?)(\x08+)}", function ($matches) {
+        return (string) preg_replace_callback("{(?<=^|\n|\x08)(.+?)(\x08+)}", function ($matches) {
             $pre = strip_tags($matches[1]);
 
             if (strlen($pre) === strlen($matches[2])) {
