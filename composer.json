@@ -16,19 +16,19 @@
         "php": ">=7.1",
         "php-di/php-di": "^6",
         "knplabs/github-api": "^2.11",
-        "php-http/guzzle6-adapter": "^1.1",
+        "php-http/guzzle7-adapter": "^0.1",
         "composer/composer": "^2",
         "mnapoli/silly-php-di": "^1.0",
         "symfony/console": "^4.0 | ^5.0",
         "symfony/filesystem": "^4.0 | ^5.0",
         "mnapoli/silly": "^1.7",
-        "tightenco/collect": "^5.2",
         "tm/tooly-composer-script": "^1.0",
         "padraic/phar-updater": "^1.0",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "ext-zip": "*"
+        "ext-zip": "*",
+        "illuminate/collections": "^8.11"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.4",
