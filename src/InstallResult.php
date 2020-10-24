@@ -21,11 +21,7 @@ class InstallResult
      */
     private $missingExtensions;
 
-    /**
-     * @param int $exitCode
-     * @param string $output
-     */
-    public function __construct($exitCode, $output)
+    public function __construct(int $exitCode, string $output)
     {
         $this->exitCode = $exitCode;
         $this->output = $output;
@@ -33,7 +29,7 @@ class InstallResult
         $this->checkForMissingExtensions();
     }
 
-    private function checkForMissingExtensions()
+    private function checkForMissingExtensions(): void
     {
         $this->missingExtensions = collect(explode(PHP_EOL, $this->output))
             ->filter(function ($line) {
@@ -57,7 +53,7 @@ class InstallResult
     /**
      * @return int
      */
-    public function getExitCode()
+    public function getExitCode(): int
     {
         return $this->exitCode;
     }
@@ -65,7 +61,7 @@ class InstallResult
     /**
      * @return string
      */
-    public function getOutput()
+    public function getOutput(): string
     {
         return $this->output;
     }
@@ -73,15 +69,15 @@ class InstallResult
     /**
      * @return bool
      */
-    public function missingExtensions()
+    public function missingExtensions(): bool
     {
         return !$this->missingExtensions->isEmpty();
     }
 
     /**
-     * @return array
+     * @return array<string>
      */
-    public function getMissingExtensions()
+    public function getMissingExtensions(): array
     {
         return $this->missingExtensions->all();
     }

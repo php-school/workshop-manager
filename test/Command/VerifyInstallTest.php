@@ -11,7 +11,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class VerifyInstallTest extends TestCase
 {
-
     /**
      * @var OutputInterface
      */

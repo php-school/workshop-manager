@@ -26,11 +26,6 @@ class SearchWorkshops
      */
     private $output;
 
-    /**
-     * @param RemoteWorkshopRepository $remoteWorkshopRepository
-     * @param InstalledWorkshopRepository $installedWorkshopRepository
-     * @param OutputInterface $output
-     */
     public function __construct(
         RemoteWorkshopRepository $remoteWorkshopRepository,
         InstalledWorkshopRepository $installedWorkshopRepository,
@@ -41,12 +36,7 @@ class SearchWorkshops
         $this->output = $output;
     }
 
-    /**
-     * @param string $workshopName
-     *
-     * @return void
-     */
-    public function __invoke($workshopName)
+    public function __invoke(string $workshopName = null): void
     {
         $this->output->writeln('');
 
@@ -55,7 +45,8 @@ class SearchWorkshops
             : $this->remoteWorkshopRepository->all();
 
         if (empty($workshops) && $workshopName) {
-            return $this->output->writeln(sprintf(" <info>No workshops found matching \"%s\"</info>\n", $workshopName));
+            $this->output->writeln(sprintf(" <info>No workshops found matching \"%s\"</info>\n", $workshopName));
+            return;
         }
 
         $this->output->writeln(' <info>*** Matches ***</info>');

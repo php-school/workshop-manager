@@ -2,6 +2,7 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
+use Exception;
 use Humbug\SelfUpdate\Updater;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -12,31 +13,30 @@ class SelfRollback
      */
     private $updater;
 
-    /**
-     * @param Updater $updater
-     */
     public function __construct(Updater $updater)
     {
         $this->updater = $updater;
     }
 
-    public function __invoke(OutputInterface $output)
+    public function __invoke(OutputInterface $output): void
     {
         try {
             $result = $this->updater->rollback();
             if (!$result) {
-                return $output->writeln([
+                $output->writeln([
                     '',
                     '<error>Unknown error rolling back workshop-manager</error>',
                     ''
                 ]);
+                return;
             }
-        } catch (\Exception $e) {
-            return $output->writeln([
+        } catch (Exception $e) {
+            $output->writeln([
                 '',
                 sprintf('<error>Error rolling back workshop-manager: %s</error>', $e->getMessage()),
                 ''
             ]);
+            return;
         }
 
         $output->writeln([

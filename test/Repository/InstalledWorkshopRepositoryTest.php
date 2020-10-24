@@ -32,7 +32,6 @@ class InstalledWorkshopRepositoryTest extends TestCase
     {
         $repo = $this->getRepo();
         $workshop = $repo->getByCode('workshop');
-        $this->assertInstanceOf(InstalledWorkshop::class, $workshop);
         $this->assertEquals('workshop', $workshop->getCode());
         $this->assertEquals('workshop', $workshop->getDisplayName());
         $this->assertEquals('aydin', $workshop->getGitHubOwner());
@@ -45,7 +44,6 @@ class InstalledWorkshopRepositoryTest extends TestCase
     {
         $repo = $this->getRepo();
         $this->assertTrue($repo->hasWorkshop('workshop'));
-
 
         $json = $this->createMock(JsonFile::class);
         $json

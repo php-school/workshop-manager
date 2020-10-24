@@ -19,7 +19,7 @@ class Application extends PhpDiApp
       \/_/    \/_/\/_/\/_/        \/_____/\/____/ \/_/\/_/\/___/ \/___/\/____/';
 
 
-    public function getHelp()
+    public function getHelp(): string
     {
         return sprintf(
             "<fg=magenta>%s</>\n\n<comment>%s</comment> <info>%s</info>",

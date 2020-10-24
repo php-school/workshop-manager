@@ -14,6 +14,9 @@ use Symfony\Component\Console\Output\BufferedOutput;
 
 class ListWorkshopsTest extends TestCase
 {
+    /**
+     * @var JsonFile
+     */
     private $localJsonFile;
 
     /**

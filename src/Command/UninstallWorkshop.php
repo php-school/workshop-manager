@@ -14,22 +14,12 @@ class UninstallWorkshop
      */
     private $uninstaller;
 
-    /**
-     * @param Uninstaller $uninstaller
-     */
     public function __construct(Uninstaller $uninstaller)
     {
         $this->uninstaller = $uninstaller;
     }
 
-    /**
-     * @param OutputInterface $output
-     * @param string $workshopName
-     *
-     * @return void
-     * @throws \RuntimeException
-     */
-    public function __invoke(OutputInterface $output, $workshopName)
+    public function __invoke(OutputInterface $output, string $workshopName): void
     {
         $output->writeln('');
 

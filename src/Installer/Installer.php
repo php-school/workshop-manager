@@ -69,49 +69,29 @@ class Installer
      */
     private $composerInstaller;
 
-    /**
-     * @param InstalledWorkshopRepository $installedWorkshops
-     * @param RemoteWorkshopRepository $remoteWorkshopRepository
-     * @param Linker $linker
-     * @param Filesystem $filesystem
-     * @param string $workshopHomeDirectory
-     * @param ComposerInstaller $composerInstaller
-     * @param Client $gitHubClient
-     * @param VersionChecker $versionChecker
-     * @param string|null $notifyUrlFormat
-     */
     public function __construct(
         InstalledWorkshopRepository $installedWorkshops,
         RemoteWorkshopRepository $remoteWorkshopRepository,
         Linker $linker,
         Filesystem $filesystem,
-        $workshopHomeDirectory,
+        string $workshopHomeDirectory,
         ComposerInstaller $composerInstaller,
         Client $gitHubClient,
         VersionChecker $versionChecker,
-        $notifyUrlFormat = null
+        string $notifyUrlFormat = null
     ) {
-        $this->installedWorkshopRepository  = $installedWorkshops;
-        $this->remoteWorkshopRepository     = $remoteWorkshopRepository;
-        $this->linker                       = $linker;
-        $this->filesystem                   = $filesystem;
-        $this->workshopHomeDirectory        = $workshopHomeDirectory;
-        $this->composerInstaller            = $composerInstaller;
-        $this->gitHubClient                 = $gitHubClient;
-        $this->versionChecker               = $versionChecker;
-        $this->notifyFormat                 = $notifyUrlFormat ?: $this->notifyFormat;
+        $this->installedWorkshopRepository = $installedWorkshops;
+        $this->remoteWorkshopRepository = $remoteWorkshopRepository;
+        $this->linker = $linker;
+        $this->filesystem = $filesystem;
+        $this->workshopHomeDirectory = $workshopHomeDirectory;
+        $this->composerInstaller = $composerInstaller;
+        $this->gitHubClient = $gitHubClient;
+        $this->versionChecker = $versionChecker;
+        $this->notifyFormat = $notifyUrlFormat ?: $this->notifyFormat;
     }
 
-    /**
-     * @param string $workshop
-     * @return string $version The version number of the workshop that was downloaded
-     *
-     * @throws WorkshopAlreadyInstalledException
-     * @throws ComposerFailureException
-     * @throws DownloadFailureException
-     * @throws FailedToMoveWorkshopException
-     */
-    public function installWorkshop($workshop)
+    public function installWorkshop(string $workshop): void
     {
         if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
             throw new WorkshopAlreadyInstalledException();
@@ -183,7 +163,7 @@ class Installer
         $this->notifyInstall($installedWorkshop);
     }
 
-    private function notifyInstall(InstalledWorkshop $workshop)
+    private function notifyInstall(InstalledWorkshop $workshop): void
     {
         $curl = curl_init();
         curl_setopt_array(
@@ -203,7 +183,7 @@ class Installer
      * @param string $sha The commit hash to download as an archive
      * @return string
      */
-    private function download(Workshop $workshop, $sha)
+    private function download(Workshop $workshop, string $sha): string
     {
         $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getCode());
 

@@ -18,35 +18,30 @@ class UpdateWorkshop
      */
     private $updater;
 
-    /**
-     * @param Updater $updater
-     */
     public function __construct(Updater $updater)
     {
         $this->updater = $updater;
     }
 
-    /**
-     * @param OutputInterface $output
-     * @param string $workshopName
-     */
-    public function __invoke(OutputInterface $output, $workshopName)
+    public function __invoke(OutputInterface $output, string $workshopName): void
     {
         $output->writeln('');
 
         try {
             $version = $this->updater->updateWorkshop($workshopName);
         } catch (WorkshopNotFoundException $e) {
-            return $output->writeln(
+            $output->writeln(
                 sprintf(
                     " <fg=magenta> It doesn't look like \"%s\" is installed, did you spell it correctly?</>\n",
                     $workshopName
                 )
             );
+            return;
         } catch (NoUpdateAvailableException $e) {
-            return $output->writeln(
+            $output->writeln(
                 sprintf(" <fg=magenta> There are no updates available for workshop \"%s\".</>\n", $workshopName)
             );
+            return;
         } catch (IOException $e) {
             $output->writeln(
                 sprintf(

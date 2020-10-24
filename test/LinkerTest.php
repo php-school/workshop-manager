@@ -18,7 +18,7 @@ class LinkerTest extends TestCase
     private $filesystem;
 
     /**
-     * @var IOInterface|\PHPUnit_Framework_MockObject_MockObject
+     * @var IOInterface
      */
     private $io;
 

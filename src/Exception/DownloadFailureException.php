@@ -4,11 +4,7 @@ namespace PhpSchool\WorkshopManager\Exception;
 
 final class DownloadFailureException extends \RuntimeException
 {
-    /**
-     * @param \Exception $e
-     * @return DownloadFailureException
-     */
-    public static function fromException(\Exception $e)
+    public static function fromException(\Exception $e): self
     {
         return new self($e->getMessage());
     }
