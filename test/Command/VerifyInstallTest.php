@@ -34,7 +34,7 @@ class VerifyInstallTest extends TestCase
 
     public function setUp(): void
     {
-        $this->output = new BufferedOutput;
+        $this->output = new BufferedOutput();
         $this->output->getFormatter()->setStyle('phps', new OutputFormatterStyle('magenta'));
         $this->input = $this->createMock(InputInterface::class);
         $this->tmpDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());

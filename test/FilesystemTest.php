@@ -20,7 +20,7 @@ class FilesystemTest extends TestCase
 
     public function setUp(): void
     {
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
         $this->tmpDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         @mkdir($this->tmpDir);
     }

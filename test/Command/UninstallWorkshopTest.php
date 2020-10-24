@@ -39,7 +39,7 @@ class UninstallWorkshopTest extends TestCase
             ->expects($this->once())
             ->method('uninstallWorkshop')
             ->with('learnyouphp')
-            ->willThrowException(new WorkshopNotFoundException);
+            ->willThrowException(new WorkshopNotFoundException());
 
         $this->output
             ->expects($this->exactly(2))

@@ -52,7 +52,7 @@ class RemoteWorkshopRepository
     {
         $this->init();
         if (!$this->hasWorkshop($code)) {
-            throw new WorkshopNotFoundException;
+            throw new WorkshopNotFoundException();
         }
 
         return $this->workshops[$code];
@@ -149,7 +149,7 @@ class RemoteWorkshopRepository
         }
 
         if (!checkdnsrr(parse_url($this->remoteJsonFile->getPath(), PHP_URL_HOST), 'A')) {
-            throw new RequiresNetworkAccessException;
+            throw new RequiresNetworkAccessException();
         }
 
         $requiredKeys = collect(

@@ -33,7 +33,7 @@ class VersionCheckerTest extends TestCase
             ->expects($this->once())
             ->method('all')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
-            ->willThrowException(new \Github\Exception\RuntimeException);
+            ->willThrowException(new \Github\Exception\RuntimeException());
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot communicate with GitHub - check your internet connection');

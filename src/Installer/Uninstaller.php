@@ -58,7 +58,7 @@ class Uninstaller
     public function uninstallWorkshop($workshop)
     {
         if (!$this->installedWorkshops->hasWorkshop($workshop)) {
-            throw new WorkshopNotInstalledException;
+            throw new WorkshopNotInstalledException();
         }
 
         $workshop = $this->installedWorkshops->getByCode($workshop);

@@ -54,7 +54,7 @@ class InstallerTest extends TestCase
         $this->installedWorkshopRepo = new InstalledWorkshopRepository($this->localJsonFile);
         $this->remoteWorkshopRepo = $this->createMock(RemoteWorkshopRepository::class);
         $this->linker = $this->createMock(Linker::class);
-        $this->filesystem = new Filesystem;
+        $this->filesystem = new Filesystem();
         $this->workshopHomeDir = sprintf('%s/%s', realpath(sys_get_temp_dir()), $this->getName());
         $this->composerInstaller = $this->createMock(ComposerInstaller::class);
         @mkdir($this->workshopHomeDir);
@@ -443,7 +443,7 @@ class InstallerTest extends TestCase
 
     private function createZipArchive(): void
     {
-        $zipArchive = new ZipArchive;
+        $zipArchive = new ZipArchive();
         $zipArchive->open(sprintf('%s/temp.zip', $this->workshopHomeDir), ZipArchive::CREATE);
         $zipArchive->addEmptyDir('learnyouphp');
         $zipArchive->addFromString('learnyouphp/file1.txt', 'data');

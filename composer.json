@@ -49,8 +49,12 @@
     ],
     "scripts": {
         "cs": [
-            "phpcs --standard=PSR2 src",
-            "phpcs --standard=PSR2 test"
+            "phpcs --standard=PSR12 src",
+            "phpcs --standard=PSR12 test"
+        ],
+        "cs-fix" : [
+            "phpcbf src --standard=PSR12 --encoding=UTF-8",
+            "phpcbf test --standard=PSR12 --encoding=UTF-8"
         ],
         "phar": [
             "@composer install --no-dev -o",
@@ -58,10 +62,6 @@
         ],
         "test": [
             "phpunit",
-            "@cs"
-        ],
-        "test-travis": [
-            "phpunit --coverage-clover ./build/logs/clover.xml",
             "@cs"
         ],
         "post-install-cmd": "Tooly\\ScriptHandler::installPharTools",

@@ -21,7 +21,7 @@ class ComposerInstaller
      * @var OutputInterface
      */
     private $output;
-    
+
     /**
      * @var Factory
      */
@@ -59,7 +59,7 @@ class ComposerInstaller
         }
 
         $wrappedOutput = new RecordingOutput($output);
-        $io            = new ConsoleIO($this->input, $wrappedOutput, new HelperSet);
+        $io            = new ConsoleIO($this->input, $wrappedOutput, new HelperSet());
 
         $composer = $this->composerFactory->createComposer(
             $io,

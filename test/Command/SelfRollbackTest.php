@@ -30,7 +30,7 @@ class SelfRollbackTest extends TestCase
     {
         $this->updater = $this->createMock(Updater::class);
         $this->command = new SelfRollback($this->updater);
-        $this->output = new BufferedOutput;
+        $this->output = new BufferedOutput();
     }
 
     public function testUnknownError(): void
