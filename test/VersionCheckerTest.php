@@ -2,10 +2,9 @@
 
 namespace PhpSchool\WorkshopManagerTest;
 
-use Github\Api\GitData;
-use Github\Api\GitData\Tags;
-use Github\Client;
+use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\GitHubApi\Exception;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -17,23 +16,11 @@ class VersionCheckerTest extends TestCase
         $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
 
-        $gitData = $this->createMock(GitData::class);
-        $tags = $this->createMock(Tags::class);
-
         $client
-            ->method('api')
-            ->with('git')
-            ->willReturn($gitData);
-
-        $gitData
-            ->method('tags')
-            ->willReturn($tags);
-
-        $tags
             ->expects($this->once())
-            ->method('all')
+            ->method('tags')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
-            ->willThrowException(new \Github\Exception\RuntimeException());
+            ->willThrowException(new Exception());
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Cannot communicate with GitHub - check your internet connection');
@@ -47,21 +34,9 @@ class VersionCheckerTest extends TestCase
         $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
 
-        $gitData = $this->createMock(GitData::class);
-        $tags = $this->createMock(Tags::class);
-
         $client
-            ->method('api')
-            ->with('git')
-            ->willReturn($gitData);
-
-        $gitData
-            ->method('tags')
-            ->willReturn($tags);
-
-        $tags
             ->expects($this->once())
-            ->method('all')
+            ->method('tags')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn([]);
 
@@ -77,21 +52,9 @@ class VersionCheckerTest extends TestCase
         $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
         $client = $this->createMock(Client::class);
 
-        $gitData = $this->createMock(GitData::class);
-        $tags = $this->createMock(Tags::class);
-
         $client
-            ->method('api')
-            ->with('git')
-            ->willReturn($gitData);
-
-        $gitData
-            ->method('tags')
-            ->willReturn($tags);
-
-        $tags
             ->expects($this->once())
-            ->method('all')
+            ->method('tags')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn(
                 [

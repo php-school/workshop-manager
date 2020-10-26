@@ -3,8 +3,7 @@
 namespace PhpSchool\WorkshopManager\Installer;
 
 use Exception;
-use Github\Client;
-use Github\Exception\ExceptionInterface;
+use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
@@ -15,6 +14,7 @@ use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Filesystem;
+use PhpSchool\WorkshopManager\GitHubApi\Exception as GitHubException;
 use PhpSchool\WorkshopManager\Linker;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Repository\RemoteWorkshopRepository;
@@ -196,13 +196,13 @@ class Installer
         }
 
         try {
-            $data = $this->gitHubClient->api('repo')->contents()->archive(
+            $data = $this->gitHubClient->archive(
                 $workshop->getGitHubOwner(),
                 $workshop->getGitHubRepoName(),
                 'zipball',
                 $sha
             );
-        } catch (ExceptionInterface $e) {
+        } catch (GitHubException $e) {
             throw DownloadFailureException::fromException($e);
         }
 

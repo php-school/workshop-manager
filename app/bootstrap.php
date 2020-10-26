@@ -55,5 +55,5 @@ try {
             ''
         ]);
 } catch (\Exception $e) {
-    $app->renderException($e, $container->get(Symfony\Component\Console\Output\OutputInterface::class));
+    $app->renderThrowable($e, $container->get(Symfony\Component\Console\Output\OutputInterface::class));
 }
