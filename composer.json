@@ -28,7 +28,6 @@
         "ext-zip": "*",
         "php-http/discovery": "^1.12",
         "php-http/guzzle7-adapter": "^0.1.1",
-        "php-http/message": "^1.9",
         "php-http/client-common": "^2.3",
         "guzzlehttp/psr7": "^1.7",
         "http-interop/http-factory-guzzle": "^1.0"
