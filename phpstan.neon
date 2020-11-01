@@ -1,9 +1,3 @@
 parameters:
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
-        -
-            message: '#Call to an undefined method Github\\Api\\ApiInterface\:\:contents\(\)#'
-            path: src/Installer/Installer.php
-        -
-            message: '#Call to an undefined method Github\\Api\\ApiInterface\:\:tags\(\)#'
-            path: src/VersionChecker.php

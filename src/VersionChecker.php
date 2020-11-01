@@ -2,11 +2,11 @@
 
 namespace PhpSchool\WorkshopManager;
 
-use Github\Client;
-use Github\Exception\ExceptionInterface;
 use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
+use PhpSchool\WorkshopManager\GitHubApi\Client;
+use PhpSchool\WorkshopManager\GitHubApi\Exception;
 use RuntimeException;
 
 class VersionChecker
@@ -24,11 +24,11 @@ class VersionChecker
     public function getLatestRelease(Workshop $workshop): Release
     {
         try {
-            $tags = collect($this->gitHubClient->api('git')->tags()->all(
+            $tags = collect($this->gitHubClient->tags(
                 $workshop->getGitHubOwner(),
                 $workshop->getGitHubRepoName()
             ));
-        } catch (ExceptionInterface $e) {
+        } catch (Exception $e) {
             throw new RequiresNetworkAccessException('Cannot communicate with GitHub - check your internet connection');
         }
 
