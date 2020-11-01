@@ -8,6 +8,7 @@ use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\GitHubApi\Exception;
 use RuntimeException;
+use PhpSchool\WorkshopManager\Util\Collection;
 
 class VersionChecker
 {
@@ -24,6 +25,7 @@ class VersionChecker
     public function getLatestRelease(Workshop $workshop): Release
     {
         try {
+            /** @var Collection<array{object: array{sha: string}, ref: string}> $tags */
             $tags = collect($this->gitHubClient->tags(
                 $workshop->getGitHubOwner(),
                 $workshop->getGitHubRepoName()
@@ -36,20 +38,19 @@ class VersionChecker
             throw new RuntimeException('This workshop has no tagged releases.');
         }
 
-        $tags = $tags
-            ->keyBy(function ($tag) {
-                return $tag['object']['sha'];
-            })
+        /** @var array{sha: string, ref: string} $latestVersion */
+        $latestVersion = $tags
             ->map(function ($tag) {
-                return substr($tag['ref'], 10);
-            });
+                return [
+                    'sha' => $tag['object']['sha'],
+                    'ref' => substr($tag['ref'], 10)
+                ];
+            })
+            ->sortBy(function (array $a, array $b) {
+                return version_compare($b['ref'], $a['ref']);
+            })
+            ->first();
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $latestVersion = $tags->reduce(function ($highest, $current) {
-            return version_compare($highest, $current, '>') ? $highest : $current;
-        });
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        return new Release($latestVersion, $tags->search($latestVersion));
+        return new Release($latestVersion['ref'], $latestVersion['sha']);
     }
 }

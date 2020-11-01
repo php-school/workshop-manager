@@ -2,7 +2,7 @@
 
 namespace PhpSchool\WorkshopManager;
 
-use Illuminate\Support\Collection;
+use PhpSchool\WorkshopManager\Util\Collection;
 
 class InstallResult
 {

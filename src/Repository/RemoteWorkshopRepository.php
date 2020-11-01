@@ -129,10 +129,12 @@ class RemoteWorkshopRepository
             ['workshop_code', 'display_name', 'github_owner', 'github_repo_name', 'description', 'type']
         );
 
-        collect($this->remoteJsonFile->read()['workshops'])
+        /** @var array<array> $workshops */
+        $workshops = $this->remoteJsonFile->read()['workshops'];
+        collect($workshops)
             ->filter(function ($workshopData) use ($requiredKeys) {
                     $missingKeyCount = $requiredKeys
-                        ->diff(array_keys($workshopData))
+                        ->diff(array_map('strval', array_keys($workshopData)))
                         ->count();
 
                     //true if no missing keys
