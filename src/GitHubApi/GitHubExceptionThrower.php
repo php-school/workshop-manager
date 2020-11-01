@@ -20,7 +20,10 @@ class GitHubExceptionThrower implements Plugin
 
             if ($response->hasHeader('X-RateLimit-Remaining')) {
                 $remaining = (int) $response->getHeader('X-RateLimit-Remaining')[0];
-                if (null !== $remaining && 1 > $remaining && 'rate_limit' !== substr($request->getRequestTarget(), 1, 10)) {
+                if (
+                    null !== $remaining && 1 > $remaining
+                    && 'rate_limit' !== substr($request->getRequestTarget(), 1, 10)
+                ) {
                     throw Exception::apiLimitExceeded(
                         (int) $response->getHeader('X-RateLimit-Limit')[0]
                     );
@@ -42,10 +45,12 @@ class GitHubExceptionThrower implements Plugin
                 }
             }
 
-            if (502 === $response->getStatusCode()
+            if (
+                502 === $response->getStatusCode()
                 && is_array($content)
                 && isset($content['errors'])
-                && is_array($content['errors'])) {
+                && is_array($content['errors'])
+            ) {
                 throw Exception::failed($content['errors']);
             }
 
@@ -62,7 +67,7 @@ class GitHubExceptionThrower implements Plugin
     private function getValidationFailedException(array $errors): Exception
     {
         return Exception::validationFailed(array_filter(array_map(function (array $error) {
-            switch($error['code']) {
+            switch ($error['code']) {
                 case 'missing':
                     return sprintf(
                         'The %s %s does not exist, for resource "%s"',
@@ -91,7 +96,6 @@ class GitHubExceptionThrower implements Plugin
                     );
                 default:
                     return $error['message'] ?? null;
-
             }
         }, $errors)));
     }

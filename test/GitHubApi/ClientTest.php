@@ -130,7 +130,8 @@ class ClientTest extends TestCase
                 ])
             ],
             'multiple-messages' => [
-                'error' => 'Validation Failed: Field "a-field" is invalid, for resource "a-resource", Field "b-field" is invalid, for resource "b-resource"',
+                'error' => 'Validation Failed: Field "a-field" is invalid, for resource "a-resource", Field "b-field" '
+                         . 'is invalid, for resource "b-resource"',
                 'response' => json_encode([
                     'message' => 'Some error',
                     'errors' => [

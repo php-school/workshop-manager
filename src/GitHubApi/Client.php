@@ -57,7 +57,7 @@ class Client
     public function tags(string $username, string $repository): array
     {
         $response = $this->getClient()
-            ->get('/repos/' . rawurlencode($username).'/'.rawurlencode($repository).'/git/refs/tags');
+            ->get('/repos/' . rawurlencode($username) . '/' . rawurlencode($repository) . '/git/refs/tags');
 
         /** @var array<array> $response */
         $response = Response::parse($response);
