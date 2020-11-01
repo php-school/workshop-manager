@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "php-di/php-di": "^6",
         "composer/composer": "^2",
         "mnapoli/silly-php-di": "^1.0",
