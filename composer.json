@@ -26,7 +26,6 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-zip": "*",
-        "tightenco/collect": "^8.0.4",
         "php-http/discovery": "^1.12",
         "php-http/guzzle7-adapter": "^0.1.1",
         "php-http/message": "^1.9",
@@ -43,7 +42,10 @@
     "autoload" : {
         "psr-4" : {
             "PhpSchool\\WorkshopManager\\": "src"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
