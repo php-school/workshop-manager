@@ -3,12 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest\Installer;
 
 use Composer\Json\JsonFile;
-use Github\Api\GitData;
-use Github\Api\GitData\Tags;
-use Github\Api\Repo;
-use Github\Api\Repository\Contents;
-use Github\Client;
-use Github\Exception\RuntimeException;
+use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
@@ -19,6 +14,8 @@ use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
 use PhpSchool\WorkshopManager\Exception\WorkshopAlreadyInstalledException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 use PhpSchool\WorkshopManager\Filesystem;
+use PhpSchool\WorkshopManager\GitHubApi\Exception;
+use PhpSchool\WorkshopManager\GitHubApi\Exception as GitHubException;
 use PhpSchool\WorkshopManager\Installer\Installer;
 use PhpSchool\WorkshopManager\InstallResult;
 use PhpSchool\WorkshopManager\Linker;
@@ -105,25 +102,11 @@ class InstallerTest extends TestCase
     {
         $workshop = $this->configureRemoteRepository();
 
-        $gitData = $this->createMock(GitData::class);
-        $tags = $this->createMock(Tags::class);
-
         $this->ghClient
-            ->expects($this->any())
-            ->method('api')
-            ->with('git')
-            ->willReturn($gitData);
-
-        $gitData
-            ->expects($this->any())
-            ->method('tags')
-            ->willReturn($tags);
-
-        $tags
             ->expects($this->once())
-            ->method('all')
+            ->method('tags')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
-            ->willThrowException(new RuntimeException('Tag Failure'));
+            ->willThrowException(new Exception('Tag Failure'));
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessage('Cannot communicate with GitHub - check your internet connection');
@@ -153,30 +136,15 @@ class InstallerTest extends TestCase
     {
         $workshop = $this->configureRemoteRepository();
 
-        $gitData = $this->createMock(GitData::class);
-        $tags = $this->createMock(Tags::class);
-
-        $contents = $this->createMock(Contents::class);
-        $contents
+        $this->ghClient
             ->expects($this->once())
             ->method('archive')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
-            ->willThrowException(new RuntimeException('Download failure'));
-
-        $repo = $this->createMock(Repo::class);
-        $repo->method('contents')->willReturn($contents);
+            ->willThrowException(new GitHubException('Download failure'));
 
         $this->ghClient
-            ->expects($this->exactly(2))
-            ->method('api')
-            ->withConsecutive(['git'], ['repo'])
-            ->willReturnOnConsecutiveCalls($gitData, $repo);
-
-        $gitData->method('tags')->willReturn($tags);
-
-        $tags
             ->expects($this->once())
-            ->method('all')
+            ->method('tags')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn([
                 [
@@ -402,42 +370,28 @@ class InstallerTest extends TestCase
 
     private function configureGitHubApi(Workshop $workshop, bool $configureDownload): void
     {
-        $gitData = $this->createMock(GitData::class);
-        $tags = $this->createMock(Tags::class);
-
         if ($configureDownload) {
-            $repo = $this->createMock(Repo::class);
-            $repo
-                ->method('contents')
-                ->willReturn($this->getContentsStub($workshop));
+            $this->createZipArchive();
 
-            $this->ghClient
-                ->expects($this->exactly(2))
-                ->method('api')
-                ->withConsecutive(['git'], ['repo'])
-                ->willReturnOnConsecutiveCalls($gitData, $repo);
-        } else {
             $this->ghClient
                 ->expects($this->once())
-                ->method('api')
-                ->with('git')
-                ->willReturn($gitData);
+                ->method('archive')
+                ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
+                ->willReturn(file_get_contents(sprintf('%s/temp.zip', $this->workshopHomeDir)));
+
+            unlink(sprintf('%s/temp.zip', $this->workshopHomeDir));
         }
 
-        $gitData
-            ->method('tags')
-            ->willReturn($tags);
-
-        $tags
+        $this->ghClient
             ->expects($this->once())
-            ->method('all')
+            ->method('tags')
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn([
-                [
-                    'ref' => 'refs/tags/1.0.0',
-                    'object' => ['sha' => '0123456789']
+                 [
+                     'ref' => 'refs/tags/1.0.0',
+                     'object' => ['sha' => '0123456789']
                  ]
-            ]);
+             ]);
     }
 
     private function createZipArchive(): void
@@ -448,21 +402,5 @@ class InstallerTest extends TestCase
         $zipArchive->addFromString('learnyouphp/file1.txt', 'data');
         $zipArchive->addFromString('learnyouphp/composer.json', '{"name" : "learnyouphp"}');
         $zipArchive->close();
-    }
-
-    private function getContentsStub(Workshop $workshop): MockObject
-    {
-        $this->createZipArchive();
-
-        $contents = $this->createMock(Contents::class);
-        $contents
-            ->expects($this->once())
-            ->method('archive')
-            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
-            ->willReturn(file_get_contents(sprintf('%s/temp.zip', $this->workshopHomeDir)));
-
-        unlink(sprintf('%s/temp.zip', $this->workshopHomeDir));
-
-        return $contents;
     }
 }

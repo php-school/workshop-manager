@@ -3,8 +3,9 @@
 use Composer\Factory;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
+use Composer\Util\HttpDownloader;
 use Composer\Util\RemoteFilesystem;
-use Github\Client;
+use PhpSchool\WorkshopManager\GitHubApi\Client;
 use Humbug\SelfUpdate\Updater as PharUpdater;
 use Psr\Container\ContainerInterface;
 use PhpSchool\WorkshopManager\Application;
@@ -250,7 +251,7 @@ EOF
         return new RemoteWorkshopRepository(
             new JsonFile(
                 'https://www.phpschool.io/workshops.json',
-                new RemoteFilesystem(new NullIo)
+                new HttpDownloader(new NullIO(), new Composer\Config)
             )
         );
     }),
