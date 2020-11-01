@@ -26,7 +26,7 @@ jobs:
           tools: composer:v1
 
       - name: Install Dependencies
-        run: composer update
+        run: composer update --ignore-platform-reqs
 
       - name: Run phpunit tests
         run: |
