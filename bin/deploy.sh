@@ -14,12 +14,11 @@ composer phar
 # Without the following step, we cannot checkout the gh-pages branch due to
 # file conflicts:
 mv workshop-manager.phar workshop-manager.phar.tmp
+rm composer.lock
 
 # Checkout gh-pages and add PHAR file and version:
 git fetch
-git stash
 git checkout -b gh-pages origin/gh-pages
-git stash apply
 mv workshop-manager.phar.tmp workshop-manager.phar
 sha1sum workshop-manager.phar > workshop-manager.phar.version
 git add workshop-manager.phar workshop-manager.phar.version
