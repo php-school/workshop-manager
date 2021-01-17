@@ -44,3 +44,8 @@ jobs:
         if: matrix.php == '7.4'
         run: bash <(curl -s https://codecov.io/bash)
 
+      - name: Build phar
+        if: matrix.php == '7.2'
+        run: echo "::set-env name=BRANCH::$(echo ${GITHUB_REF##*/})"
+
+
