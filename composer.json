@@ -64,7 +64,7 @@
             "phpcbf test --standard=PSR12 --encoding=UTF-8"
         ],
         "phar": [
-            "@composer install --no-dev -o",
+            "@composer update --no-dev -o",
             "box.phar build -vv"
         ],
         "test": [
