@@ -46,6 +46,11 @@ jobs:
 
       - name: Build phar
         if: matrix.php == '7.2' && github.ref == 'refs/heads/master'
-        run: echo "Building phar"
+        env:
+          PHAR_BUILD_PHRASE: ${{ secrets.PHAR_BUILD_PHRASE }}
+        run: |
+          echo "Building phar"
+          ./bin/deploy.sh
+
 
 

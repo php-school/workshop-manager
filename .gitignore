@@ -3,6 +3,8 @@
 /.idea
 /.travis/build-key.pem
 /.travis/secrets.tar
+/.github/secrets/build-key.pem
+/.github/secrets/secrets.tar
 /workshop-manager.phar
 /workshop-manager.phar.version
 .phpunit.result.cache

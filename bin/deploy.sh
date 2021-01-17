@@ -4,12 +4,16 @@
 git reset --hard
 
 # Unpack secrets; -C ensures they unpack *in* the .travis directory
-tar xvf .travis/secrets.tar -C .travis
+cd $HOME/.github/secrets
+gpg --quiet --batch --yes --decrypt --passphrase="$PHAR_BUILD_PHRASE" \
+--output $HOME/.github/secrets/secrets.tar secrets.tar.gpg
+cd $HOME
+tar xvf .github/secrets/secrets.tar -C .github/secrets
 
 # Setup SSH agent:
 eval "$(ssh-agent -s)" #start the ssh agent
-chmod 600 .travis/build-key.pem
-ssh-add .travis/build-key.pem
+chmod 600 .github/secrets/build-key.pem
+ssh-add .github/secrets/build-key.pem
 
 # Setup git defaults:
 git config --global user.email "aydin@hotmail.co.uk"
