@@ -25,4 +25,4 @@ git add workshop-manager.phar workshop-manager.phar.version
 
 # Commit and push:
 git commit -m 'Rebuilt phar'
-git push gh-pages:gh-pages
+git push origin gh-pages:gh-pages
