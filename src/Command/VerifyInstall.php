@@ -8,6 +8,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class VerifyInstall
 {
+    private const MIN_PHP_VERSION = '7.2';
+
     /**
      * @var array<string>
      */
@@ -66,11 +68,11 @@ class VerifyInstall
             ]);
         }
 
-        if (version_compare(PHP_VERSION, '7.1')) {
-            $message  = 'Your PHP version is %s, PHP 7.1 is the minimum supported version for this tool. Please note ';
+        if (version_compare(PHP_VERSION, self::MIN_PHP_VERSION)) {
+            $message  = 'Your PHP version is %s, PHP %s is the minimum supported version for this tool. Please note ';
             $message .= 'that some workshops may require a higher version of PHP, so you may not be able to install ';
             $message .= 'them without upgrading PHP.';
-            $style->success(sprintf($message, PHP_VERSION));
+            $style->success(sprintf($message, PHP_VERSION, self::MIN_PHP_VERSION));
         } else {
             $style->error('You need a PHP version of at least 5.6 to use PHP School.');
         }
