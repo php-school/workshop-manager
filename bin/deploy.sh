@@ -3,7 +3,7 @@
 #reset changes from composer updates
 git reset --hard
 
-# Unpack secrets; -C ensures they unpack *in* the .travis directory
+ls -la
 cd $HOME/.github/secrets
 gpg --quiet --batch --yes --decrypt --passphrase="$PHAR_BUILD_PHRASE" \
 --output $HOME/.github/secrets/secrets.tar secrets.tar.gpg
