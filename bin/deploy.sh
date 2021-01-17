@@ -3,11 +3,10 @@
 #reset changes from composer updates
 git reset --hard
 
-ls -la
-cd $HOME/.github/secrets
+cd .github/secrets
 gpg --quiet --batch --yes --decrypt --passphrase="$PHAR_BUILD_PHRASE" \
---output $HOME/.github/secrets/secrets.tar secrets.tar.gpg
-cd $HOME
+--output .github/secrets/secrets.tar secrets.tar.gpg
+cd ../../
 tar xvf .github/secrets/secrets.tar -C .github/secrets
 
 # Setup SSH agent:
