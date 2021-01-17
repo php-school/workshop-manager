@@ -24,6 +24,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           tools: composer:v1
+          ini-values: ${{ env.PHP_INI_VALUES }}
 
       - name: Install Dependencies
         run: composer update
