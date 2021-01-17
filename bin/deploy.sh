@@ -17,8 +17,9 @@ mv workshop-manager.phar workshop-manager.phar.tmp
 
 # Checkout gh-pages and add PHAR file and version:
 git fetch
-git remote -v
+git stash
 git checkout -b gh-pages origin/gh-pages
+git stash apply
 mv workshop-manager.phar.tmp workshop-manager.phar
 sha1sum workshop-manager.phar > workshop-manager.phar.version
 git add workshop-manager.phar workshop-manager.phar.version
