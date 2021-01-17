@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 #reset changes from composer updates
 git reset --hard
