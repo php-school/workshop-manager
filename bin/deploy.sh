@@ -6,7 +6,7 @@ git reset --hard
 
 cd .github/secrets
 gpg --quiet --batch --yes --decrypt --passphrase="$PHAR_BUILD_PHRASE" \
---output .github/secrets/secrets.tar secrets.tar.gpg
+--output secrets.tar secrets.tar.gpg
 cd ../../
 tar xvf .github/secrets/secrets.tar -C .github/secrets
 
