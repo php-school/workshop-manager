@@ -1,4 +1,4 @@
-name: WorkshopManager
+name: InstallLearnYouPHP
 
 on:
   push:
