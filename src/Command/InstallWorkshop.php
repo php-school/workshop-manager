@@ -25,7 +25,7 @@ class InstallWorkshop
         $this->installer = $installer;
     }
 
-    public function __invoke(OutputInterface $output, string $workshopName): void
+    public function __invoke(OutputInterface $output, string $workshopName): int
     {
         $output->writeln('');
 
@@ -35,7 +35,7 @@ class InstallWorkshop
             $output->writeln(
                 sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
             );
-            return;
+            return 1;
         } catch (WorkshopNotFoundException $e) {
             $output->writeln(
                 sprintf(
@@ -43,7 +43,7 @@ class InstallWorkshop
                     $workshopName
                 )
             );
-            return;
+            return 1;
         } catch (DownloadFailureException $e) {
             $output->writeln(
                 sprintf(
@@ -80,10 +80,12 @@ class InstallWorkshop
         if (isset($e) && $output->isVerbose()) {
             throw $e;
         } elseif (isset($e)) {
-            return;
+            return 1;
         }
 
         $output->writeln(sprintf(" <info>Successfully installed \"%s\"</info>\n", $workshopName));
+
+        return 0;
     }
 
     private function getCommand(): string

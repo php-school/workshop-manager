@@ -46,7 +46,7 @@ if (DIRECTORY_SEPARATOR === '\\') {
 }
 
 try {
-    $app->run();
+    exit($app->run());
 } catch (RequiresNetworkAccessException $e) {
     $container->get(OutputInterface::class)
         ->writeln([
@@ -56,4 +56,5 @@ try {
         ]);
 } catch (\Exception $e) {
     $app->renderThrowable($e, $container->get(Symfony\Component\Console\Output\OutputInterface::class));
+    exit(1);
 }
