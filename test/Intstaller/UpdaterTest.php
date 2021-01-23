@@ -105,7 +105,15 @@ class UpdaterTest extends TestCase
 
     public function testUpdateWithWorkshopInstalledAsBranchUninstallAndReinstallsLastestVersion(): void
     {
-        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'master');
+        $workshop = new InstalledWorkshop(
+            'learn-you-php',
+            'learnyouphp',
+            'aydin',
+            'repo',
+            'workshop',
+            'core',
+            'master'
+        );
 
         $this->installedWorkshopRepository
             ->expects($this->once())
