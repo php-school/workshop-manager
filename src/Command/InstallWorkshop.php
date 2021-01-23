@@ -25,12 +25,16 @@ class InstallWorkshop
         $this->installer = $installer;
     }
 
-    public function __invoke(OutputInterface $output, string $workshopName): int
+    public function __invoke(OutputInterface $output, string $workshopName, string $branchName = null): int
     {
         $output->writeln('');
 
+        if ($branchName) {
+            $output->writeln(" <fg=magenta> Installing branches is reserved for testing purposes</>\n");
+        }
+
         try {
-            $this->installer->installWorkshop($workshopName);
+            $this->installer->installWorkshop($workshopName, $branchName);
         } catch (WorkshopAlreadyInstalledException $e) {
             $output->writeln(
                 sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)
