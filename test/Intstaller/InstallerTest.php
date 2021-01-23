@@ -86,6 +86,16 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop('learn-you-php');
     }
 
+    public function testExceptionIsThrownIfWorkshopWithSameNameAlreadyExistsWhenInstalledAsBranch(): void
+    {
+        $this->installedWorkshopRepo->add(
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'master')
+        );
+
+        $this->expectException(WorkshopAlreadyInstalledException::class);
+        $this->installer->installWorkshop('learn-you-php');
+    }
+
     public function testExceptionIsThrowIfWorkshopDoesNotExistInRegistry(): void
     {
         $this->remoteWorkshopRepo
@@ -368,7 +378,7 @@ class InstallerTest extends TestCase
         return $workshop;
     }
 
-    private function configureGitHubApi(Workshop $workshop, bool $configureDownload): void
+    private function configureGitHubApi(Workshop $workshop, bool $configureDownload, string $branchName = null): void
     {
         if ($configureDownload) {
             $this->createZipArchive();
@@ -376,7 +386,12 @@ class InstallerTest extends TestCase
             $this->ghClient
                 ->expects($this->once())
                 ->method('archive')
-                ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), 'zipball', '0123456789')
+                ->with(
+                    $workshop->getGitHubOwner(),
+                    $workshop->getGitHubRepoName(),
+                    'zipball',
+                    $branchName ?? '0123456789'
+                )
                 ->willReturn(file_get_contents(sprintf('%s/temp.zip', $this->workshopHomeDir)));
 
             unlink(sprintf('%s/temp.zip', $this->workshopHomeDir));
@@ -402,5 +417,35 @@ class InstallerTest extends TestCase
         $zipArchive->addFromString('learnyouphp/file1.txt', 'data');
         $zipArchive->addFromString('learnyouphp/composer.json', '{"name" : "learnyouphp"}');
         $zipArchive->close();
+    }
+
+    public function testSuccessfulInstallWithBranch(): void
+    {
+        $workshop = $this->configureRemoteRepository();
+        $this->configureGitHubApi($workshop, true, 'master');
+
+        $path = sprintf('%s/workshops/', $this->workshopHomeDir);
+        @mkdir($path);
+
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%slearn-you-php', $path))
+            ->willReturn(new InstallResult(0, ''));
+
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('link')
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
+
+        $this->installer->installWorkshop($workshop->getCode(), 'master');
+
+        $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
+        $this->assertEquals('master', $this->installedWorkshopRepo->getByCode('learn-you-php')->getVersion());
+        $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 }

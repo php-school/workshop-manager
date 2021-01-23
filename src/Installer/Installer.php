@@ -91,7 +91,7 @@ class Installer
         $this->notifyFormat = $notifyUrlFormat ?: $this->notifyFormat;
     }
 
-    public function installWorkshop(string $workshop): void
+    public function installWorkshop(string $workshop, string $branchName = null): void
     {
         if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
             throw new WorkshopAlreadyInstalledException();
@@ -109,7 +109,7 @@ class Installer
             throw DownloadFailureException::fromException($e);
         }
 
-        $pathToZip  = $this->download($workshop, $release->getSha());
+        $pathToZip  = $this->download($workshop, $branchName ?? $release->getSha());
         $zipArchive = new \ZipArchive();
 
         $zipArchive->open($pathToZip);
@@ -154,7 +154,7 @@ class Installer
             }
         });
 
-        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, $release->getTag());
+        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, $branchName ?? $release->getTag());
         $this->installedWorkshopRepository->add($installedWorkshop);
         $this->installedWorkshopRepository->save();
 

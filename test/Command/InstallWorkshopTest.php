@@ -206,4 +206,23 @@ class InstallWorkshopTest extends TestCase
 
         $this->command->__invoke($this->output, 'learnyouphp');
     }
+
+    public function testSuccessWithBranch(): void
+    {
+        $this->installer
+            ->expects($this->once())
+            ->method('installWorkshop')
+            ->with('learnyouphp', 'master');
+
+        $this->output
+            ->expects($this->exactly(3))
+            ->method('writeln')
+            ->withConsecutive(
+                [""],
+                [" <fg=magenta> Installing branches is reserved for testing purposes</>\n"],
+                [" <info>Successfully installed \"learnyouphp\"</info>\n"]
+            );
+
+        $this->command->__invoke($this->output, 'learnyouphp', 'master');
+    }
 }

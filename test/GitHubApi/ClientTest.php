@@ -363,4 +363,31 @@ class ClientTest extends TestCase
             $request->getHeader('Accept')[0]
         );
     }
+
+    public function testArchiveWithBranch(): void
+    {
+        $response = (new Response(200))
+            ->withBody(Psr7\Utils::streamFor('filecontent'));
+
+        $client = new MockClient();
+        $client->addResponse($response);
+
+        $ghClient = new Client($client);
+        $ghClient->archive('php-school', 'workshop-manager', 'zipball', 'master');
+
+        $request = $client->getLastRequest();
+
+        $this->assertSame(
+            'https://api.github.com/repos/php-school/workshop-manager/zipball/master',
+            $request->getUri()->__toString()
+        );
+        $this->assertSame(
+            'php-school/workshop-manager (https://www.phpschool.io/)',
+            $request->getHeader('User-Agent')[0]
+        );
+        $this->assertSame(
+            'application/vnd.github.3+json',
+            $request->getHeader('Accept')[0]
+        );
+    }
 }
