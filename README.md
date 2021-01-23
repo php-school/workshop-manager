@@ -25,7 +25,7 @@ A tool to manage your PHP School workshops. Search, install, update & remove wor
 This is the recommended installation method.
 
 ```
-curl https://php-school.github.io/workshop-manager/workshop-manager.phar
+curl -O https://php-school.github.io/workshop-manager/workshop-manager.phar
 mv workshop-manager.phar /usr/local/bin/workshop-manager
 chmod +x /usr/local/bin/workshop-manager
 workshop-manager verify
