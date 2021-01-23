@@ -98,6 +98,37 @@ class UpdaterTest extends TestCase
             ->method('installWorkshop')
             ->with('learn-you-php');
 
-        $this->updater->updateWorkshop('learn-you-php');
+        $installed = $this->updater->updateWorkshop('learn-you-php');
+
+        $this->assertEquals('2.0.0', $installed);
+    }
+
+    public function testUpdateWithWorkshopInstalledAsBranchUninstallAndReinstallsLastestVersion(): void
+    {
+        $workshop = new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'master');
+
+        $this->installedWorkshopRepository
+            ->expects($this->once())
+            ->method('getByCode')
+            ->willReturn($workshop);
+
+        $this->versionChecker
+            ->expects($this->once())
+            ->method('getLatestRelease')
+            ->willReturn(new Release('1.0.0', 'AAAA'));
+
+        $this->uninstaller
+            ->expects($this->once())
+            ->method('uninstallWorkshop')
+            ->with('learn-you-php');
+
+        $this->installer
+            ->expects($this->once())
+            ->method('installWorkshop')
+            ->with('learn-you-php');
+
+        $installed = $this->updater->updateWorkshop('learn-you-php');
+
+        $this->assertEquals('1.0.0', $installed);
     }
 }

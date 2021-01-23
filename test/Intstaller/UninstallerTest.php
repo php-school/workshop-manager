@@ -99,4 +99,28 @@ class UninstallerTest extends TestCase
         $this->assertTrue($this->installedWorkshopRepo->isEmpty());
         $this->assertFileDoesNotExist($dir);
     }
+
+    public function testRemoveWithBranch(): void
+    {
+        $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
+        mkdir($dir, 0775, true);
+
+        $this->installedWorkshopRepo->add(
+            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', 'master')
+        );
+
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('unlink')
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
+
+        $this->uninstaller->uninstallWorkshop('learn-you-php');
+
+        $this->assertTrue($this->installedWorkshopRepo->isEmpty());
+        $this->assertFileDoesNotExist($dir);
+    }
 }

@@ -102,4 +102,24 @@ class ListWorkshopsTest extends TestCase
             $output
         );
     }
+
+    public function testOutputWhenWorkshopInstalledAsBranch(): void
+    {
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, 'master');
+        $this->localRepo->add($installedWorkshop);
+
+        $this->versionChecker
+            ->expects($this->once())
+            ->method('getLatestRelease')
+            ->willReturn(new Release('1.0.0', 'AAAA'));
+
+        $this->command->__invoke($this->output);
+
+        $output = $this->output->fetch();
+        $this->assertMatchesRegularExpression(
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|master|\s+Yes - 1\.0\.0/',
+            $output
+        );
+    }
 }
