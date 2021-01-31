@@ -7,6 +7,7 @@ use PhpSchool\WorkshopManager\Command\ListWorkshops;
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
 use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\NoTaggedReleaseException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit\Framework\TestCase;
@@ -119,6 +120,46 @@ class ListWorkshopsTest extends TestCase
         $output = $this->output->fetch();
         $this->assertMatchesRegularExpression(
             '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|master|\s+Yes - 1\.0\.0/',
+            $output
+        );
+    }
+
+    public function testOutputWhenWorkshopInstalledAsBranchFromDifferentRepo(): void
+    {
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, 'https://github.com/AydinHassan/php8-appreciate:master');
+        $this->localRepo->add($installedWorkshop);
+
+        $this->versionChecker
+            ->expects($this->once())
+            ->method('getLatestRelease')
+            ->willReturn(new Release('1.0.0', 'AAAA'));
+
+        $this->command->__invoke($this->output);
+
+        $output = $this->output->fetch();
+        $this->assertMatchesRegularExpression(
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|https:\/\/github\.com\/AydinHassan\/php8\-appreciate:master|\s+Yes - 1\.0\.0/',
+            $output
+        );
+    }
+
+    public function testOutputWhenWorkshopInstalledAsBranchFromDifferentRepoAndNoTagsExist(): void
+    {
+        $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, 'https://github.com/AydinHassan/php8-appreciate:master');
+        $this->localRepo->add($installedWorkshop);
+
+        $this->versionChecker
+            ->expects($this->once())
+            ->method('getLatestRelease')
+            ->willThrowException(NoTaggedReleaseException::fromWorkshop($workshop));
+
+        $this->command->__invoke($this->output);
+
+        $output = $this->output->fetch();
+        $this->assertMatchesRegularExpression(
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|https:\/\/github\.com\/AydinHassan\/php8\-appreciate:master|\s+No releases/',
             $output
         );
     }

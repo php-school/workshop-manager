@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManager\Command;
 
 use PhpSchool\WorkshopManager\Entity\InstalledWorkshop;
+use PhpSchool\WorkshopManager\Exception\NoTaggedReleaseException;
 use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
 use Symfony\Component\Console\Helper\Table;
@@ -46,7 +47,19 @@ class ListWorkshops
         (new Table($output))
             ->setHeaders(['Name', 'Description', 'Code', 'Type', 'Version', 'New version available?'])
             ->setRows(array_map(function (InstalledWorkshop $workshop) {
-                $latestRelease = $this->versionChecker->getLatestRelease($workshop);
+                try {
+                    $latestRelease = $this->versionChecker->getLatestRelease($workshop);
+                } catch (NoTaggedReleaseException $e) {
+                    $latestRelease = null;
+                }
+
+                if ($latestRelease && $latestRelease->getTag() !== $workshop->getVersion()) {
+                    $update = 'Yes - ' . $latestRelease->getTag();
+                } elseif ($latestRelease) {
+                    $update = 'Nope!';
+                } else {
+                    $update = 'No releases';
+                }
 
                 return [
                     $workshop->getDisplayName(),
@@ -54,9 +67,7 @@ class ListWorkshops
                     $workshop->getCode(),
                     ucfirst($workshop->getType()),
                     $workshop->getVersion(),
-                    $latestRelease->getTag() === $workshop->getVersion()
-                        ? 'Nope!'
-                        : 'Yes - ' . $latestRelease->getTag(),
+                    $update
                 ];
             }, $this->installedWorkshops->getAll()))
             ->setStyle($style)
