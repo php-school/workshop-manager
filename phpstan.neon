@@ -1,3 +1,6 @@
 parameters:
     treatPhpDocTypesAsCertain: false
     ignoreErrors:
+        - '#Parameter \#1 \$owner of method PhpSchool\\WorkshopManager\\Installer\\Installer::downloadArchive\(\) expects string, string\|null given.#'
+        - '#Parameter \#2 \$repo of method PhpSchool\\WorkshopManager\\Installer\\Installer::downloadArchive\(\) expects string, string\|null given.#'
+
