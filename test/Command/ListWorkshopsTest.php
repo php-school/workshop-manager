@@ -127,7 +127,10 @@ class ListWorkshopsTest extends TestCase
     public function testOutputWhenWorkshopInstalledAsBranchFromDifferentRepo(): void
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
-        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, 'https://github.com/AydinHassan/php8-appreciate:master');
+        $installedWorkshop = InstalledWorkshop::fromWorkshop(
+            $workshop,
+            'https://github.com/AydinHassan/php8-appreciate:master'
+        );
         $this->localRepo->add($installedWorkshop);
 
         $this->versionChecker
@@ -139,7 +142,8 @@ class ListWorkshopsTest extends TestCase
 
         $output = $this->output->fetch();
         $this->assertMatchesRegularExpression(
-            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|https:\/\/github\.com\/AydinHassan\/php8\-appreciate:master|\s+Yes - 1\.0\.0/',
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|https:\/\/github\.com\/AydinHassan' .
+            '\/php8\-appreciate:master|\s+Yes - 1\.0\.0/',
             $output
         );
     }
@@ -147,7 +151,10 @@ class ListWorkshopsTest extends TestCase
     public function testOutputWhenWorkshopInstalledAsBranchFromDifferentRepoAndNoTagsExist(): void
     {
         $workshop = new Workshop('learnyouphp', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
-        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, 'https://github.com/AydinHassan/php8-appreciate:master');
+        $installedWorkshop = InstalledWorkshop::fromWorkshop(
+            $workshop,
+            'https://github.com/AydinHassan/php8-appreciate:master'
+        );
         $this->localRepo->add($installedWorkshop);
 
         $this->versionChecker
@@ -159,7 +166,8 @@ class ListWorkshopsTest extends TestCase
 
         $output = $this->output->fetch();
         $this->assertMatchesRegularExpression(
-            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|https:\/\/github\.com\/AydinHassan\/php8\-appreciate:master|\s+No releases/',
+            '/learnyouphp\s+\|\s+workshop\s+\|\s+learnyouphp\s+\|\sCore\s+\|https:\/\/github\.com\/AydinHassan' .
+            '\/php8\-appreciate:master|\s+No releases/',
             $output
         );
     }
