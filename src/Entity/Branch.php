@@ -6,14 +6,29 @@ namespace PhpSchool\WorkshopManager\Entity;
 
 class Branch
 {
+    /**
+     * @var string
+     */
     private static $gitHubRepoUrlRegex = '/^(https?:\/\/)?(www.)?github.com\/([A-Za-z\d-]+)\/([A-Za-z\d\.-]+)\/?$/';
 
+    /**
+     * @var string
+     */
     private $branch;
 
+    /**
+     * @var ?string
+     */
     private $gitHubRepository;
 
+    /**
+     * @var ?string
+     */
     private $gitHubOwner;
 
+    /**
+     * @var ?string
+     */
     private $gitHubRepoName;
 
     public function __construct(string $branch, string $gitHubRepository = null)
