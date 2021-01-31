@@ -36,7 +36,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 return [
     Application::class => \DI\factory(function (ContainerInterface $c) {
         $application = new \PhpSchool\WorkshopManager\Application('PHP School workshop manager', '1.1.0', $c);
-        $application->command('install workshopName [branchName]', InstallWorkshop::class, ['add'])
+        $application->command('install workshopName [branchName] [repo]', InstallWorkshop::class, ['add'])
             ->setDescription('Install a PHP School workshop.')
             ->setHelp(<<<'EOF'
 This command requires a <comment>workshopName</comment> code as an argument:
