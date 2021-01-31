@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest\Installer;
 
 use Composer\Json\JsonFile;
+use PhpSchool\WorkshopManager\Entity\Branch;
 use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
@@ -127,7 +128,6 @@ class InstallerTest extends TestCase
     public function testExceptionIsThrowIfWorkshopTempDownloadFileExistsAndCannotBeRemoved(): void
     {
         $workshop = $this->configureRemoteRepository();
-        $this->configureGitHubApi($workshop, false);
 
         $path = sprintf('%s/.temp/learn-you-php.zip', $this->workshopHomeDir);
         @mkdir(dirname($path));
@@ -378,7 +378,7 @@ class InstallerTest extends TestCase
         return $workshop;
     }
 
-    private function configureGitHubApi(Workshop $workshop, bool $configureDownload, string $branchName = null): void
+    private function configureGitHubApi(Workshop $workshop, bool $configureDownload, Branch $b = null): void
     {
         if ($configureDownload) {
             $this->createZipArchive();
@@ -387,26 +387,28 @@ class InstallerTest extends TestCase
                 ->expects($this->once())
                 ->method('archive')
                 ->with(
-                    $workshop->getGitHubOwner(),
-                    $workshop->getGitHubRepoName(),
+                    $b && $b->isDifferentRepository() ? $b->getGitHubOwner() : $workshop->getGitHubOwner(),
+                    $b && $b->isDifferentRepository() ? $b->getGitHubRepoName() : $workshop->getGitHubRepoName(),
                     'zipball',
-                    $branchName ?? '0123456789'
+                    $b ? $b->getBranch() : '0123456789'
                 )
                 ->willReturn(file_get_contents(sprintf('%s/temp.zip', $this->workshopHomeDir)));
 
             unlink(sprintf('%s/temp.zip', $this->workshopHomeDir));
         }
 
-        $this->ghClient
-            ->expects($this->once())
-            ->method('tags')
-            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
-            ->willReturn([
-                 [
-                     'ref' => 'refs/tags/1.0.0',
-                     'object' => ['sha' => '0123456789']
-                 ]
-             ]);
+        if (!$b) {
+            $this->ghClient
+                ->expects($this->once())
+                ->method('tags')
+                ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
+                ->willReturn([
+                    [
+                        'ref' => 'refs/tags/1.0.0',
+                        'object' => ['sha' => '0123456789']
+                    ]
+                ]);
+        }
     }
 
     private function createZipArchive(): void
@@ -421,8 +423,9 @@ class InstallerTest extends TestCase
 
     public function testSuccessfulInstallWithBranch(): void
     {
+        $branch = new Branch('master');
         $workshop = $this->configureRemoteRepository();
-        $this->configureGitHubApi($workshop, true, 'master');
+        $this->configureGitHubApi($workshop, true, $branch);
 
         $path = sprintf('%s/workshops/', $this->workshopHomeDir);
         @mkdir($path);
@@ -442,10 +445,44 @@ class InstallerTest extends TestCase
             ->method('link')
             ->with($this->isInstanceOf(InstalledWorkshop::class));
 
-        $this->installer->installWorkshop($workshop->getCode(), 'master');
+        $this->installer->installWorkshop($workshop->getCode(), $branch);
 
         $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
         $this->assertEquals('master', $this->installedWorkshopRepo->getByCode('learn-you-php')->getVersion());
+        $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
+    }
+
+    public function testSuccessfulInstallWithBranchFromDifferentRepo(): void
+    {
+        $branch = new Branch('master', 'https://github.com/AydinHassan/php8-appreciate');
+        $workshop = $this->configureRemoteRepository();
+        $this->configureGitHubApi($workshop, true, $branch);
+
+        $path = sprintf('%s/workshops/', $this->workshopHomeDir);
+        @mkdir($path);
+
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%slearn-you-php', $path))
+            ->willReturn(new InstallResult(0, ''));
+
+        $this->localJsonFile
+            ->expects($this->once())
+            ->method('write');
+
+        $this->linker
+            ->expects($this->once())
+            ->method('link')
+            ->with($this->isInstanceOf(InstalledWorkshop::class));
+
+        $this->installer->installWorkshop($workshop->getCode(), $branch);
+
+        $this->assertTrue($this->installedWorkshopRepo->hasWorkshop('learn-you-php'));
+        $this->assertEquals(
+            'https://github.com/AydinHassan/php8-appreciate:master',
+            $this->installedWorkshopRepo->getByCode('learn-you-php')->getVersion()
+        );
         $this->assertFileExists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir));
     }
 }

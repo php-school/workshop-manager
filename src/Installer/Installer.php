@@ -3,6 +3,8 @@
 namespace PhpSchool\WorkshopManager\Installer;
 
 use Exception;
+use PhpSchool\WorkshopManager\Entity\Branch;
+use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\ComposerInstaller;
 use PhpSchool\WorkshopManager\ComposerInstallerFactory;
@@ -91,7 +93,7 @@ class Installer
         $this->notifyFormat = $notifyUrlFormat ?: $this->notifyFormat;
     }
 
-    public function installWorkshop(string $workshop, string $branchName = null): void
+    public function installWorkshop(string $workshop, Branch $branch = null): void
     {
         if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
             throw new WorkshopAlreadyInstalledException();
@@ -103,13 +105,14 @@ class Installer
 
         $workshop = $this->remoteWorkshopRepository->getByCode($workshop);
 
-        try {
-            $release = $this->versionChecker->getLatestRelease($workshop);
-        } catch (RuntimeException $e) {
-            throw DownloadFailureException::fromException($e);
-        }
+        $pathToZip = $this->getPathAndCreateDirectory($workshop);
 
-        $pathToZip  = $this->download($workshop, $branchName ?? $release->getSha());
+        $data = $branch
+            ? $this->downloadBranch($workshop, $branch)
+            : $this->downloadRelease($workshop, $release = $this->getLatestRelease($workshop));
+
+        $this->writeWorkshop($pathToZip, $data);
+
         $zipArchive = new \ZipArchive();
 
         $zipArchive->open($pathToZip);
@@ -154,7 +157,10 @@ class Installer
             }
         });
 
-        $installedWorkshop = InstalledWorkshop::fromWorkshop($workshop, $branchName ?? $release->getTag());
+        $installedWorkshop = InstalledWorkshop::fromWorkshop(
+            $workshop,
+            $branch ? (string) $branch : $release->getTag()
+        );
         $this->installedWorkshopRepository->add($installedWorkshop);
         $this->installedWorkshopRepository->save();
 
@@ -178,12 +184,7 @@ class Installer
         curl_close($curl);
     }
 
-    /**
-     * @param Workshop $workshop
-     * @param string $sha The commit hash to download as an archive
-     * @return string
-     */
-    private function download(Workshop $workshop, string $sha): string
+    private function getPathAndCreateDirectory(Workshop $workshop): string
     {
         $path = sprintf('%s/.temp/%s.zip', $this->workshopHomeDirectory, $workshop->getCode());
 
@@ -195,23 +196,50 @@ class Installer
             }
         }
 
-        try {
-            $data = $this->gitHubClient->archive(
-                $workshop->getGitHubOwner(),
-                $workshop->getGitHubRepoName(),
-                'zipball',
-                $sha
-            );
-        } catch (GitHubException $e) {
-            throw DownloadFailureException::fromException($e);
-        }
+        return $path;
+    }
 
+    private function writeWorkshop(string $path, string $data): void
+    {
         try {
             $this->filesystem->dumpFile($path, $data);
         } catch (IOException $e) {
             throw DownloadFailureException::fromException($e);
         }
+    }
 
-        return $path;
+    private function downloadBranch(Workshop $workshop, Branch $branch): string
+    {
+        return $branch->isDifferentRepository()
+            ? $this->downloadArchive($branch->getGitHubOwner(), $branch->getGitHubRepoName(), $branch->getBranch())
+            : $this->downloadArchive($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), $branch->getBranch());
+    }
+
+    private function downloadRelease(Workshop $workshop, Release $release): string
+    {
+        return $this->downloadArchive($workshop->getGitHubOwner(), $workshop->getGitHubRepoName(), $release->getSha());
+    }
+
+    private function downloadArchive(string $owner, string $repo, string $reference): string
+    {
+        try {
+            return $this->gitHubClient->archive(
+                $owner,
+                $repo,
+                'zipball',
+                $reference
+            );
+        } catch (GitHubException $e) {
+            throw DownloadFailureException::fromException($e);
+        }
+    }
+
+    private function getLatestRelease(Workshop $workshop): Release
+    {
+        try {
+            return $this->versionChecker->getLatestRelease($workshop);
+        } catch (RuntimeException $e) {
+            throw DownloadFailureException::fromException($e);
+        }
     }
 }
