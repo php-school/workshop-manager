@@ -4,10 +4,10 @@ namespace PhpSchool\WorkshopManager;
 
 use PhpSchool\WorkshopManager\Entity\Release;
 use PhpSchool\WorkshopManager\Entity\Workshop;
+use PhpSchool\WorkshopManager\Exception\NoTaggedReleaseException;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\GitHubApi\Exception;
-use RuntimeException;
 use PhpSchool\WorkshopManager\Util\Collection;
 
 class VersionChecker
@@ -31,11 +31,15 @@ class VersionChecker
                 $workshop->getGitHubRepoName()
             ));
         } catch (Exception $e) {
+            if ($e->getMessage() === 'Not Found') {
+                throw NoTaggedReleaseException::fromWorkshop($workshop);
+            }
+
             throw new RequiresNetworkAccessException('Cannot communicate with GitHub - check your internet connection');
         }
 
         if ($tags->isEmpty()) {
-            throw new RuntimeException('This workshop has no tagged releases.');
+            throw NoTaggedReleaseException::fromWorkshop($workshop);
         }
 
         /** @var array{sha: string, ref: string} $latestVersion */

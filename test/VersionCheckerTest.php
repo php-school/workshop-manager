@@ -2,6 +2,7 @@
 
 namespace PhpSchool\WorkshopManagerTest;
 
+use PhpSchool\WorkshopManager\Exception\NoTaggedReleaseException;
 use PhpSchool\WorkshopManager\GitHubApi\Client;
 use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\GitHubApi\Exception;
@@ -40,8 +41,26 @@ class VersionCheckerTest extends TestCase
             ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
             ->willReturn([]);
 
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('This workshop has no tagged releases.');
+        $this->expectException(NoTaggedReleaseException::class);
+        $this->expectExceptionMessage("Workshop {$workshop->getDisplayName()} has no tagged releases.");
+
+        $versionChecker = new VersionChecker($client);
+        $versionChecker->getLatestRelease($workshop);
+    }
+
+    public function testGetLatestReleaseThrowsExceptionIfCannotFindTag(): void
+    {
+        $workshop = new Workshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core');
+        $client = $this->createMock(Client::class);
+
+        $client
+            ->expects($this->once())
+            ->method('tags')
+            ->with($workshop->getGitHubOwner(), $workshop->getGitHubRepoName())
+            ->willThrowException(new Exception('Not Found'));
+
+        $this->expectException(NoTaggedReleaseException::class);
+        $this->expectExceptionMessage("Workshop {$workshop->getDisplayName()} has no tagged releases.");
 
         $versionChecker = new VersionChecker($client);
         $versionChecker->getLatestRelease($workshop);
