@@ -2,6 +2,7 @@
 
 namespace PhpSchool\WorkshopManager\Command;
 
+use PhpSchool\WorkshopManager\Entity\Branch;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
@@ -25,16 +26,22 @@ class InstallWorkshop
         $this->installer = $installer;
     }
 
-    public function __invoke(OutputInterface $output, string $workshopName, string $branchName = null): int
-    {
+    public function __invoke(
+        OutputInterface $output,
+        string $workshopName,
+        string $branchName = null,
+        string $repo = null
+    ): int {
         $output->writeln('');
 
         if ($branchName) {
             $output->writeln(" <fg=magenta> Installing branches is reserved for testing purposes</>\n");
         }
 
+        $branch = $branchName ? new Branch($branchName, $repo) : null;
+
         try {
-            $this->installer->installWorkshop($workshopName, $branchName);
+            $this->installer->installWorkshop($workshopName, $branch);
         } catch (WorkshopAlreadyInstalledException $e) {
             $output->writeln(
                 sprintf(" <info>\"%s\" is already installed, you're ready to learn!</info>\n", $workshopName)

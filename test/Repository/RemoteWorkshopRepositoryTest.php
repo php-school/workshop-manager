@@ -17,7 +17,7 @@ class RemoteWorkshopRepositoryTest extends TestCase
         $json
             ->expects($this->once())
             ->method('getPath')
-            ->willReturn('http://www.not-a-valid-site.org');
+            ->willReturn('http://not-a-valid-site.org');
 
         $repo = new RemoteWorkshopRepository($json);
         $this->expectException(RequiresNetworkAccessException::class);

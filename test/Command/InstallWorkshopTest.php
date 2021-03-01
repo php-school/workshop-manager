@@ -3,6 +3,7 @@
 namespace PhpSchool\WorkshopManagerTest\Command;
 
 use PhpSchool\WorkshopManager\Command\InstallWorkshop;
+use PhpSchool\WorkshopManager\Entity\Branch;
 use PhpSchool\WorkshopManager\Exception\ComposerFailureException;
 use PhpSchool\WorkshopManager\Exception\DownloadFailureException;
 use PhpSchool\WorkshopManager\Exception\FailedToMoveWorkshopException;
@@ -212,7 +213,11 @@ class InstallWorkshopTest extends TestCase
         $this->installer
             ->expects($this->once())
             ->method('installWorkshop')
-            ->with('learnyouphp', 'master');
+            ->with('learnyouphp', $this->callback(function ($branch) {
+                return $branch instanceof Branch
+                    && 'master' === $branch->getBranch()
+                    && !$branch->isDifferentRepository();
+            }));
 
         $this->output
             ->expects($this->exactly(3))
@@ -224,5 +229,35 @@ class InstallWorkshopTest extends TestCase
             );
 
         $this->command->__invoke($this->output, 'learnyouphp', 'master');
+    }
+
+    public function testSuccessWithBranchAndDifferentRepo(): void
+    {
+        $this->installer
+            ->expects($this->once())
+            ->method('installWorkshop')
+            ->with('learnyouphp', $this->callback(function ($branch) {
+                return $branch instanceof Branch
+                    && 'master' === $branch->getBranch()
+                    && $branch->isDifferentRepository()
+                    && $branch->getGitHubOwner() === 'AydinHassan'
+                    && $branch->getGitHubRepoName() === 'php8-appreciate';
+            }));
+
+        $this->output
+            ->expects($this->exactly(3))
+            ->method('writeln')
+            ->withConsecutive(
+                [""],
+                [" <fg=magenta> Installing branches is reserved for testing purposes</>\n"],
+                [" <info>Successfully installed \"learnyouphp\"</info>\n"]
+            );
+
+        $this->command->__invoke(
+            $this->output,
+            'learnyouphp',
+            'master',
+            'https://github.com/AydinHassan/php8-appreciate'
+        );
     }
 }
