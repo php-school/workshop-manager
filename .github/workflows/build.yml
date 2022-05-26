@@ -27,7 +27,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          tools: composer:v1
+          tools: composer:v2
           ini-values: ${{ env.PHP_INI_VALUES }}
 
       - name: Install Dependencies
