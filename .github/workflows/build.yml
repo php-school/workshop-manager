@@ -37,7 +37,7 @@ jobs:
         run: |
           mkdir -p build/logs
           export COLUMNS=200
-          vendor/bin/simple-phpunit --coverage-clover ./build/logs/clover.xml
+          vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
 
       - name: Run phpcs
         run: composer cs
