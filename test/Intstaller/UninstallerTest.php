@@ -73,7 +73,12 @@ class UninstallerTest extends TestCase
             new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
-        $this->uninstaller->uninstallWorkshop('learn-you-php');
+        try {
+            $this->uninstaller->uninstallWorkshop('learn-you-php');
+
+        } catch (\Exception $e) {
+            var_dump(get_class($e));
+        }
     }
 
     public function testRemove(): void
