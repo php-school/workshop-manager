@@ -76,7 +76,7 @@ class UninstallerTest extends TestCase
         try {
             $this->uninstaller->uninstallWorkshop('learn-you-php');
 
-        } catch (\Exception $e) {
+        } catch (IOException $e) {
             var_dump(get_class($e));
         }
     }
