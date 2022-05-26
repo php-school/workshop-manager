@@ -11,9 +11,12 @@ use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
 
 class UninstallerTest extends TestCase
 {
+    use AssertionRenames;
+
     private $localJsonFile;
     private $installedWorkshopRepo;
     private $linker;
@@ -67,18 +70,13 @@ class UninstallerTest extends TestCase
         chmod($dir, 0555);
 
         $this->expectException(IOException::class);
-        //$this->expectExceptionMessageMatches('/Failed to remove file.*/');
+        $this->expectExceptionMessageMatches('/Failed to remove file.*/');
 
         $this->installedWorkshopRepo->add(
             new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
-        try {
-            $this->uninstaller->uninstallWorkshop('learn-you-php');
-
-        } catch (IOException $e) {
-            var_dump(get_class($e));
-        }
+        $this->uninstaller->uninstallWorkshop('learn-you-php');
     }
 
     public function testRemove(): void
