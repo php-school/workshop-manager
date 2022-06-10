@@ -8,9 +8,12 @@ use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
 
 class VerifyInstallTest extends TestCase
 {
+    use AssertionRenames;
+
     /**
      * @var OutputInterface
      */

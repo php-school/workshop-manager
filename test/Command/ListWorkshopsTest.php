@@ -12,9 +12,12 @@ use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\VersionChecker;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
 
 class ListWorkshopsTest extends TestCase
 {
+    use AssertionRenames;
+
     /**
      * @var JsonFile
      */

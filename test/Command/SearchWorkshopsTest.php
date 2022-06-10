@@ -12,9 +12,12 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
 
 class SearchWorkshopsTest extends TestCase
 {
+    use AssertionRenames;
+
     /**
      * @var JsonFile
      */
