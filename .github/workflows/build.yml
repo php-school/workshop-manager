@@ -47,7 +47,10 @@ jobs:
 
       - name: Coverage upload
         if: matrix.php == '7.4'
-        run: bash <(curl -s https://codecov.io/bash)
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -t ${CODECOV_TOKEN}
 
       - name: Build phar
         if: matrix.php == '7.2' && github.ref == 'refs/heads/master'
