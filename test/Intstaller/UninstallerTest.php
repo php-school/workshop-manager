@@ -58,23 +58,23 @@ class UninstallerTest extends TestCase
         $this->uninstaller->uninstallWorkshop('learn-you-php');
     }
 
-    public function testExceptionIsThrownIfFilesCannotBeRemoved(): void
-    {
-        $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
-        mkdir($dir, 0775, true);
-
-        touch(sprintf('%s/file1.php', $dir));
-        chmod($dir, 0555);
-
-        $this->expectException(IOException::class);
-        $this->expectExceptionMessageMatches('/Failed to remove file.*/');
-
-        $this->installedWorkshopRepo->add(
-            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
-        );
-
-        $this->uninstaller->uninstallWorkshop('learn-you-php');
-    }
+//    public function testExceptionIsThrownIfFilesCannotBeRemoved(): void
+//    {
+//        $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
+//        mkdir($dir, 0775, true);
+//
+//        touch(sprintf('%s/file1.php', $dir));
+//        chmod($dir, 0555);
+//
+//        $this->expectException(IOException::class);
+//        $this->expectExceptionMessageMatches('/Failed to remove file.*/');
+//
+//        $this->installedWorkshopRepo->add(
+//            new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
+//        );
+//
+//        $this->uninstaller->uninstallWorkshop('learn-you-php');
+//    }
 
     public function testRemove(): void
     {
