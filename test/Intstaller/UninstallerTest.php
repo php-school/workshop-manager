@@ -51,11 +51,12 @@ class UninstallerTest extends TestCase
 
     public function tearDown(): void
     {
-        try {
-            $this->filesystem->remove($this->workshopHomeDir);
-        } catch (IOException $e) {
-            //might fail because of permissions, let specific test handle it
+        if ($this->getName() === 'testExceptionIsThrownIfFilesCannotBeRemoved') {
+            $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
+            chmod($dir, 0775);
         }
+
+        $this->filesystem->remove($this->workshopHomeDir);
     }
 
     public function testExceptionIsThrownIfWorkshopIsNotInstalled(): void
@@ -79,13 +80,7 @@ class UninstallerTest extends TestCase
             new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
-        try {
-            $this->uninstaller->uninstallWorkshop('learn-you-php');
-        } finally {
-            chmod($dir, 0775);
-            $this->filesystem->remove($this->workshopHomeDir);
-            //$this->filesystem->chmod($dir, 0775, 0000, true);
-        }
+        $this->uninstaller->uninstallWorkshop('learn-you-php');
     }
 
     public function testRemove(): void
