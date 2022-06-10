@@ -10,9 +10,12 @@ use Seld\JsonLint\ParsingException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
 
 class ComposerInstallerTest extends TestCase
 {
+    use AssertionRenames;
+
     /**
      * @var string
      */

@@ -11,9 +11,12 @@ use PhpSchool\WorkshopManager\Repository\InstalledWorkshopRepository;
 use PhpSchool\WorkshopManager\Installer\Uninstaller;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Yoast\PHPUnitPolyfills\Polyfills\AssertionRenames;
 
 class UninstallerTest extends TestCase
 {
+    use AssertionRenames;
+
     private $localJsonFile;
     private $installedWorkshopRepo;
     private $linker;
