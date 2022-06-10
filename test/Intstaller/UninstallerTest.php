@@ -51,11 +51,6 @@ class UninstallerTest extends TestCase
 
     public function tearDown(): void
     {
-        var_dump(file_exists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir)));
-        if (file_exists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir))) {
-            $this->filesystem->chmod(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775, 0000, true);
-        }
-
         $this->filesystem->remove($this->workshopHomeDir);
     }
 
@@ -70,7 +65,6 @@ class UninstallerTest extends TestCase
         $dir = sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir);
         mkdir($dir, 0775, true);
 
-        var_dump($dir);
         touch(sprintf('%s/file1.php', $dir));
         chmod($dir, 0555);
 
@@ -81,7 +75,11 @@ class UninstallerTest extends TestCase
             new InstalledWorkshop('learn-you-php', 'learnyouphp', 'aydin', 'repo', 'workshop', 'core', '1.0.0')
         );
 
-        $this->uninstaller->uninstallWorkshop('learn-you-php');
+        try {
+            $this->uninstaller->uninstallWorkshop('learn-you-php');
+        } finally {
+            $this->filesystem->chmod(sprintf('%s/workshops/learn-you-php', $dir), 0775, 0000, true);
+        }
     }
 
     public function testRemove(): void
