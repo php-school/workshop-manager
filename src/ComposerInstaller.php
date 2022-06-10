@@ -2,6 +2,7 @@
 
 namespace PhpSchool\WorkshopManager;
 
+use Composer\Composer;
 use Composer\Factory;
 use Composer\Installer;
 use Composer\IO\ConsoleIO;
@@ -58,6 +59,7 @@ class ComposerInstaller
         $wrappedOutput = new RecordingOutput($output);
         $io            = new ConsoleIO($this->input, $wrappedOutput, new HelperSet());
 
+        /** @var Composer $composer */
         $composer = $this->composerFactory->createComposer(
             $io,
             sprintf('%s/composer.json', rtrim($pathToComposerProject, '/')),
