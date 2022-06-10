@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
-
     public function testMap(): void
     {
         $data = new Collection(['first' => 'taylor', 'last' => 'otwell']);

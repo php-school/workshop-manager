@@ -179,7 +179,7 @@ class InstallerTest extends TestCase
         chmod($path, 0555);
 
         $this->expectException(DownloadFailureException::class);
-        $this->expectExceptionMessageMatches('/^Unable to write to the.*/');
+        $this->expectExceptionMessageMatches('/^Cannot rename.*/');
 
         $this->installer->installWorkshop($workshop->getCode());
     }
