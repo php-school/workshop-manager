@@ -78,7 +78,8 @@ class UninstallerTest extends TestCase
         try {
             $this->uninstaller->uninstallWorkshop('learn-you-php');
         } finally {
-            $this->filesystem->chmod($dir, 0775, 0000, true);
+            chmod($dir, 0775);
+            //$this->filesystem->chmod($dir, 0775, 0000, true);
         }
     }
 
