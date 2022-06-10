@@ -15,7 +15,7 @@
     "require": {
         "php": ">=7.2",
         "php-di/php-di": "^6",
-        "composer/composer": "^2",
+        "composer/composer": "^2.2",
         "mnapoli/silly-php-di": "^1.0",
         "symfony/console": "^4.0 | ^5.0",
         "symfony/filesystem": "^4.0 | ^5.0",
