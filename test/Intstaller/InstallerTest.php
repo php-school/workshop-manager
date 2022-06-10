@@ -180,7 +180,7 @@ class InstallerTest extends TestCase
 
         $this->expectException(DownloadFailureException::class);
         $this->expectExceptionMessageMatches('/^Cannot rename.*/');
-        
+
         $this->installer->installWorkshop($workshop->getCode());
     }
 

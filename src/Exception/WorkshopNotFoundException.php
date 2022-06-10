@@ -7,5 +7,4 @@ namespace PhpSchool\WorkshopManager\Exception;
  */
 final class WorkshopNotFoundException extends \InvalidArgumentException
 {
-
 }
