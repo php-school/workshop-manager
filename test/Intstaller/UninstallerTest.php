@@ -51,7 +51,10 @@ class UninstallerTest extends TestCase
 
     public function tearDown(): void
     {
-        @chmod(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775);
+        if (file_exists(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir))) {
+            $this->filesystem->chmod(sprintf('%s/workshops/learn-you-php', $this->workshopHomeDir), 0775, 0000, true);
+        }
+        
         $this->filesystem->remove($this->workshopHomeDir);
     }
 
