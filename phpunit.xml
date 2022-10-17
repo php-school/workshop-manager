@@ -9,4 +9,7 @@
             <directory suffix=".php">./src</directory>
         </whitelist>
     </filter>
+    <php>
+        <env name="COLUMNS" value="200" force="true" />
+    </php>
 </phpunit>

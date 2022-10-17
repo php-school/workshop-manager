@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: [7.2, 7.3, 7.4, 8.0]
+        php: [7.2, 7.3, 7.4, 8.0, 8.1]
 
     name: PHP ${{ matrix.php }}
 
@@ -46,11 +46,11 @@ jobs:
         run: composer static
 
       - name: Coverage upload
+        uses: codecov/codecov-action@v3
         if: matrix.php == '7.4'
-        run: |
-          curl -Os https://uploader.codecov.io/latest/linux/codecov
-          chmod +x codecov
-          ./codecov -t ${CODECOV_TOKEN}
+        with:
+          files: ./build/logs/clover.xml
+          fail_ci_if_error: true
 
       - name: Build phar
         if: matrix.php == '7.2' && github.ref == 'refs/heads/master'
