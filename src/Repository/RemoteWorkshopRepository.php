@@ -7,6 +7,8 @@ use PhpSchool\WorkshopManager\Entity\Workshop;
 use PhpSchool\WorkshopManager\Exception\RequiresNetworkAccessException;
 use PhpSchool\WorkshopManager\Exception\WorkshopNotFoundException;
 
+use function PhpSchool\WorkshopManager\collect;
+
 class RemoteWorkshopRepository
 {
     /**
