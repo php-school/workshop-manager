@@ -24,4 +24,12 @@ class ComposerFailureExceptionTest extends TestCase
         $composerException = ComposerFailureException::fromMissingExtensions(['mbstring', 'zip']);
         $this->assertEquals($message, $composerException->getMessage());
     }
+
+    public function testFromResolveError(): void
+    {
+        $message  = 'This workshops dependencies could not be resolved.';
+
+        $composerException = ComposerFailureException::fromResolveError();
+        $this->assertEquals($message, $composerException->getMessage());
+    }
 }

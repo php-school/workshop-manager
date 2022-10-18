@@ -153,7 +153,11 @@ class Installer
                     throw ComposerFailureException::fromMissingExtensions($result->getMissingExtensions());
                 }
 
-                throw new ComposerFailureException();
+                if ($result->couldNotBeResolved()) {
+                    throw ComposerFailureException::fromResolveError();
+                }
+
+                throw new ComposerFailureException($result->getOutput());
             }
         });
 

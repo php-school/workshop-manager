@@ -19,4 +19,9 @@ class ComposerFailureException extends \RuntimeException
 
         return new self(sprintf($message, implode(', ', $missingExtensions)));
     }
+
+    public static function fromResolveError(): self
+    {
+        return new self('This workshops dependencies could not be resolved.');
+    }
 }
