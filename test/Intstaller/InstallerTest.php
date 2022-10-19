@@ -248,6 +248,30 @@ class InstallerTest extends TestCase
         $this->installer->installWorkshop($workshop->getCode());
     }
 
+    public function testExceptionIsThrownIfCannotRunComposerInstallBecauseDependenciesCannotBeResolved(): void
+    {
+        $path = sprintf('%s/workshops/', $this->workshopHomeDir);
+        @mkdir($path);
+
+        $workshop = $this->configureRemoteRepository();
+        $this->configureGitHubApi($workshop, true);
+
+        $this->composerInstaller
+            ->expects($this->once())
+            ->method('install')
+            ->with(sprintf('%slearn-you-php', $path))
+            ->willReturn(
+                new InstallResult(1, "Your requirements could not be resolved to an installable set of packages.")
+            );
+
+        $message  = 'This workshops dependencies could not be resolved.';
+
+        $this->expectException(ComposerFailureException::class);
+        $this->expectExceptionMessage($message);
+
+        $this->installer->installWorkshop($workshop->getCode());
+    }
+
     public function testSuccessfulInstall(): void
     {
         $workshop = $this->configureRemoteRepository();

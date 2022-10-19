@@ -42,4 +42,16 @@ class InstallResultTest extends TestCase
         $this->assertTrue($result->missingExtensions());
         $this->assertSame(['mbstring'], $result->getMissingExtensions());
     }
+
+    public function testWhenResolveError(): void
+    {
+        $output = 'Your requirements could not be resolved to an installable set of packages.';
+
+        $result = new InstallResult(1, $output);
+
+        $this->assertEquals(1, $result->getExitCode());
+        $this->assertEquals($output, $result->getOutput());
+        $this->assertFalse($result->missingExtensions());
+        $this->assertTrue($result->couldNotBeResolved());
+    }
 }

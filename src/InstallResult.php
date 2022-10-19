@@ -81,4 +81,12 @@ class InstallResult
     {
         return $this->missingExtensions->all();
     }
+
+    public function couldNotBeResolved(): bool
+    {
+        return (bool) preg_match(
+            '/Your requirements could not be resolved to an installable set of packages./',
+            $this->output
+        );
+    }
 }
