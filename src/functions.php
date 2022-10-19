@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace PhpSchool\WorkshopManager;
+
 use PhpSchool\WorkshopManager\Util\Collection;
 
 if (!function_exists('collect')) {
