@@ -52,15 +52,15 @@ class Client
     }
 
     /**
-     * @return array<array>
+     * @return array<array{ref: string, object: array{sha: string}}>
      */
     public function tags(string $username, string $repository): array
     {
         $response = $this->getClient()
             ->get('/repos/' . rawurlencode($username) . '/' . rawurlencode($repository) . '/git/refs/tags');
 
-        /** @var array<array> $response */
         $response = Response::parse($response);
+        /** @var array<array{ref: string, object: array{sha: string}}> $response */
         return $response;
     }
 

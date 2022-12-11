@@ -39,7 +39,7 @@ class Branch
         $this->gitHubRepository = $gitHubRepository;
 
         if ($this->gitHubRepository !== null) {
-            if (!preg_match(static::$gitHubRepoUrlRegex, $this->gitHubRepository, $matches)) {
+            if (!preg_match(self::$gitHubRepoUrlRegex, $this->gitHubRepository, $matches)) {
                 throw InvalidRepositoryUrlException::fromUrl($this->gitHubRepository);
             };
             $this->gitHubOwner = $matches[3];
