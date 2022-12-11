@@ -131,9 +131,9 @@ class RemoteWorkshopRepository
             ['workshop_code', 'display_name', 'github_owner', 'github_repo_name', 'description', 'type']
         );
 
-        /** @var array<array> $workshops */
-        $workshops = $this->remoteJsonFile->read()['workshops'];
-        collect($workshops)
+        /** @var array{workshops: array<mixed>}> $workshops $data */
+        $data = $this->remoteJsonFile->read();
+        collect($data['workshops'])
             ->filter(function ($workshopData) use ($requiredKeys) {
                     $missingKeyCount = $requiredKeys
                         ->diff(array_map('strval', array_keys($workshopData)))

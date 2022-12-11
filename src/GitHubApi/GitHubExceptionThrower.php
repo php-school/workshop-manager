@@ -62,7 +62,7 @@ class GitHubExceptionThrower implements Plugin
     }
 
     /**
-     * @param array<array> $errors
+     * @param array<array{code: string, field: string, value: string, resource: string, message?:string}> $errors
      */
     private function getValidationFailedException(array $errors): Exception
     {
