@@ -8,7 +8,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class VerifyInstall
 {
-    private const MIN_PHP_VERSION = '7.2';
+    private const MIN_PHP_VERSION = '8.2';
 
     /**
      * @var array<string>

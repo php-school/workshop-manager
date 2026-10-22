@@ -67,6 +67,11 @@ class ComposerInstaller
             $pathToComposerProject
         );
 
+        // Composer 2.9+ refuses to resolve packages with security advisories.
+        // Released workshops pin older dependencies, so keep the pre-2.9
+        // behaviour: still report advisories, but don't block the install.
+        $composer->getConfig()->merge(['config' => ['policy' => ['advisories' => ['block' => false]]]]);
+
         return new InstallResult(
             Installer::create($io, $composer)->setUpdate(true)->run(),
             $wrappedOutput->getOutput()

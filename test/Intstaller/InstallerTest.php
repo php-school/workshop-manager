@@ -402,7 +402,7 @@ class InstallerTest extends TestCase
         return $workshop;
     }
 
-    private function configureGitHubApi(Workshop $workshop, bool $configureDownload, Branch $b = null): void
+    private function configureGitHubApi(Workshop $workshop, bool $configureDownload, ?Branch $b = null): void
     {
         if ($configureDownload) {
             $this->createZipArchive();

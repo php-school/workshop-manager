@@ -136,7 +136,7 @@ class InstalledWorkshopRepositoryTest extends TestCase
         $repo->save();
     }
 
-    private function getRepo(array $workshops = null): InstalledWorkshopRepository
+    private function getRepo(?array $workshops = null): InstalledWorkshopRepository
     {
         if (null === $workshops) {
             $workshops = [
