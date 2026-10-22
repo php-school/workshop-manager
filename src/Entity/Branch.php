@@ -33,7 +33,7 @@ class Branch
      */
     private $gitHubRepoName;
 
-    public function __construct(string $branch, string $gitHubRepository = null)
+    public function __construct(string $branch, ?string $gitHubRepository = null)
     {
         $this->branch = $branch;
         $this->gitHubRepository = $gitHubRepository;

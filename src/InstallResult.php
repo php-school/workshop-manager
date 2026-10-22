@@ -45,7 +45,7 @@ class InstallResult
                     $match
                 );
 
-                return trim($match[1]);
+                return trim($match[1] ?? '');
             })
             ->unique();
     }

@@ -29,8 +29,8 @@ class InstallWorkshop
     public function __invoke(
         OutputInterface $output,
         string $workshopName,
-        string $branchName = null,
-        string $repo = null
+        ?string $branchName = null,
+        ?string $repo = null
     ): int {
         $output->writeln('');
 

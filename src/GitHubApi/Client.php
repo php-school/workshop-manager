@@ -26,8 +26,8 @@ class Client
     private $requestFactory;
 
     public function __construct(
-        HttpClient $httpClient = null,
-        RequestFactoryInterface $requestFactory = null
+        ?HttpClient $httpClient = null,
+        ?RequestFactoryInterface $requestFactory = null
     ) {
         $this->httpClient = $httpClient ?: HttpClientDiscovery::find();
         $this->requestFactory = $requestFactory ?: Psr17FactoryDiscovery::findRequestFactory();
@@ -64,7 +64,7 @@ class Client
         return $response;
     }
 
-    public function archive(string $username, string $repository, string $format, string $ref = null): string
+    public function archive(string $username, string $repository, string $format, ?string $ref = null): string
     {
         if (!in_array($format, ['tarball', 'zipball'], true)) {
             $format = 'tarball';

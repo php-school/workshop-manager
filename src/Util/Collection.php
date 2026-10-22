@@ -42,7 +42,7 @@ final class Collection implements \Countable
      * @param ?callable $callback
      * @return self<T>
      */
-    public function filter(callable $callback = null): self
+    public function filter(?callable $callback = null): self
     {
         if (null === $callback) {
             return new self(array_filter($this->items));

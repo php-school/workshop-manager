@@ -80,7 +80,7 @@ class Installer
         ComposerInstaller $composerInstaller,
         Client $gitHubClient,
         VersionChecker $versionChecker,
-        string $notifyUrlFormat = null
+        ?string $notifyUrlFormat = null
     ) {
         $this->installedWorkshopRepository = $installedWorkshops;
         $this->remoteWorkshopRepository = $remoteWorkshopRepository;
@@ -93,7 +93,7 @@ class Installer
         $this->notifyFormat = $notifyUrlFormat ?: $this->notifyFormat;
     }
 
-    public function installWorkshop(string $workshop, Branch $branch = null): void
+    public function installWorkshop(string $workshop, ?Branch $branch = null): void
     {
         if ($this->installedWorkshopRepository->hasWorkshop($workshop)) {
             throw new WorkshopAlreadyInstalledException();
@@ -185,7 +185,6 @@ class Installer
             ]
         );
         curl_exec($curl);
-        curl_close($curl);
     }
 
     private function getPathAndCreateDirectory(Workshop $workshop): string

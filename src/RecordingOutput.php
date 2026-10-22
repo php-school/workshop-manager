@@ -64,7 +64,7 @@ class RecordingOutput implements OutputInterface
     }
 
     /**
-     * @param int $level
+     * @param OutputInterface::VERBOSITY_* $level
      */
     public function setVerbosity($level): void
     {

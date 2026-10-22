@@ -36,7 +36,7 @@ class SearchWorkshops
         $this->output = $output;
     }
 
-    public function __invoke(string $workshopName = null): void
+    public function __invoke(?string $workshopName = null): void
     {
         $this->output->writeln('');
 

@@ -84,7 +84,6 @@ class VerifyInstallTest extends TestCase
     {
         $rc = new \ReflectionClass(VerifyInstall::class);
         $rp = $rc->getProperty('requiredExtensions');
-        $rp->setAccessible(true);
         $rp->setValue($this->command, ['some-ext']);
 
         $this->command->__invoke();
