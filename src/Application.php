@@ -2,9 +2,11 @@
 
 namespace PhpSchool\WorkshopManager;
 
-use Silly\Edition\PhpDi\Application as PhpDiApp;
+use DI\Container;
+use Psr\Container\ContainerInterface;
+use Silly\Application as SillyApplication;
 
-class Application extends PhpDiApp
+class Application extends SillyApplication
 {
     /**
      * @var string
@@ -18,6 +20,15 @@ class Application extends PhpDiApp
      \ \_\   \ \_\ \_\ \_\       \ `\____\ \____\\ \_\ \_\ \____\ \____/\____\
       \/_/    \/_/\/_/\/_/        \/_____/\/____/ \/_/\/_/\/___/ \/___/\/____/';
 
+    public function __construct(
+        string $name = 'UNKNOWN',
+        string $version = 'UNKNOWN',
+        ?ContainerInterface $container = null
+    ) {
+        parent::__construct($name, $version);
+
+        $this->useContainer($container ?? new Container(), true, true);
+    }
 
     public function getHelp(): string
     {

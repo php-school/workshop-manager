@@ -13,21 +13,20 @@
         }
     ],
     "require": {
-        "php": "^7.2|^8.0",
-        "php-di/php-di": "^6",
-        "composer/composer": "^2.2",
-        "mnapoli/silly-php-di": "^1.0",
-        "symfony/console": "^4.0 | ^5.0 | ^6.0",
-        "symfony/filesystem": "^4.0 | ^5.0 | ^6.0",
+        "php": "^8.2",
+        "php-di/php-di": "^7.0",
+        "composer/composer": "^2.8",
+        "symfony/console": "^6.4 | ^7.0",
+        "symfony/filesystem": "^6.4 | ^7.0",
         "mnapoli/silly": "^1.7",
         "tm/tooly-composer-script": "^1.0",
-        "padraic/phar-updater": "^1.0",
+        "laravel-zero/phar-updater": "^1.4",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
         "ext-zip": "*",
         "php-http/discovery": "^1.12",
-        "php-http/guzzle7-adapter": "^0.1.1",
+        "php-http/guzzle7-adapter": "^1.1",
         "php-http/client-common": "^2.3",
         "guzzlehttp/psr7": "^1.7 | ^2.4",
         "http-interop/http-factory-guzzle": "^1.0"
@@ -66,7 +65,7 @@
         ],
         "phar": [
             "@composer update --no-dev -o",
-            "box.phar build -vv"
+            "box.phar compile"
         ],
         "test": [
             "phpunit",
@@ -80,9 +79,14 @@
     "extra": {
         "tools": {
             "box": {
-                "url": "https://github.com/box-project/box2/releases/download/2.7.2/box-2.7.2.phar",
+                "url": "https://github.com/box-project/box/releases/download/4.7.0/box.phar",
                 "only-dev": false
             }
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "8.2.0"
         }
     }
 }
