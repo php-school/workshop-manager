@@ -51,7 +51,6 @@ jobs:
         if: matrix.php == '8.4'
         with:
           files: ./build/logs/clover.xml
-          fail_ci_if_error: true
 
       - name: Build phar
         if: matrix.php == '8.4' && github.ref == 'refs/heads/master'
