@@ -4,7 +4,8 @@
   "compression": "GZ",
   "directories": [
     "src",
-    "app"
+    "app",
+    "vendor/symfony/console/Resources"
   ],
   "files": [
     "vendor/composer/ca-bundle/res/cacert.pem",

@@ -5,7 +5,7 @@
 # http://phpschool.io
 #
 
-FROM php:7-cli
+FROM php:8-cli
 MAINTAINER Michael Woodward <mikeymike.mw@gmail.com>
 
 RUN apt-get update \
